@@ -2,7 +2,11 @@
 
 ## Architecture
 
-Single-agent pattern: `pharma-search-specialist` analyzes queries → returns JSON execution plan → Claude Code executes MCP tools → saves to `data_dump/`
+**Multi-agent pattern**: Data gathering + analytical agents
+
+**Agents**:
+- `pharma-search-specialist`: Query → JSON plan → MCP execution → `data_dump/`
+- `epidemiology-analyst`: Reads `data_dump/` → prevalence models, segmentation, funnels
 
 ## MCP Servers (see .mcp.json)
 
@@ -102,6 +106,18 @@ Design custom workflow. Return ONLY JSON execution plan."
 ### 3. Execute Plan
 Parse JSON → execute each step → save to `data_dump/{YYYY-MM-DD}_{HHMMSS}_{tool}_{term}/` → present findings
 
+### 4. Invoke Analytical Agents (If Needed)
+
+**epidemiology-analyst** - Prevalence modeling, segmentation, eligibility funnels
+
+Use for: Market sizing, drug-eligible population estimates, patient segmentation
+
+Template:
+```
+"You are epidemiology-analyst. Read .claude/agents/epidemiology-analyst.md.
+Analyze data_dump/[folder]/ and return prevalence model, segmentation, eligibility funnel."
+```
+
 ## File Structure
 
 **data_dump/**: Raw MCP results (query.json, results.json, summary.md, metadata.json)
@@ -119,7 +135,8 @@ Parse JSON → execute each step → save to `data_dump/{YYYY-MM-DD}_{HHMMSS}_{t
 
 ## Design Principles
 
-1. **Single agent**: pharma-search-specialist plans, Claude Code executes
-2. **Token optimization**: Conservative limits, pagination, count strategies
-3. **Audit trail**: All results saved to data_dump/
-4. **Agent constraints**: Read-only tools, no file writing
+1. **Multi-agent**: Data gathering (pharma-search-specialist) + analytical (epidemiology-analyst)
+2. **Separation of concerns**: Gathering vs analysis, no MCP execution by analysts
+3. **Token optimization**: Conservative limits, pagination, count strategies
+4. **Audit trail**: All results saved to data_dump/
+5. **Agent constraints**: Read-only tools for analysts

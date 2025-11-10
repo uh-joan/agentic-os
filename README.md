@@ -4,21 +4,13 @@ AI-powered pharmaceutical research system using Claude Code with specialized MCP
 
 ## Architecture
 
-**Single-agent pattern**: `pharma-search-specialist` analyzes queries → returns JSON execution plan → Claude Code executes MCP tools → saves results to `data_dump/`
+Multi-agent system: data gathering + analytical modeling
 
-```
-User Query
-    ↓
-pharma-search-specialist (planning agent)
-    ↓
-JSON Execution Plan
-    ↓
-Claude Code (executor)
-    ↓
-MCP Tool Calls (ct-gov, fda, pubmed, etc.)
-    ↓
-Results saved to data_dump/
-```
+**Agents:**
+- `pharma-search-specialist`: Query → JSON plan → MCP tools → `data_dump/`
+- `epidemiology-analyst`: Reads `data_dump/` → prevalence models, segmentation, funnels
+
+**Workflow:** Query → pharma-search-specialist (gathers data) → epidemiology-analyst (analyzes) → results
 
 ## MCP Servers
 
@@ -176,18 +168,40 @@ data_dump/2025-11-10_183054_fda_baricitinib/
 3. ClinicalTrials.gov → clinical validation
 4. PubChem → tool compounds
 
+### Epidemiological Analysis (using epidemiology-analyst)
+1. Data Commons + WHO + CMS → prevalence data gathering
+2. PubMed → severity distribution studies
+3. ClinicalTrials.gov → eligibility criteria patterns
+4. FDA + CMS → contraindication prevalence
+5. Epidemiology-analyst → eligibility funnel modeling
+6. Output: Drug-eligible population estimate with sensitivity analysis
+
+## Agents
+
+### pharma-search-specialist
+Data gathering coordinator. Input: query → Output: JSON execution plan with MCP tool calls
+
+### epidemiology-analyst
+Prevalence modeling and market sizing. Input: `data_dump/` → Output: Models, segmentation, eligibility funnels
+
+**Capabilities**: Age-standardization, severity segmentation, biomarker stratification, eligibility funnels, sensitivity analysis, CMS real-world evidence integration
+
 ## Design Principles
 
-1. **Single agent**: pharma-search-specialist plans, Claude Code executes
-2. **Token optimization**: Conservative limits, pagination, count strategies
-3. **Audit trail**: All results saved to data_dump/
-4. **Agent constraints**: Read-only tools, no file writing
-5. **Modular architecture**: Easy to add new MCP servers
+1. **Multi-agent**: Data gathering + analytical agents, optimized roles
+2. **Separation**: No MCP execution by analytical agents
+3. **Token optimization**: Conservative limits, pagination, count-first
+4. **Audit trail**: All results → data_dump/
+5. **Modular**: Easy to add MCP servers and agents
 
 ## Contributing
 
-When adding new MCP servers:
-1. Add server config to `.mcp.json`
+**New MCP Servers:**
+1. Add to `.mcp.json`
 2. Create tool guide in `.claude/.context/mcp-tool-guides/`
-3. Update server list in `.claude/CLAUDE.md`
-4. Add to permissions in `.claude/settings.local.json`
+3. Update `.claude/CLAUDE.md`, `README.md`, `.claude/settings.local.json`
+
+**New Agents:**
+1. Create in `.claude/agents/` (follow `epidemiology-analyst.md` structure)
+2. Use frontmatter, enumerated capability domains, response methodology, example output
+3. Update `.claude/CLAUDE.md` and `README.md`
