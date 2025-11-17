@@ -1,6 +1,6 @@
 # Create Plan Command
 
-**Purpose**: Use pharma-search-orchestrator to analyze project context files and generate a comprehensive Task Master workflow with proper dependencies and agent delegations.
+**Purpose**: Use search-orchestrator to analyze project context files and generate a comprehensive Task Master workflow with proper dependencies and agent delegations.
 
 **Usage**: `/create-plan`
 
@@ -24,8 +24,8 @@ Verify that all required context files exist and are readable:
 
 If any files are missing, prompt the user to run `/primer` first.
 
-### Step 2: Invoke pharma-search-orchestrator
-Invoke the pharma-search-orchestrator agent with the project context files.
+### Step 2: Invoke search-orchestrator
+Invoke the search-orchestrator agent with the project context files.
 
 **Prompt**:
 ```
@@ -38,20 +38,20 @@ Context files available:
 - .claude/project-context.md: Agent-facing decision framework
 
 Create a complete search plan following your standard JSON format with:
-1. **searches_required**: All data gathering tasks (PubChem, PubMed, ClinicalTrials.gov, FDA, OpenTargets, Data Commons queries)
+1. **mcp_queries**: All data gathering tasks (PubChem, PubMed, ClinicalTrials.gov, FDA, OpenTargets, Data Commons queries)
 2. **specialist_delegations**: All analysis tasks needed (target validation, SAR analysis, DMPK profiling, competitive analysis, etc.)
 3. **synthesis_plan**: Final compilation and report generation
 
-Mark each search with priority ("core" vs "supplementary") and specify exact query parameters.
+Mark each query with priority ("core" vs "supplementary") and specify exact query parameters.
 ```
 
-The agent will return a comprehensive JSON plan with both data gathering searches and specialist analysis delegations.
+The agent will return a comprehensive JSON plan with both data gathering queries and specialist analysis delegations.
 
 ### Step 3: Parse Workflow Plan
-Extract from the pharma-search-orchestrator JSON response and map to Task Master tasks:
+Extract from the search-orchestrator JSON response and map to Task Master tasks:
 
-**From `searches_required` array** → Data gathering tasks:
-- Extract: search_id, priority, database, query_parameters, purpose
+**From `mcp_queries` array** → Data gathering tasks:
+- Extract: query_id, priority, tool, method, params, purpose
 - Agent: pharma-search-specialist (all data gathering uses this agent)
 - Dependencies: Empty array `[]` (Phase 1 tasks have no dependencies)
 - Output location: `data_dump/YYYYMMDD_HHMMSS_[database]_[query]/`
@@ -68,7 +68,7 @@ Extract from the pharma-search-orchestrator JSON response and map to Task Master
 - Output location: `reports/[project_name]_YYYYMMDD.md`
 
 **Task Count**:
-- Data gathering: Count of `searches_required` array length
+- Data gathering: Count of `mcp_queries` array length
 - Analysis: Count of `specialist_delegations` array length
 - Compilation: 1 task (from `synthesis_plan`)
 - Total: Sum of all tasks
@@ -85,7 +85,7 @@ Before creating new tasks:
 **Process**:
 1. Read the current `.taskmaster/tasks/tasks.json` file
 2. Clear existing tasks array or create new empty structure if needed
-3. For each task in the orchestrator search plan:
+3. For each task in the orchestrator plan:
    - Create a task object with exact delegation format (see below)
    - Add to the tasks array
 4. Update the `metadata.updated` timestamp to current ISO datetime
@@ -234,8 +234,8 @@ Provide a comprehensive summary:
 **Expected Output**:
 ```
 ✅ Validated context files (all 4 present)
-✅ Invoked pharma-search-orchestrator
-✅ Parsed search plan (17 searches, 5 phases)
+✅ Invoked search-orchestrator
+✅ Parsed search plan (17 MCP queries, 5 phases)
 ✅ Cleared existing Task Master tasks (10 removed)
 ✅ Created 17 new Task Master tasks
 
@@ -299,9 +299,9 @@ Estimated Duration: 2.5-3.5 hours
 ➡️  Run `/primer <source_file>` first to create context files
 ```
 
-**pharma-search-orchestrator Failure**:
+**search-orchestrator Failure**:
 ```
-❌ Error: pharma-search-orchestrator failed to generate search plan
+❌ Error: search-orchestrator failed to generate search plan
 
 Troubleshooting:
 1. Check that context files contain sufficient detail
@@ -327,7 +327,7 @@ Enter choice [1/2/3]: _
 
 - This command requires context files created by `/primer`
 - Existing Task Master tasks will be cleared (with confirmation)
-- The pharma-search-orchestrator uses AI to create the optimal search plan
+- The search-orchestrator uses AI to create the optimal search plan
 - Task dependencies are automatically set based on the search plan
 - Phase 1 tasks have no dependencies (can be executed in any order)
 - Specialist agent tasks (Phases 2-5) have sequential dependencies

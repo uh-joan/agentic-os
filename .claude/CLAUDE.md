@@ -5,7 +5,8 @@
 **Multi-agent pattern**: Data gathering + analytical agents
 
 **Agents**:
-- `pharma-search-specialist`: Query → JSON plan → MCP execution → `data_dump/`
+- `pharma-search-specialist`: Query → JSON plan (Claude Code executes MCP queries) → `data_dump/`
+- `search-orchestrator`: Project context → JSON plan with mcp_queries + specialist_delegations + synthesis_plan (used by `/create-plan`)
 - `epidemiology-analyst`: Reads `data_dump/` → prevalence models, segmentation, funnels
 - `patient-flow-modeler`: Reads `data_dump/` → eligibility funnels, treatment sequencing, multi-year patient flows
 - `uptake-dynamics-analyst`: Reads `temp/` + `data_dump/` → market share evolution, treated patient projections
@@ -15,9 +16,25 @@
 - `competitive-analyst`: Reads `data_dump/` → competitive landscape mapping, pipeline threats
 - `opportunity-identifier`: Reads `temp/` → BD opportunities (partnerships, acquisitions, white space)
 - `strategy-synthesizer`: Reads `temp/` → strategic planning, action prioritization, scenario analysis
-- `pharma-valuation-comparable-analyst`: Reads `data_dump/` → deal benchmarking, licensing precedents, M&A valuation ranges
-- `pharma-valuation-npv-modeler`: Reads `data_dump/` → risk-adjusted NPV, DCF analysis, sensitivity scenarios
-- `pharma-valuation-structure-optimizer`: Reads `temp/` → upfront/milestone/royalty optimization, risk-sharing frameworks
+- `comparable-analyst`: Reads `data_dump/` → deal benchmarking, licensing precedents, M&A valuation ranges
+- `npv-modeler`: Reads `data_dump/` → risk-adjusted NPV, DCF analysis, sensitivity scenarios
+- `structure-optimizer`: Reads `temp/` → upfront/milestone/royalty optimization, risk-sharing frameworks
+- `target-identifier`: Reads `data_dump/` → novel drug target identification from genetics and multi-omics
+- `target-validator`: Reads `temp/` + `data_dump/` → CRISPR/RNAi validation study design, genetic safety assessment
+- `target-druggability-assessor`: Reads `temp/` + `data_dump/` → protein structure analysis, modality selection, genetic safety prediction
+- `target-hypothesis-synthesizer`: Reads `temp/` + `data_dump/` → therapeutic hypotheses, MOA, patient populations, PoC trial designs
+- `safety-pharmacology-analyst`: Reads `data_dump/` → hERG/QT assessment, CNS/respiratory safety, ICH S7A/S7B compliance
+- `genetic-toxicology-analyst`: Reads `data_dump/` → Ames/micronucleus evaluation, ICH S2(R1) study design, genotoxicity risk
+- `toxicology-analyst`: Reads `data_dump/` → NOAEL/safety margins, repeat-dose/reproductive/carcinogenicity study design
+- `toxicologist-regulatory-strategist`: Reads `temp/` + `data_dump/` → FIH dose calculation, IND Module 2.4/2.6 assembly, regulatory strategy
+- `rwe-study-designer`: Reads `data_dump/` → RWE protocol development, data source selection, feasibility assessment
+- `rwe-outcomes-analyst`: Reads `data_dump/` + `temp/` → outcomes algorithm development, treatment pathway mapping, phenotype validation
+- `rwe-analytics-strategist`: Reads `data_dump/` + `temp/` → causal inference methods, propensity scoring, sensitivity analysis
+- `regulatory-risk-analyst`: Reads `data_dump/` + `temp/` → CRL probability scoring, AdComm likelihood, label restriction risk, mitigation strategies
+- `regulatory-precedent-analyst`: Reads `data_dump/` → historical FDA/EMA precedents, success/failure patterns, endpoint acceptance analysis
+- `regulatory-pathway-analyst`: Reads `temp/` + `data_dump/` → optimal regulatory pathway (NDA, 505(b)(2), Accelerated Approval), designation strategies
+- `regulatory-label-strategist`: Reads `data_dump/` + `temp/` → label negotiation (indication, contraindications, warnings, REMS), restriction mitigation
+- `regulatory-adcomm-strategist`: Reads `data_dump/` + `temp/` → AdComm preparation, voting prediction, panel analysis, presentation strategy
 
 ## MCP Servers (see .mcp.json)
 
@@ -42,12 +59,57 @@
 **Input**: User query
 **Output**: JSON with execution_plan array (step, tool, method, params, token_budget)
 **Tools**: Read only (reads `.claude/.context/mcp-tool-guides/`)
+**Use for**: Ad-hoc queries, simple data gathering
 
 See `.claude/agents/pharma-search-specialist.md` for plan format and examples.
 
+## search-orchestrator
+
+**Role**: Multi-phase project planning → JSON plan with MCP queries + specialist delegations + synthesis
+**Input**: Project context files (project-brief.md, user-profile.md, PROJECT_WORKFLOW.md, .claude/project-context.md)
+**Output**: JSON with mcp_queries (data gathering), specialist_delegations (analysis), synthesis_plan (compilation)
+**Tools**: Read only
+**Use for**: Task Master workflows, complex analytical pipelines, multi-phase projects
+**Invoked by**: `/create-plan` command
+
+See `.claude/agents/search-orchestrator.md` for plan format and examples.
+
 ## Execution Protocol
 
-### 1. Classify Query Complexity
+### 1. Determine Workflow Type
+
+**Use `search-orchestrator` for**:
+- Multi-phase projects requiring Task Master workflows
+- Complex analytical pipelines (data gathering → analysis → synthesis)
+- Projects with context files (project-brief.md, user-profile.md, PROJECT_WORKFLOW.md)
+- When using `/create-plan` command
+- Workflows requiring multiple specialist agents in sequence
+
+**Use `pharma-search-specialist` for**:
+- Ad-hoc queries
+- Simple data gathering (single or few MCP queries)
+- Direct user questions without project context
+- Quick lookups and explorations
+
+### 2. If Using search-orchestrator
+
+Template for `/create-plan` command:
+```
+"You are search-orchestrator. Read .claude/agents/search-orchestrator.md.
+
+Analyze project context files and create comprehensive workflow plan with:
+1. mcp_queries: Data gathering tasks (direct MCP tool calls)
+2. specialist_delegations: Analysis tasks (specify which agents)
+3. synthesis_plan: Final compilation and report generation
+
+Return ONLY JSON plan."
+```
+
+See `/create-plan` command documentation for full workflow integration.
+
+### 3. If Using pharma-search-specialist
+
+#### 3a. Classify Query Complexity
 
 **Simple** (single database, <5 steps):
 - FDA approval status for specific drug
@@ -71,7 +133,7 @@ See `.claude/agents/pharma-search-specialist.md` for plan format and examples.
 - Open-ended research
 - Keywords: "explore", "discover", "what are all", "map the space"
 
-### 2. Invoke Specialist
+#### 3b. Invoke Specialist
 
 Use the template matching the complexity classification from Step 1.
 
@@ -114,7 +176,7 @@ Read relevant tool guides (fda.md, clinicaltrials.md, pubmed.md, etc.).
 Design custom workflow. Return ONLY JSON execution plan."
 ```
 
-### 3. Execute Plan
+#### 3c. Execute Plan
 Parse JSON → execute each step → save to `data_dump/{YYYY-MM-DD}_{HHMMSS}_{tool}_{term}/` → present findings
 
 **After execution**: Save raw MCP results to data_dump/, then optionally invoke analytical agents.
@@ -211,34 +273,194 @@ Template:
 Read temp/competitive_analysis_*.md and temp/bd_opportunities_*.md and return strategic plan."
 ```
 
-**pharma-valuation-comparable-analyst** - Deal benchmarking and licensing precedent analysis
+**comparable-analyst** - Deal benchmarking and licensing precedent analysis
 
 Use for: M&A valuation ranges, licensing deal multiples, upfront/milestone/royalty benchmarks
 
 Template:
 ```
-"You are pharma-valuation-comparable-analyst. Read .claude/agents/pharma-valuation-comparable-analyst.md.
+"You are comparable-analyst. Read .claude/agents/comparable-analyst.md.
 Analyze data_dump/[folder]/ and return comparable deal analysis with valuation ranges."
 ```
 
-**pharma-valuation-npv-modeler** - Risk-adjusted NPV modeling and DCF analysis
+**npv-modeler** - Risk-adjusted NPV modeling and DCF analysis
 
 Use for: Probability-weighted revenue forecasts, development cost modeling, sensitivity analysis
 
 Template:
 ```
-"You are pharma-valuation-npv-modeler. Read .claude/agents/pharma-valuation-npv-modeler.md.
+"You are npv-modeler. Read .claude/agents/npv-modeler.md.
 Analyze data_dump/[folder]/ and return NPV analysis with sensitivity scenarios."
 ```
 
-**pharma-valuation-structure-optimizer** - Deal structure optimization
+**structure-optimizer** - Deal structure optimization
 
 Use for: Upfront/milestone/royalty allocation, risk-sharing frameworks, NPV-equivalent structure design
 
 Template:
 ```
-"You are pharma-valuation-structure-optimizer. Read .claude/agents/pharma-valuation-structure-optimizer.md.
+"You are structure-optimizer. Read .claude/agents/structure-optimizer.md.
 Read temp/npv_analysis_*.md and temp/deal_comparables_*.md and return deal structure recommendations."
+```
+
+**target-identifier** - Novel drug target identification from genetics and multi-omics
+
+Use for: Target prioritization, genetic evidence scoring, multi-omics integration, novel opportunity flagging
+
+Template:
+```
+"You are target-identifier. Read .claude/agents/target-identifier.md.
+Analyze data_dump/[folder]/ and return prioritized target list with genetic evidence and delegation recommendations."
+```
+
+**target-validator** - CRISPR/RNAi validation study design and genetic safety assessment
+
+Use for: Validation experiment design, genetic evidence-based triage, human knockout phenotype safety prediction, go/no-go criteria
+
+Template:
+```
+"You are target-validator. Read .claude/agents/target-validator.md.
+Read temp/target_identification_*.md and data_dump/[folder]/ and return validation plan with genetic safety assessment."
+```
+
+**target-druggability-assessor** - Protein structure analysis, modality selection, genetic safety prediction
+
+Use for: Druggability scoring, small molecule vs. biologic tractability, on-target toxicity prediction, modality recommendation
+
+Template:
+```
+"You are target-druggability-assessor. Read .claude/agents/target-druggability-assessor.md.
+Read temp/target_validation_*.md and data_dump/[folder]/ and return druggability assessment with modality recommendations."
+```
+
+**target-hypothesis-synthesizer** - Therapeutic hypothesis development with MOA, patient populations, PoC trial designs
+
+Use for: MOA development, patient population definition, biomarker strategy, clinical PoC design, competitive differentiation
+
+Template:
+```
+"You are target-hypothesis-synthesizer. Read .claude/agents/target-hypothesis-synthesizer.md.
+Read temp/target_identification_*.md, temp/target_validation_*.md, temp/target_druggability_*.md, and data_dump/[folder]/ and return therapeutic hypothesis."
+```
+
+**safety-pharmacology-analyst** - Cardiovascular, CNS, and respiratory safety assessment
+
+Use for: hERG liability evaluation, thorough QT strategy, ICH S7A/S7B compliance, TQT study recommendations
+
+Template:
+```
+"You are safety-pharmacology-analyst. Read .claude/agents/safety-pharmacology-analyst.md.
+Analyze data_dump/[folder]/ and return hERG assessment, TQT strategy, and ICH S7A/S7B safety pharmacology package."
+```
+
+**genetic-toxicology-analyst** - DNA damage and mutagenicity assessment
+
+Use for: ICH S2(R1) genotoxicity evaluation, Ames test design, micronucleus study recommendations, ICH M7 impurity control
+
+Template:
+```
+"You are genetic-toxicology-analyst. Read .claude/agents/genetic-toxicology-analyst.md.
+Analyze data_dump/[folder]/ and return Ames predictions, ICH S2(R1) study battery, and genotoxicity risk assessment."
+```
+
+**toxicology-analyst** - Repeat-dose toxicology and NOAEL determination
+
+Use for: Safety margin calculation, target organ prediction, GLP study design, reproductive/carcinogenicity assessment
+
+Template:
+```
+"You are toxicology-analyst. Read .claude/agents/toxicology-analyst.md.
+Analyze data_dump/[folder]/ and return NOAEL predictions, safety margins, and ICH-compliant toxicology study designs."
+```
+
+**toxicologist-regulatory-strategist** - IND toxicology package assembly and FIH dose calculation
+
+Use for: First-in-human dose justification, Module 2.4/2.6 preparation, regulatory strategy for clinical trials
+
+Template:
+```
+"You are toxicologist-regulatory-strategist. Read .claude/agents/toxicologist-regulatory-strategist.md.
+Read temp/safety_pharmacology_*.md, temp/genetic_toxicology_*.md, temp/toxicology_*.md, and data_dump/[folder]/ and return IND package with FIH dose."
+```
+
+**rwe-study-designer** - Real-world evidence study protocol design and feasibility assessment
+
+Use for: RWE protocol development, observational cohort design, data source selection, patient identification algorithms
+
+Template:
+```
+"You are rwe-study-designer. Read .claude/agents/rwe-study-designer.md.
+Analyze data_dump/[rwe_methodology folder]/ and return RWE study design with feasibility assessment."
+```
+
+**rwe-outcomes-analyst** - Treatment pattern analysis and clinical outcomes algorithm development
+
+Use for: Outcomes algorithm development, treatment pathway mapping, phenotype validation, patient journey analysis
+
+Template:
+```
+"You are rwe-outcomes-analyst. Read .claude/agents/rwe-outcomes-analyst.md.
+Read temp/rwe_study_design_*.md and data_dump/[treatment_patterns folder]/ and return outcomes analysis with validated algorithms."
+```
+
+**rwe-analytics-strategist** - Statistical analysis strategy development for causal inference
+
+Use for: Propensity score methods, sensitivity analysis, missing data strategies, effect estimation
+
+Template:
+```
+"You are rwe-analytics-strategist. Read .claude/agents/rwe-analytics-strategist.md.
+Read temp/rwe_study_design_*.md and data_dump/[causal_inference folder]/ and return statistical analysis plan with sensitivity analyses."
+```
+
+**regulatory-risk-analyst** - CRL probability scoring and approval risk assessment
+
+Use for: CRL probability scoring, AdComm likelihood prediction, label restriction risk, mitigation strategies
+
+Template:
+```
+"You are regulatory-risk-analyst. Read .claude/agents/regulatory-risk-analyst.md.
+Read temp/regulatory_precedent_*.md and data_dump/[folder]/ and return CRL probability score with risk mitigation strategies."
+```
+
+**regulatory-precedent-analyst** - Historical FDA/EMA approval precedent analysis
+
+Use for: Comparable program identification, success/failure patterns, endpoint acceptance analysis
+
+Template:
+```
+"You are regulatory-precedent-analyst. Read .claude/agents/regulatory-precedent-analyst.md.
+Analyze data_dump/[folder]/ and return precedent analysis with comparable approvals and regulatory decision trends."
+```
+
+**regulatory-pathway-analyst** - Optimal regulatory pathway selection and designation strategies
+
+Use for: Regulatory pathway selection (Standard NDA, 505(b)(2), Accelerated Approval, Breakthrough), designation strategies, submission timing
+
+Template:
+```
+"You are regulatory-pathway-analyst. Read .claude/agents/regulatory-pathway-analyst.md.
+Read temp/regulatory_precedent_*.md and data_dump/[folder]/ and return optimal pathway recommendation with designation strategy."
+```
+
+**regulatory-label-strategist** - FDA label negotiation and restriction mitigation
+
+Use for: Indication statement optimization, contraindication/warning language, REMS mitigation, label negotiation tactics
+
+Template:
+```
+"You are regulatory-label-strategist. Read .claude/agents/regulatory-label-strategist.md.
+Read temp/regulatory_precedent_*.md and data_dump/[folder]/ and return label strategy with indication wording and REMS mitigation."
+```
+
+**regulatory-adcomm-strategist** - FDA Advisory Committee preparation and voting prediction
+
+Use for: AdComm convening prediction, panel composition analysis, voting outcome forecasting, presentation strategy
+
+Template:
+```
+"You are regulatory-adcomm-strategist. Read .claude/agents/regulatory-adcomm-strategist.md.
+Read temp/regulatory_precedent_*.md and data_dump/[folder]/ and return AdComm strategy with voting prediction and presentation plan."
 ```
 
 ### 5. Save Analytical Outputs (If Agents Invoked)
@@ -256,13 +478,29 @@ After analytical agent execution, Claude Code saves outputs to `temp/`:
 - `temp/deal_comparables_{YYYY-MM-DD}_{HHMMSS}_{asset}.md`
 - `temp/npv_analysis_{YYYY-MM-DD}_{HHMMSS}_{asset}.md`
 - `temp/deal_structure_{YYYY-MM-DD}_{HHMMSS}_{asset}.md`
+- `temp/target_identification_{YYYY-MM-DD}_{HHMMSS}_{disease}.md`
+- `temp/target_validation_{YYYY-MM-DD}_{HHMMSS}_{gene}.md`
+- `temp/target_druggability_{YYYY-MM-DD}_{HHMMSS}_{gene}.md`
+- `temp/target_hypothesis_{YYYY-MM-DD}_{HHMMSS}_{gene_disease}.md`
+- `temp/safety_pharmacology_{YYYY-MM-DD}_{HHMMSS}_{compound}.md`
+- `temp/genetic_toxicology_{YYYY-MM-DD}_{HHMMSS}_{compound}.md`
+- `temp/toxicology_{YYYY-MM-DD}_{HHMMSS}_{compound}.md`
+- `temp/ind_package_{YYYY-MM-DD}_{HHMMSS}_{compound}.md`
+- `temp/rwe_study_design_{YYYY-MM-DD}_{HHMMSS}_{research_question}.md`
+- `temp/rwe_outcomes_analysis_{YYYY-MM-DD}_{HHMMSS}_{research_question}.md`
+- `temp/rwe_analytics_strategy_{YYYY-MM-DD}_{HHMMSS}_{research_question}.md`
+- `temp/regulatory_risk_assessment_{YYYY-MM-DD}_{HHMMSS}_{asset}.md`
+- `temp/regulatory_precedent_analysis_{YYYY-MM-DD}_{HHMMSS}_{indication}.md`
+- `temp/regulatory_pathway_recommendation_{YYYY-MM-DD}_{HHMMSS}_{asset}.md`
+- `temp/regulatory_label_strategy_{YYYY-MM-DD}_{HHMMSS}_{asset}.md`
+- `temp/regulatory_adcomm_strategy_{YYYY-MM-DD}_{HHMMSS}_{asset}.md`
 
 **Agent Constraint**: Analytical agents are read-only (tools: [Read]). Claude Code orchestrator handles file persistence.
 
 ## File Structure
 
 **data_dump/**: Raw MCP results (query.json, results.json, summary.md, metadata.json)
-**temp/**: Analytical agent outputs (epidemiology_analysis_*.md, patient_flow_*.md, uptake_dynamics_*.md, pricing_strategy_*.md, revenue_forecast_*.md, market_sizing_*.md, competitive_analysis_*.md, bd_opportunities_*.md, strategic_plan_*.md, deal_comparables_*.md, npv_analysis_*.md, deal_structure_*.md) - written by Claude Code after agent execution
+**temp/**: Analytical agent outputs (epidemiology_analysis_*.md, patient_flow_*.md, uptake_dynamics_*.md, pricing_strategy_*.md, revenue_forecast_*.md, market_sizing_*.md, competitive_analysis_*.md, bd_opportunities_*.md, strategic_plan_*.md, deal_comparables_*.md, npv_analysis_*.md, deal_structure_*.md, target_identification_*.md, target_validation_*.md, target_druggability_*.md, target_hypothesis_*.md, safety_pharmacology_*.md, genetic_toxicology_*.md, toxicology_*.md, ind_package_*.md, rwe_study_design_*.md, rwe_outcomes_analysis_*.md, rwe_analytics_strategy_*.md) - written by Claude Code after agent execution
 **.claude/.context/mcp-tool-guides/**: Tool documentation (DO NOT MODIFY)
 
 ## Token Efficiency
@@ -277,9 +515,9 @@ After analytical agent execution, Claude Code saves outputs to `temp/`:
 
 ## Design Principles
 
-1. **Multi-agent**: Data gathering (pharma-search-specialist) + analytical (epidemiology-analyst, patient-flow-modeler, uptake-dynamics-analyst, pricing-strategy-analyst, revenue-synthesizer, market-sizing-analyst, competitive-analyst, opportunity-identifier, strategy-synthesizer, pharma-valuation-comparable-analyst, pharma-valuation-npv-modeler, pharma-valuation-structure-optimizer)
-2. **Separation of concerns**: Gathering vs analysis, no MCP execution by analysts
-3. **Read-only analysts**: Analytical agents use only Read tool; Claude Code orchestrator handles file writes to temp/
+1. **Multi-agent**: Planning agents (pharma-search-specialist for ad-hoc queries, search-orchestrator for projects) + analytical agents (epidemiology-analyst, patient-flow-modeler, uptake-dynamics-analyst, pricing-strategy-analyst, revenue-synthesizer, market-sizing-analyst, competitive-analyst, opportunity-identifier, strategy-synthesizer, comparable-analyst, npv-modeler, structure-optimizer, target-identifier, target-validator, target-druggability-assessor, target-hypothesis-synthesizer, safety-pharmacology-analyst, genetic-toxicology-analyst, toxicology-analyst, toxicologist-regulatory-strategist, rwe-study-designer, rwe-outcomes-analyst, rwe-analytics-strategist, regulatory-risk-analyst, regulatory-precedent-analyst, regulatory-pathway-analyst, regulatory-label-strategist, regulatory-adcomm-strategist)
+2. **Separation of concerns**: Planning vs execution vs analysis - agents plan, Claude Code executes MCP queries, analysts process results
+3. **Read-only analysts**: All analytical agents use only Read tool; Claude Code orchestrator handles file writes to temp/
 4. **Token optimization**: Conservative limits, pagination, count strategies
 5. **Audit trail**: Raw MCP results → data_dump/, analytical outputs → temp/
-6. **Agent constraints**: Read-only tools for analysts, Write reserved for Claude Code orchestrator
+6. **Agent constraints**: Planning agents plan only (no execution), analytical agents read only (no writes), Claude Code handles all execution and file persistence

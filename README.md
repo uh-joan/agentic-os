@@ -8,8 +8,9 @@ Multi-agent system: data gathering + analytical modeling
 
 **Agents:**
 
-*Data Gathering:*
-- `pharma-search-specialist`: Query → JSON plan → MCP tools → `data_dump/`
+*Planning Agents:*
+- `pharma-search-specialist`: Query → JSON plan (Claude Code executes MCP) → `data_dump/`
+- `search-orchestrator`: Project context → JSON plan with mcp_queries + specialist_delegations + synthesis_plan
 
 *Epidemiological Analysis:*
 - `epidemiology-analyst`: Reads `data_dump/` → prevalence models, segmentation, funnels
@@ -27,11 +28,37 @@ Multi-agent system: data gathering + analytical modeling
 - `strategy-synthesizer`: Reads `temp/` → strategic planning, action prioritization, scenario analysis
 
 *Asset Valuation:*
-- `pharma-valuation-comparable-analyst`: Reads `data_dump/` → deal benchmarking, licensing precedents, M&A valuation ranges
-- `pharma-valuation-npv-modeler`: Reads `data_dump/` → risk-adjusted NPV, DCF analysis, sensitivity scenarios
-- `pharma-valuation-structure-optimizer`: Reads `temp/` → upfront/milestone/royalty optimization, risk-sharing frameworks
+- `comparable-analyst`: Reads `data_dump/` → deal benchmarking, licensing precedents, M&A valuation ranges
+- `npv-modeler`: Reads `data_dump/` → risk-adjusted NPV, DCF analysis, sensitivity scenarios
+- `structure-optimizer`: Reads `temp/` → upfront/milestone/royalty optimization, risk-sharing frameworks
 
-**Workflow:** Query → pharma-search-specialist (gathers data) → epidemiology-analyst (analyzes) → results
+*Target Discovery & Validation:*
+- `target-identifier`: Reads `data_dump/` → novel drug target identification from genetics and multi-omics
+- `target-validator`: Reads `temp/` + `data_dump/` → CRISPR/RNAi validation study design, genetic safety assessment
+- `target-druggability-assessor`: Reads `temp/` + `data_dump/` → protein structure analysis, modality selection, genetic safety prediction
+- `target-hypothesis-synthesizer`: Reads `temp/` + `data_dump/` → therapeutic hypotheses, MOA, patient populations, PoC trial designs
+
+*Toxicology & Regulatory:*
+- `safety-pharmacology-analyst`: Reads `data_dump/` → hERG/QT assessment, CNS/respiratory safety, ICH S7A/S7B compliance
+- `genetic-toxicology-analyst`: Reads `data_dump/` → Ames/micronucleus evaluation, ICH S2(R1) study design, genotoxicity risk
+- `toxicology-analyst`: Reads `data_dump/` → NOAEL/safety margins, repeat-dose/reproductive/carcinogenicity study design
+- `toxicologist-regulatory-strategist`: Reads `temp/` + `data_dump/` → FIH dose calculation, IND Module 2.4/2.6 assembly, regulatory strategy
+
+*Real-World Evidence:*
+- `rwe-study-designer`: Reads `data_dump/` → RWE protocol development, data source selection, feasibility assessment
+- `rwe-outcomes-analyst`: Reads `data_dump/` + `temp/` → outcomes algorithm development, treatment pathway mapping, phenotype validation
+- `rwe-analytics-strategist`: Reads `data_dump/` + `temp/` → causal inference methods, propensity scoring, sensitivity analysis
+
+*Regulatory Strategy:*
+- `regulatory-risk-analyst`: Reads `data_dump/` + `temp/` → CRL probability scoring, AdComm likelihood, label restriction risk, mitigation strategies
+- `regulatory-precedent-analyst`: Reads `data_dump/` → historical FDA/EMA precedents, success/failure patterns, endpoint acceptance analysis
+- `regulatory-pathway-analyst`: Reads `temp/` + `data_dump/` → optimal regulatory pathway (NDA, 505(b)(2), Accelerated Approval), designation strategies
+- `regulatory-label-strategist`: Reads `data_dump/` + `temp/` → label negotiation (indication, contraindications, warnings, REMS), restriction mitigation
+- `regulatory-adcomm-strategist`: Reads `data_dump/` + `temp/` → AdComm preparation, voting prediction, panel analysis, presentation strategy
+
+**Workflow:**
+- **Ad-hoc queries**: Query → pharma-search-specialist (plans) → Claude Code executes MCP → analytical agents → results
+- **Project workflows**: Context files → search-orchestrator (plans) → Claude Code executes → specialist agents → synthesis
 
 ## MCP Servers
 
@@ -269,25 +296,121 @@ Strategic planning synthesis from competitive intelligence and BD opportunities.
 
 Sequential agents for pharmaceutical asset valuation (comparables → NPV → deal structure):
 
-#### pharma-valuation-comparable-analyst
+#### comparable-analyst
 Deal benchmarking and licensing precedent analysis. Input: `data_dump/` → Output: Comparable deal analysis with valuation ranges
 
 **Capabilities**: Three-dimensional matching (indication × stage × structure), stage-appropriate valuation multiples (Phase 1-3, approved), upfront/peak sales benchmarks, total deal/peak sales ratios, milestone structure patterns, royalty rate analysis, 25th/50th/75th percentile ranges
 
-#### pharma-valuation-npv-modeler
+#### npv-modeler
 Risk-adjusted NPV modeling and DCF analysis. Input: `data_dump/` → Output: NPV analysis with sensitivity scenarios
 
 **Capabilities**: Probability of success (PoS) frameworks by therapeutic area, program-specific adjustments (FDA Breakthrough, orphan drug, novel mechanism), probability-weighted revenue forecasts with patent exclusivity, risk-adjusted development costs, operating cash flow modeling (COGS, SG&A, R&D, tax), phase-appropriate discount rates (10-15%), tornado sensitivity analysis, bull/base/bear scenarios
 
-#### pharma-valuation-structure-optimizer
+#### structure-optimizer
 Deal structure optimization for licensing transactions. Input: `temp/npv_analysis_*.md` + `temp/deal_comparables_*.md` → Output: Upfront/milestone/royalty allocation recommendations
 
 **Capabilities**: NPV-equivalent structure design (seller-favorable/balanced/buyer-favorable), discount rate sensitivity (buyer vs seller WACC), risk allocation analysis (development/regulatory/commercial/timing), milestone allocation (40-50% development, 50-60% commercial), tiered royalty structures (8-20% by sales tier), comparables benchmarking, win-win value creation, dependency validation
 
+### Target Discovery & Validation
+
+Sequential agents for pharmaceutical target discovery and validation (identification → validation → druggability → hypothesis):
+
+#### target-identifier
+Novel drug target identification from genetics and multi-omics. Input: `data_dump/` → Output: Prioritized target list with genetic evidence scores and clinical precedents
+
+**Capabilities**: GWAS mining (lead variants, fine-mapping, functional annotation), multi-omics integration (transcriptomics, proteomics, metabolomics, causal inference), OpenTargets genetic evidence scoring (preferred), clinical precedent identification, novel opportunity flagging (strong genetics + no known drugs), multi-criteria target ranking (genetic 40%, precedent 25%, expression 20%, pathway 15%)
+
+#### target-validator
+CRISPR/RNAi validation study design and genetic safety assessment. Input: `temp/target_identification_*.md` + `data_dump/` → Output: Validation plan with genetic safety assessment and go/no-go criteria
+
+**Capabilities**: Genetic evidence-based triage (>0.7: STREAMLINED validation with 30-50% timeline reduction; 0.5-0.7: standard 4-phase; <0.5: extended), four-phase validation framework (CRISPR knockout, RNAi validation, patient-derived models, in vivo models), human knockout phenotype safety prediction (GREEN/YELLOW/RED flags), rescue experiment design (pharmacological + genetic), statistical power analysis, go/no-go decision criteria
+
+#### target-druggability-assessor
+Protein structure analysis, modality selection, and genetic safety prediction. Input: `temp/target_validation_*.md` + `data_dump/` → Output: Druggability assessment with modality recommendations and safety flags
+
+**Capabilities**: Protein structure analysis (crystal structures, druggable pockets, ligandability scoring), small molecule tractability (target class precedents, Lipinski Rule of Five, oral bioavailability), biologic modality assessment (antibody accessibility, ADC feasibility, bispecific opportunities, gene therapy suitability), genetic safety prediction (LOF phenotype analysis, clinical precedent validation, on-target toxicity prediction using OpenTargets), modality selection framework (decision tree comparing small molecule/antibody/PROTAC/gene therapy), tissue expression profiling, selectivity assessment (homology, off-target prediction)
+
+#### target-hypothesis-synthesizer
+Therapeutic hypothesis development with MOA, patient populations, and PoC trial designs. Input: `temp/target_identification_*.md` + `temp/target_validation_*.md` + `temp/target_druggability_*.md` + `data_dump/` → Output: Comprehensive therapeutic hypothesis
+
+**Capabilities**: MOA development (pharmacodynamic cascade: target engagement → pathway modulation → phenotypic reversal → clinical benefit), patient population definition (genetic stratification, disease subtyping, addressable market sizing), multi-tier biomarker strategy (selection, engagement, PD, efficacy, safety with companion diagnostic plan), clinical PoC design (Phase 1b/2a trial with go/no-go criteria, adaptive enrollment, realistic timelines), competitive differentiation (first-in-class vs best-in-class positioning), development timeline & risk mitigation
+
+### Toxicology & Regulatory
+
+Sequential agents for pharmaceutical toxicology assessment and IND preparation (safety pharmacology → genetic toxicology → general toxicology → regulatory assembly):
+
+#### safety-pharmacology-analyst
+Cardiovascular, CNS, and respiratory safety assessment. Input: `data_dump/` → Output: hERG/QT assessment, TQT strategy, ICH S7A/S7B safety pharmacology package
+
+**Capabilities**: hERG patch clamp IC50 evaluation with safety margin calculations (total and free drug), cardiovascular risk categorization (low/moderate/high based on >30×/10-30×/<10× margins), dog telemetry study design (GLP-compliant, QTc/HR/BP monitoring), thorough QT study decision logic per ICH S7B/E14, CNS receptor binding panels (GABA-A, NMDA, opioid, 5-HT2A, D2), brain penetration prediction (LogP/TPSA/P-gp status), neurobehavioral study design (Irwin screen, EEG), respiratory safety assessment (plethysmography, opioid receptor risk, ABG), approved drug benchmarking (erlotinib, gefitinib, moxifloxacin precedents), Phase 1 clinical monitoring protocols (ECG, sedation, SpO2)
+
+#### genetic-toxicology-analyst
+DNA damage and mutagenicity assessment. Input: `data_dump/` → Output: Ames predictions, ICH S2(R1) study battery, genotoxicity risk assessment
+
+**Capabilities**: Structural alert screening (aromatic amines, nitro compounds, epoxides, quinones, PAHs), QSAR model integration (MultiCase MC4PC, Derek Nexus, ToxTree), Ames test design (5 bacterial strains, ±S9, GLP-compliant), in vitro mammalian cell micronucleus assay (CHO/TK6/L5178Y, ±S9), in vivo rat micronucleus decision logic per ICH S2(R1), metabolite genotoxicity assessment (CYP1A2/3A4 activation pathways), ICH M7 impurity genotoxicity classification (Class 1-5 with TTC limits), equivocal result resolution strategies, approved drug genotox precedents, regulatory strategy for positive findings (ICH S9 oncology exemption, risk-benefit analysis)
+
+#### toxicology-analyst
+Repeat-dose toxicology and NOAEL determination. Input: `data_dump/` → Output: NOAEL predictions, safety margins, ICH-compliant toxicology study designs
+
+**Capabilities**: NOAEL determination from approved drug analogs, dose-based safety margin calculations (target ≥10×), AUC-based safety margin calculations (target ≥25×), target organ prediction from structural alerts (hepatotoxicity, nephrotoxicity, cardiotoxicity), GLP study design (28-day, 90-day, 6-month repeat-dose in rat/dog/monkey), reproductive toxicity assessment per ICH S5(R3) (Segment I/II/III study battery, abbreviated vs full justification), carcinogenicity evaluation per ICH S1 (2-year rat bioassay, 6-month Tg-rasH2 mouse alternative), acute toxicity and GHS classification (LD50 prediction, oral/dermal/inhalation routes), species sensitivity ranking for FIH calculations, ICH M3(R2) study timing (Phase 1, 2, 3, NDA gates)
+
+#### toxicologist-regulatory-strategist
+IND toxicology package assembly and FIH dose calculation. Input: `temp/safety_pharmacology_*.md` + `temp/genetic_toxicology_*.md` + `temp/toxicology_*.md` + `data_dump/` → Output: IND Module 2.4/2.6 package with FIH dose justification
+
+**Capabilities**: First-in-human (FIH) dose calculation via allometric scaling (FDA 2005 guidance: HED = Animal NOAEL × (Animal Wt/Human Wt)^0.33), safety factor application (standard 10×, elevated >10× for genetic safety concerns, reduced 6× for oncology), species selection for FIH (most sensitive species by AUC comparison), modified Fibonacci dose escalation design (100%/67%/50%/40%/33% increments with DLT criteria), IND Module 2.4 nonclinical overview assembly (pharmacology, PK, toxicology, integrated safety summary), IND Module 2.6 toxicology tables (repeat-dose, genetic toxicology, safety pharmacology summaries), cardiovascular safety strategy per ICH S7B/E14 (hERG margin assessment, dog telemetry integration, TQT study timing), OpenTargets genetic safety integration (essential gene assessment, HLA hypersensitivity screening, CYP pharmacogenetics), clinical hold risk assessment (low/moderate/high with mitigation strategies), FDA Pre-IND meeting preparation (discussion topics, briefing documents), nonclinical study timeline and budget planning (Phase 1 through NDA gates)
+
+### Real-World Evidence
+
+Sequential agents for real-world evidence study design, outcomes analysis, and statistical methodology (study design → outcomes → analytics):
+
+#### rwe-study-designer
+Real-world evidence study protocol design and feasibility assessment. Input: `data_dump/` → Output: RWE study design with patient algorithms, data source evaluation, and feasibility analysis
+
+**Capabilities**: Observational study design (retrospective/prospective cohorts, case-control, cross-sectional), pragmatic trial framework (PRECIS-2), synthetic control arms (propensity score matching, concurrent/historical controls), data source strategy (claims databases, EHR platforms, disease registries, linked datasets), patient identification algorithm development (ICD-10/11 codes, treatment codes, inclusion/exclusion logic, washout periods), feasibility assessment (population estimation, data completeness, event accrual, follow-up duration), bias mitigation strategies (selection, confounding, information, time-related biases), FDA RWE framework compliance
+
+#### rwe-outcomes-analyst
+Treatment pattern analysis and clinical outcomes algorithm development. Input: `temp/rwe_study_design_*.md` + `data_dump/` → Output: Validated outcomes algorithms with treatment pathway mapping
+
+**Capabilities**: Treatment pattern analysis (line-of-therapy algorithms, treatment switching, discontinuation patterns, persistence metrics MPR/PDC, re-treatment, concomitant medications), outcomes algorithm development (hospitalization codes, progression proxies, mortality ascertainment, adverse event identification, healthcare utilization), phenotype validation (PPV assessment, sensitivity/specificity evaluation, external validation), patient journey mapping (diagnosis-to-treatment intervals, treatment-to-outcome timelines, healthcare touchpoints, geographic variation), algorithm misclassification impact assessment
+
+#### rwe-analytics-strategist
+Statistical analysis strategy development for causal inference from real-world data. Input: `temp/rwe_study_design_*.md` + `data_dump/` → Output: Statistical analysis plan with propensity methods and sensitivity analyses
+
+**Capabilities**: Propensity score methods (1:1 matching, IPTW with ATE/ATT/overlap weights, stratification, covariate balance diagnostics, common support assessment), advanced causal inference (instrumental variable analysis, difference-in-differences, regression discontinuity, synthetic control, marginal structural models), effect estimation (risk difference/NNT, risk ratio, hazard ratio, odds ratio, RMST), sensitivity analysis framework (E-value calculation, quantitative bias analysis, negative control outcomes, falsification tests), missing data strategies (multiple imputation MICE, inverse probability weighting, pattern mixture models), sample size and power assessment, doubly robust estimation, STROBE compliance
+
+### Regulatory Strategy
+
+Sequential agents for pharmaceutical regulatory strategy and FDA approval optimization (precedent analysis → pathway selection → risk assessment → label strategy → AdComm preparation):
+
+#### regulatory-precedent-analyst
+Historical FDA/EMA approval precedent analysis. Input: `data_dump/` → Output: Precedent analysis with comparable approvals and regulatory decision trends
+
+**Capabilities**: Comparable program identification (3-dimensional matching: indication × endpoint × pathway), success/failure pattern analysis, endpoint acceptance precedents (surrogate vs clinical, accelerated approval pathways), regulatory decision trend analysis (approval rates by pathway, timeline benchmarks), precedent-based argumentation frameworks
+
+#### regulatory-pathway-analyst
+Optimal regulatory pathway selection and designation strategies. Input: `temp/regulatory_precedent_*.md` + `data_dump/` → Output: Pathway recommendation with designation strategy
+
+**Capabilities**: Pathway qualification (Standard NDA, 505(b)(2), Accelerated Approval, Breakthrough Therapy, Fast Track, Priority Review, Orphan Drug), designation strategy optimization (application timing, documentation requirements, FDA meeting recommendations), submission timing optimization, precedent-based pathway justification
+
+#### regulatory-risk-analyst
+CRL probability scoring and approval risk assessment. Input: `temp/regulatory_precedent_*.md` + `data_dump/` → Output: CRL probability score with risk mitigation strategies
+
+**Capabilities**: Quantitative CRL probability scoring (0-100% with confidence intervals), AdComm likelihood prediction (convening triggers, probability assessment), label restriction risk assessment (biomarker restrictions, line-of-therapy limitations, REMS requirements), deficiency prediction (CMC, nonclinical, clinical), risk mitigation strategy recommendations, contingency planning frameworks
+
+#### regulatory-label-strategist
+FDA label negotiation and restriction mitigation. Input: `temp/regulatory_precedent_*.md` + `data_dump/` → Output: Label strategy with indication wording and REMS mitigation
+
+**Capabilities**: Indication statement optimization (line-of-therapy language, biomarker restriction negotiation, precedent-based argumentation), contraindication and warning language strategy (boxed warning mitigation, Section 5 Warnings optimization), REMS mitigation strategies (ETASU resistance, Medication Guide acceptance), dose modification guideline design, label negotiation tactics with precedent citations
+
+#### regulatory-adcomm-strategist
+FDA Advisory Committee preparation and voting prediction. Input: `temp/regulatory_precedent_*.md` + `data_dump/` → Output: AdComm strategy with voting prediction and presentation plan
+
+**Capabilities**: AdComm convening likelihood prediction (risk-based triggers, precedent patterns, 0-100% probability), panel composition analysis (member expertise, voting history, affiliation assessment), voting outcome forecasting (member-level predictions, aggregate forecasts with confidence intervals), presentation strategy design (briefing document structure, slide deck, key messaging, Q&A preparation), stakeholder preparation planning (FDA coordination, medical expert selection, patient advocate engagement)
+
 ## Design Principles
 
-1. **Multi-agent**: Data gathering (pharma-search-specialist) + analytical (epidemiology-analyst, patient-flow-modeler, uptake-dynamics-analyst, pricing-strategy-analyst, revenue-synthesizer, market-sizing-analyst, competitive-analyst, opportunity-identifier, strategy-synthesizer, pharma-valuation-comparable-analyst, pharma-valuation-npv-modeler, pharma-valuation-structure-optimizer)
-2. **Separation**: No MCP execution by analytical agents
+1. **Multi-agent**: Planning agents (pharma-search-specialist for ad-hoc, search-orchestrator for projects) + analytical agents (epidemiology-analyst, patient-flow-modeler, uptake-dynamics-analyst, pricing-strategy-analyst, revenue-synthesizer, market-sizing-analyst, competitive-analyst, opportunity-identifier, strategy-synthesizer, comparable-analyst, npv-modeler, structure-optimizer, target-identifier, target-validator, target-druggability-assessor, target-hypothesis-synthesizer, safety-pharmacology-analyst, genetic-toxicology-analyst, toxicology-analyst, toxicologist-regulatory-strategist, rwe-study-designer, rwe-outcomes-analyst, rwe-analytics-strategist, regulatory-risk-analyst, regulatory-precedent-analyst, regulatory-pathway-analyst, regulatory-label-strategist, regulatory-adcomm-strategist)
+2. **Separation**: Planning vs execution vs analysis - agents plan, Claude Code executes MCP queries, analysts process results
 3. **Token optimization**: Conservative limits, pagination, count-first
 4. **Audit trail**: All results → data_dump/, analytical outputs → temp/
 5. **Modular**: Easy to add MCP servers and agents
