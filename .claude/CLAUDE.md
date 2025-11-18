@@ -74,6 +74,28 @@ See `.claude/agents/pharma-search-specialist.md` for plan format and examples.
 
 See `.claude/agents/search-orchestrator.md` for plan format and examples.
 
+## FDA Query Validation (AUTOMATIC)
+
+**All FDA MCP queries are automatically validated and optimized** by `scripts/utils/fda_query_validator.py`.
+
+### Why This Matters
+- Without count parameter: 67,000 tokens → **EXCEEDS 25k MCP LIMIT** → **QUERY FAILS**
+- With count parameter: 400 tokens → Query succeeds (99.4% reduction)
+
+### Auto-Validation Rules
+1. **Count parameter auto-added** if missing for general/adverse_events queries
+2. **.exact suffix auto-added** if missing from count parameter
+3. **Field selection recommended** for large detail queries
+4. **Validation report** shows fixes applied and token savings
+
+### Default Count Parameters
+- `search_type: "general"` → `"count": "openfda.brand_name.exact"`
+- `search_type: "adverse_events"` → `"count": "patient.reaction.reactionmeddrapt.exact"`
+- `search_type: "recalls"` → Count optional (small dataset)
+- `search_type: "shortages"` → Count optional (small dataset)
+
+**See:** `scripts/utils/README.md` for validator documentation and examples.
+
 ## Execution Protocol
 
 ### 1. Determine Workflow Type
