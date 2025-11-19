@@ -33,22 +33,32 @@
 .claude/
 ├── CLAUDE.md                           # This file - architecture overview
 ├── agents/
-│   └── pharma-search-specialist.md     # Agent definition
+│   ├── pharma-search-specialist.md     # Infrastructure agent
+│   └── competitive-landscape-analyst.md # Strategic agent
 ├── .context/
 │   ├── mcp-tool-guides/                # MCP server API documentation
 │   │   ├── clinicaltrials.md           # CT.gov API (returns markdown)
 │   │   ├── fda.md                      # FDA API (returns JSON)
 │   │   ├── pubmed.md
 │   │   └── [10 more servers...]
-│   └── code-examples/                  # Code patterns (progressive disclosure)
-│       ├── ctgov_markdown_parsing.md   # CT.gov pattern
-│       ├── fda_json_parsing.md         # FDA pattern
-│       ├── multi_server_query.md       # Combining servers
-│       └── skills_library_pattern.md   # Skills library pattern
+│   ├── code-examples/                  # Code patterns (progressive disclosure)
+│   │   ├── ctgov_markdown_parsing.md   # CT.gov pattern
+│   │   ├── fda_json_parsing.md         # FDA pattern
+│   │   ├── multi_server_query.md       # Combining servers
+│   │   └── skills_library_pattern.md   # Skills library pattern
+│   └── templates/                      # Report templates
+│       └── competitive-landscape-report.md
 └── skills/                             # Reusable functions (built over time)
+    ├── index.json                      # Skills discovery index
     ├── get_glp1_obesity_drugs.py
     ├── get_glp1_obesity_drugs.md
     └── [functions accumulate here...]
+
+reports/                                # Strategic analysis reports (version controlled)
+├── competitive-landscape/
+│   └── YYYY-MM-DD_therapeutic-area.md
+├── clinical-strategy/
+└── regulatory-analysis/
 
 scripts/mcp/                            # MCP infrastructure
 ├── client.py                           # MCP client (spawns servers, manages JSON-RPC)
@@ -60,18 +70,22 @@ scripts/mcp/                            # MCP infrastructure
 
 ---
 
-## pharma-search-specialist Agent
+## Agent Types
 
-**Defined in**: `.claude/agents/pharma-search-specialist.md`
+### Layer 1: Infrastructure Agents (Data Collection)
+
+**pharma-search-specialist** - Creates reusable data collection skills
 
 **Pattern**: User query → Read docs → Generate Python code → Claude Code executes
+
+**Defined in**: `.claude/agents/pharma-search-specialist.md`
 
 **Progressive Disclosure Flow**:
 1. Identify query type (FDA? CT.gov? Multi-server?)
 2. Read relevant tool guide: `.claude/.context/mcp-tool-guides/[server].md`
 3. Read relevant code example: `.claude/.context/code-examples/[pattern].md`
 4. Generate code following pattern
-5. Code saves skill to `.claude/skills/`
+5. Return skill code to main agent
 
 **Example**:
 - User: "How many Phase 3 obesity trials are recruiting in the US?"
@@ -80,6 +94,35 @@ scripts/mcp/                            # MCP infrastructure
 - Agent executes code via Bash → gets: "36 trials"
 - Agent returns: summary + skill code + documentation
 - Main agent saves: `.claude/skills/get_us_phase3_obesity_recruiting_trials.py`
+
+---
+
+### Layer 3: Strategic Agents (Analysis & Synthesis)
+
+**competitive-landscape-analyst** - Competitive intelligence and strategic analysis
+
+**Pattern**: Metadata-driven data collection → Strategic analysis
+
+**Defined in**: `.claude/agents/competitive-landscape-analyst.md`
+
+**How it works**:
+1. User invokes: `@agent-competitive-landscape-analyst "Analyze KRAS landscape"`
+2. Main agent reads agent metadata (data_requirements)
+3. Main agent infers parameters from query (therapeutic_area = "KRAS")
+4. Main agent applies skill patterns: `get_{therapeutic_area}_trials` → `get_kras_trials`
+5. Main agent checks/creates/executes required skills
+6. Main agent invokes strategic agent with collected data
+7. Strategic agent performs analysis and returns insights
+
+**Key Innovation**: Agent body describes 100+ capabilities, but only ~6 core data sources needed.
+Metadata separates WHAT agent can analyze from HOW data is collected.
+
+**Example**:
+- User: "Analyze KRAS inhibitor competitive landscape"
+- Main agent reads metadata → Needs: trials + FDA drugs
+- Main agent creates skills (if missing) → Executes skills
+- Main agent invokes analyst with data
+- Analyst returns: competitive positioning, market timing, recommendations
 
 ---
 
@@ -123,8 +166,55 @@ Agent reads these ONLY when needed for current query:
 - `.claude/.context/code-examples/fda_json_parsing.md` - FDA JSON parsing
 - `.claude/.context/code-examples/multi_server_query.md` - Combining multiple servers
 - `.claude/.context/code-examples/skills_library_pattern.md` - Skills library best practices
+- `.claude/.context/code-examples/data_validation_pattern.md` - Data validation and error handling
 
 **Benefit**: Agent loads 0-2 examples per query instead of all examples always.
+
+### Pattern Discovery (Skills Evolution)
+**NEW**: Agent discovers and reuses patterns from existing skills before creating new ones.
+
+**How it works**:
+1. User asks for new query (e.g., "Get ADC trials")
+2. Agent checks `.claude/skills/` for similar implementations
+3. Agent reads reference skill (e.g., `get_glp1_trials.py`)
+4. Agent applies proven patterns (pagination, parsing, etc.)
+5. Agent generates new skill following same structure
+
+**Discovery methods**:
+- **Index-based**: Read `.claude/skills/index.json` → Filter by server/pattern → Select best match
+- **Directory-based**: List `.claude/skills/get_*_trials.py` → Identify similar → Read implementation
+
+**Benefits**:
+- ✅ **Quality**: Learn from battle-tested implementations (not theoretical examples)
+- ✅ **Consistency**: All skills follow same patterns and conventions
+- ✅ **Completeness**: Example: `get_glp1_trials.py` has pagination → new trials skills get it automatically
+- ✅ **Efficiency**: Don't re-solve problems (pagination, parsing already working)
+
+**Example pattern reuse**:
+```
+Query: "Get ADC trials"
+↓
+Agent checks: .claude/skills/get_*_trials.py
+↓
+Agent finds: get_glp1_trials.py (has pagination!)
+↓
+Agent reads: Pagination logic (lines 15-64)
+↓
+Agent applies: Same pattern to ADC query
+↓
+Result: All ADC trials (not just first 1000)
+```
+
+**Skills Index**: `.claude/skills/index.json` contains:
+- Patterns demonstrated by each skill
+- Best reference skills for each pattern category
+- Technical details (pagination method, regex patterns)
+- Quick discovery without reading all files
+
+**Pattern Documentation**: `.claude/.context/code-examples/` includes:
+- `ctgov_pagination_pattern.md` - Extracted from `get_glp1_trials.py`
+- `fda_json_parsing.md` - FDA response handling
+- `multi_server_query.md` - Combining multiple servers
 
 ---
 
@@ -138,21 +228,68 @@ Following Anthropic's pattern with two-phase persistence:
 3. **Return skill code** to main agent (Python + Markdown)
 
 **Phase 2: Main Agent Persistence**
-4. **Save function** to `.claude/skills/[function_name].py` (Write tool)
-5. **Save documentation** to `.claude/skills/[function_name].md` (Write tool)
+4. **Extract code from response** (parse code blocks)
+5. **Save function** to `.claude/skills/[function_name].py` (Write tool)
+6. **Save documentation** to `.claude/skills/[function_name].md` (Write tool)
 
 **Why two-phase?**
 - Sub-agents cannot directly persist files to filesystem
 - Main agent has reliable Write tool access
 - Clean separation: Agent executes, main agent persists
 
-**Future reuse**:
-```python
-from .claude.skills.get_glp1_obesity_drugs import get_glp1_obesity_drugs
-brands = get_glp1_obesity_drugs()
+**Code extraction pattern**:
+Sub-agent returns response with code blocks:
+```
+Found 363 ADC trials.
+
+Python skill:
+\```python
+import sys
+...
+\```
+
+Documentation:
+\```markdown
+# get_adc_trials
+...
+\```
 ```
 
-**Agent discovery**: Agent can read SKILL.md files to discover available capabilities.
+Main agent extracts code blocks and saves files. If extraction fails, main agent can reconstruct from execution results.
+
+### Skill File Standards
+
+**Every skill must be both importable AND executable**:
+
+```python
+import sys
+sys.path.insert(0, "scripts")
+from mcp.servers.ct_gov_mcp import search
+
+def get_kras_inhibitor_trials():
+    """Get KRAS inhibitor clinical trials across all phases.
+
+    Returns:
+        dict: Contains total_count and trials_summary
+    """
+    result = search(term="KRAS inhibitor", pageSize=100)
+    # ... processing logic ...
+    return {'total_count': count, 'trials_summary': result}
+
+# REQUIRED: Make skill executable standalone
+if __name__ == "__main__":
+    result = get_kras_inhibitor_trials()
+    print(f"Total trials found: {result['total_count']}")
+    print(result['trials_summary'])
+```
+
+**Benefits**:
+- ✅ Importable: `from .claude.skills.get_kras_inhibitor_trials import get_kras_inhibitor_trials`
+- ✅ Executable: `PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/get_kras_inhibitor_trials.py`
+- ✅ Testable: Can run directly to validate data collection
+- ✅ Debuggable: Easy to test individual skills in isolation
+
+**Agent discovery**: Agent can read `.claude/skills/index.json` or skill .md files to discover available capabilities.
 
 **Evolutionary**: Skills library grows over time, building higher-level abstractions.
 
@@ -173,6 +310,41 @@ When user explicitly requests data export:
 - NOT version controlled (.gitignore)
 
 **Rule**: Default to in-memory unless user requests export.
+
+### Report Persistence (Strategic Analyses)
+When strategic agents produce substantial analyses:
+- Save to `reports/{agent_type}/YYYY-MM-DD_{topic}.md`
+- Use templates from `.claude/.context/templates/`
+- Version controlled (shows evolution over time)
+- Includes YAML frontmatter with metadata
+
+**Available templates**:
+- `competitive-landscape-report.md` - Competitive intelligence (4000-6000 words)
+- See `.claude/.context/templates/report-template-guide.md` for standards
+
+**Report structure**:
+```markdown
+---
+title: {Therapeutic Area} Competitive Landscape
+date: YYYY-MM-DD
+analyst: competitive-landscape-analyst
+data_sources:
+  - get_kras_inhibitor_trials: 363 trials
+  - get_kras_inhibitor_fda_drugs: 2 drugs
+---
+
+# Executive Summary
+[2-3 paragraphs]
+
+# Data Summary
+[Transparency on sources]
+
+# Analysis
+[Core strategic analysis]
+
+# Actionable Recommendations
+[Prioritized with timelines]
+```
 
 ---
 
@@ -201,6 +373,112 @@ When user explicitly requests data export:
 - Code examples: Patterns and best practices
 - Skills library: Reusable implementations
 - No duplication across files
+
+### 5. Metadata-Driven Strategic Agents
+- Strategic agents declare data needs via YAML metadata
+- Main agent reads metadata and orchestrates data collection
+- Agent body focuses on capabilities (WHAT), metadata specifies data (HOW)
+- Small metadata footprint (~25 lines) supports 100+ capabilities
+
+---
+
+## Metadata-Driven Pattern (Layer 2: Main Agent Orchestration)
+
+When user invokes strategic agent (`@agent-competitive-landscape-analyst`):
+
+### Step 1: Read Agent Metadata
+Main agent reads `.claude/agents/{agent_name}.md` YAML frontmatter:
+```yaml
+data_requirements:
+  always:  # Core data always collected
+    - type: clinical_trials
+      pattern: get_{therapeutic_area}_trials
+  contextual:  # Optional based on query
+    - type: patents
+      pattern: get_{therapeutic_area}_patents
+      trigger: keywords("IP", "patent")
+```
+
+### Step 2: Infer Parameters from Query
+Extract from user query:
+- **therapeutic_area**: Disease/drug class/mechanism (e.g., "KRAS inhibitor", "GLP-1")
+- **company**: Company name if mentioned (e.g., "Pfizer", "Merck")
+- **keywords**: Trigger words for contextual data ("IP", "financial", "publications")
+
+**Example**: "Analyze KRAS inhibitor competitive landscape"
+→ therapeutic_area = "KRAS inhibitor", no company, no special keywords
+
+### Step 3: Apply Skill Patterns
+Transform patterns with inferred parameters:
+- `get_{therapeutic_area}_trials` → `get_kras_inhibitor_trials`
+- `get_{therapeutic_area}_fda_drugs` → `get_kras_inhibitor_fda_drugs`
+- Contextual skills only added if triggers match
+
+### Step 4: Check/Create/Execute Skills
+For each required skill:
+1. Check: Does `.claude/skills/{skill_name}.py` exist?
+2. If missing: Task(pharma-search-specialist) → Create skill → Save with Write tool
+3. Execute: Bash(PYTHONPATH=scripts:$PYTHONPATH python {skill_name}.py) → Collect data
+4. Validate: Ensure data collection succeeded (non-empty results, expected format)
+
+### Step 4.5: Show Data Collection Summary
+Display summary to user for transparency:
+```
+Data Collection Complete:
+✓ Clinical Trials: 363 KRAS inhibitor trials found
+✓ FDA Approved Drugs: 2 approved (LUMAKRAS, KRAZATI)
+
+Invoking competitive-landscape-analyst with collected data...
+```
+
+### Step 5: Invoke Strategic Agent with Data
+Format prompt with collected data:
+```
+Analyze KRAS inhibitor competitive landscape.
+
+Data available:
+1. Clinical Trials: [execution results from get_kras_inhibitor_trials]
+2. FDA Approved Drugs: [execution results from get_kras_inhibitor_fda_drugs]
+
+Provide strategic analysis including competitive positioning,
+market entry timing, partnership opportunities, and recommendations.
+```
+
+Task(competitive-landscape-analyst, prompt_with_data)
+
+### Step 6: Persist Report and Return Analysis
+After strategic agent returns analysis:
+1. Save report to `reports/{agent_type}/YYYY-MM-DD_{therapeutic_area_slug}.md`
+2. Use Write tool to persist analysis for future reference
+3. Return summary to user
+
+**Report Structure**:
+```markdown
+---
+title: {Therapeutic Area} Competitive Landscape
+date: YYYY-MM-DD
+analyst: {agent_name}
+therapeutic_area: {therapeutic_area}
+data_sources:
+  - {skill_1} ({data_count})
+  - {skill_2} ({data_count})
+---
+
+[Strategic analysis content]
+```
+
+**Benefits**:
+- ✅ Preserves strategic work product across sessions
+- ✅ Version history via git (shows evolution of analyses)
+- ✅ Shareable artifacts for stakeholders
+- ✅ Future agents can reference prior analyses
+
+### Key Benefits
+- ✅ Strategic agent body unchanged (only metadata added)
+- ✅ Main agent logic is generic (works for all strategic agents)
+- ✅ Smart inference (same pattern, different parameters)
+- ✅ Contextual data (only collected when triggered)
+- ✅ Small metadata (~6 data sources support 100+ capabilities)
 
 ---
 

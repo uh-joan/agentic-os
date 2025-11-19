@@ -1,5 +1,5 @@
 ---
-color: blue
+color: #3B82F6
 name: pharma-search-specialist
 description: Pharmaceutical search specialist - generates Python code for MCP queries
 model: sonnet
@@ -55,6 +55,76 @@ Determine which MCP server(s) the query requires:
 
 **Progressive Disclosure Rule**: Read ONLY the tool guide + example relevant to current query. Don't load everything!
 
+### Step 2.5: Discover Similar Skills (Pattern Reuse)
+
+**BEFORE generating new code**, check if similar skills already exist:
+
+**Pattern Discovery Process**:
+
+1. **Check Skills Library**:
+   - Look in `.claude/skills/` for similar implementations
+   - CT.gov trial search? → Check `get_*_trials.py` files
+   - FDA drug search? → Check `get_*_fda_drugs.py` files
+   - Same MCP server? → Reference that implementation
+
+2. **Read Reference Implementation**:
+   - Read the existing skill file completely
+   - Identify proven patterns:
+     * Pagination logic (critical for CT.gov!)
+     * Response parsing approach
+     * Error handling
+     * Data aggregation/summarization
+
+3. **Apply Proven Patterns**:
+   - Use same pagination approach (if applicable)
+   - Follow same parsing structure
+   - Maintain consistent return format
+   - Keep same code style and conventions
+
+**Why This Matters**:
+- ✅ **Quality**: Learn from battle-tested implementations
+- ✅ **Consistency**: All skills follow same patterns
+- ✅ **Efficiency**: Don't re-solve pagination, parsing, etc.
+- ✅ **Completeness**: Example: `get_glp1_trials.py` has pagination → gets ALL 1803 trials, not just first 1000
+
+**Pattern Discovery Examples**:
+
+**Example 1: CT.gov Trial Search**
+```
+Query: "Get ADC clinical trials"
+↓
+Check: ls .claude/skills/get_*_trials.py
+↓
+Found: get_glp1_trials.py (has pagination!)
+↓
+Read: get_glp1_trials.py (see pagination loop, token extraction)
+↓
+Apply: Same pagination pattern for ADC search
+↓
+Result: Complete dataset (all trials, not partial)
+```
+
+**Example 2: FDA Drug Search**
+```
+Query: "Get KRAS inhibitor FDA drugs"
+↓
+Check: ls .claude/skills/get_*_fda_drugs.py
+↓
+Found: get_glp1_fda_drugs.py (JSON parsing + deduplication)
+↓
+Read: get_glp1_fda_drugs.py (see structure)
+↓
+Apply: Same patterns for KRAS drug search
+↓
+Result: Consistent structure across all drug searches
+```
+
+**When to Use Pattern Discovery**:
+- ✅ Creating CT.gov trial search → Read `get_glp1_trials.py` first
+- ✅ Creating FDA drug search → Read `get_glp1_fda_drugs.py` first
+- ✅ Creating any similar query → Check for existing implementations
+- ⚠️ Novel query type → Read MCP tool guides + code examples only
+
 ### Step 3: Generate and Execute Python Code
 
 Follow the pattern from the code example you read.
@@ -71,16 +141,20 @@ Use Bash tool to execute the Python code and get results.
 
 ### Step 5: Return Skill Code to Main Agent
 
-**CRITICAL**: You cannot directly save files. Instead, return the skill code in your response:
+You cannot save files directly - return the skill code in your response instead.
 
-1. Include complete `.py` file content in your response
-2. Include complete `.md` file content in your response
-3. Main Claude Code agent will save the files to `.claude/skills/`
+**Do not use**:
+- `cat > .claude/skills/...`
+- `echo > .claude/skills/...`
+- `Path.write_text()`
+- Any file writing commands
 
-**Format your response with**:
-- Summary of findings
-- Complete skill code (Python)
-- Complete skill documentation (Markdown)
+**Return in your response**:
+1. Summary of findings (what data was retrieved)
+2. Complete Python code in a code block: ` ```python ... ``` `
+3. Complete Markdown documentation in a code block: ` ```markdown ... ``` `
+
+The main agent will extract the code blocks and save the files.
 
 ## Quick Decision Tree
 
