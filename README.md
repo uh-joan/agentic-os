@@ -484,14 +484,7 @@ python3 .claude/scripts/init_skill.py get_new_data --server ct_gov_mcp
 
 ---
 
-## License
-
-[Your License Here]
-
----
-
 ## Links
 
 - **Anthropic Code Execution Pattern**: https://www.anthropic.com/engineering/code-execution-with-mcp
 - **Model Context Protocol**: https://modelcontextprotocol.io
-- **Claude Code**: https://claude.com/claude-code
