@@ -77,7 +77,7 @@ Get count of Phase 3 obesity trials recruiting in US.
 
 ## Usage
 \`\`\`python
-from .claude.skills.get_us_phase3_obesity_recruiting_trials import get_us_phase3_obesity_recruiting_trials
+from .claude.skills.us_phase3_obesity_recruiting_trials.scripts.get_us_phase3_obesity_recruiting_trials import get_us_phase3_obesity_recruiting_trials
 count = get_us_phase3_obesity_recruiting_trials()
 \`\`\`
 

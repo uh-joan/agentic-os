@@ -1,3 +1,24 @@
+---
+name: get_kras_inhibitor_trials
+description: >
+  Get KRAS inhibitor clinical trials from ClinicalTrials.gov. Basic implementation without pagination (may miss trials if >1000 results). Use when analyzing KRAS inhibitor pipeline, competitive landscape. Consider upgrading to pagination pattern for complete data. Keywords: KRAS, KRAS G12C, oncology, cancer, targeted therapy, clinical trials.
+category: clinical-trials
+mcp_servers:
+  - ct_gov_mcp
+patterns:
+  - basic_ct_gov_search
+  - markdown_parsing
+data_scope:
+  total_results: 363
+  geographical: Global
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~2 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_kras_inhibitor_trials
 
 ## Purpose
@@ -10,7 +31,7 @@ Get KRAS inhibitor clinical trials across all phases and statuses.
 
 ## Usage
 ```python
-from .claude.skills.get_kras_inhibitor_trials import get_kras_inhibitor_trials
+from .claude.skills.kras_inhibitor_trials.scripts.get_kras_inhibitor_trials import get_kras_inhibitor_trials
 
 results = get_kras_inhibitor_trials()
 print(f"Total trials: {results['total_count']}")

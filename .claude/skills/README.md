@@ -46,22 +46,22 @@ When pharma-search-specialist generates code to answer a query, it:
 #### `get_kras_inhibitor_trials`
 - **Purpose**: Get KRAS inhibitor clinical trials across all phases
 - **Returns**: `{total_count: int, trials_summary: str}`
-- **Execute**: `PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/get_kras_inhibitor_trials.py`
+- **Execute**: `PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/kras-inhibitor-trials/scripts/get_kras_inhibitor_trials.py`
 
 ### FDA Drugs
 
 #### `get_kras_inhibitor_fda_drugs`
 - **Purpose**: Get FDA approved KRAS inhibitor drugs
 - **Returns**: `{brand_name: {generic: str, count: int}}`
-- **Execute**: `PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/get_kras_inhibitor_fda_drugs.py`
+- **Execute**: `PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/kras-inhibitor-fda-drugs/scripts/get_kras_inhibitor_fda_drugs.py`
 
 ## Usage
 
 ### Import and Use
 
 ```python
-from .claude.skills.get_kras_inhibitor_trials import get_kras_inhibitor_trials
-from .claude.skills.get_kras_inhibitor_fda_drugs import get_kras_inhibitor_fda_drugs
+from .claude.skills.kras_inhibitor_trials.scripts.get_kras_inhibitor_trials import get_kras_inhibitor_trials
+from .claude.skills.kras_inhibitor_fda_drugs.scripts.get_kras_inhibitor_fda_drugs import get_kras_inhibitor_fda_drugs
 
 # Use the functions
 trials = get_kras_inhibitor_trials()
@@ -74,7 +74,7 @@ print(f"Found {len(drugs)} approved drugs")
 ### Execute Standalone
 
 ```bash
-PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/get_kras_inhibitor_trials.py
+PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/kras-inhibitor-trials/scripts/get_kras_inhibitor_trials.py
 ```
 
 ## Benefits (per Anthropic)

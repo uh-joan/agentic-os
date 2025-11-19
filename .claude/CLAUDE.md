@@ -47,26 +47,97 @@
 │   │   ├── multi_server_query.md       # Combining servers
 │   │   └── skills_library_pattern.md   # Skills library pattern
 │   └── templates/                      # Report templates
-│       └── competitive-landscape-report.md
-└── skills/                             # Reusable functions (built over time)
-    ├── index.json                      # Skills discovery index
-    ├── get_glp1_obesity_drugs.py
-    ├── get_glp1_obesity_drugs.md
-    └── [functions accumulate here...]
+│       ├── competitive-landscape-report.md
+│       └── skill-frontmatter-template.yaml  # NEW: Skill YAML template
+├── skills/                             # Reusable functions (Anthropic folder structure)
+│   ├── index.json                      # Skills discovery index (v1.1)
+│   │
+│   ├── glp1-trials/                    # NEW: Folder structure (Anthropic format)
+│   │   ├── SKILL.md                    # YAML frontmatter + documentation
+│   │   └── scripts/
+│   │       └── get_glp1_trials.py      # Executable function
+│   │
+│   ├── glp1-fda-drugs/                 # NEW: Folder structure
+│   │   ├── SKILL.md
+│   │   └── scripts/
+│   │       └── get_glp1_fda_drugs.py
+│   │
+│   └── get_old_skill.py                # OLD: Flat structure (being phased out)
+│       get_old_skill.md                # OLD: Kept for backward compatibility
+│
+└── scripts/                            # Utilities
+    ├── init_skill.py                   # NEW: Initialize new skill
+    ├── package_skill.py                # NEW: Migrate flat to folder
+    ├── discover_skills.py              # NEW: Find skills (both formats)
+    ├── parse_skill_metadata.py         # NEW: Parse YAML frontmatter
+    └── mcp/                            # MCP infrastructure
+        ├── client.py                   # MCP client (spawns servers, manages JSON-RPC)
+        └── servers/                    # Python function stubs
+            ├── fda_mcp/
+            ├── ct_gov_mcp/
+            └── [12 MCP servers...]
 
 reports/                                # Strategic analysis reports (version controlled)
 ├── competitive-landscape/
 │   └── YYYY-MM-DD_therapeutic-area.md
 ├── clinical-strategy/
 └── regulatory-analysis/
-
-scripts/mcp/                            # MCP infrastructure
-├── client.py                           # MCP client (spawns servers, manages JSON-RPC)
-└── servers/                            # Python function stubs
-    ├── fda_mcp/
-    ├── ct_gov_mcp/
-    └── [12 MCP servers...]
 ```
+
+---
+
+## Skills Library Format (v2.0)
+
+### Migration to Anthropic Folder Structure
+
+**Current State**: Hybrid (both formats supported)
+- **v2.0 (Folder structure)**: New skills use Anthropic format
+- **v1.0 (Flat structure)**: Legacy skills kept for compatibility
+
+**Folder Structure (v2.0 - Current Standard)**:
+```
+skill-name/
+├── SKILL.md              # YAML frontmatter + documentation
+└── scripts/
+    └── skill_function.py # Executable Python function
+```
+
+**Flat Structure (v1.0 - Deprecated)**:
+```
+skill_function.py         # Python function
+skill_function.md         # Documentation
+```
+
+**Benefits of v2.0**:
+- ✅ **Standardized metadata**: YAML frontmatter for discovery
+- ✅ **Self-contained packages**: Easy to share/distribute
+- ✅ **Clear boundaries**: Folder per skill
+- ✅ **Anthropic alignment**: Follows industry conventions
+- ✅ **Still code execution**: NOT instruction-based (maintains 98.7% efficiency)
+
+**Skill Discovery**:
+```bash
+# Find all skills (both formats)
+python3 .claude/scripts/discover_skills.py
+
+# Find skills by pattern
+python3 -c "from discover_skills import find_skill_by_pattern; print(find_skill_by_pattern('pagination'))"
+
+# Find skills by MCP server
+python3 -c "from discover_skills import find_skill_by_server; print(find_skill_by_server('ct_gov_mcp'))"
+```
+
+**Creating New Skills**:
+```bash
+# Initialize new skill in folder structure
+python3 .claude/scripts/init_skill.py get_new_data --server ct_gov_mcp
+```
+
+**Migration Status** (Phase 3):
+- Phase 1: YAML frontmatter added to all skills ✓
+- Phase 2: Folder structure created for reference skills ✓
+- Phase 3: Agent generates new folder format ← **Current**
+- Phase 4: Complete migration (remaining skills) ← Next
 
 ---
 
@@ -218,19 +289,25 @@ Result: All ADC trials (not just first 1000)
 
 ---
 
-## Skills Library Pattern (Two-Phase)
+## Skills Library Pattern (Two-Phase + Folder Structure)
 
-Following Anthropic's pattern with two-phase persistence:
+Following Anthropic's pattern with two-phase persistence and folder structure:
 
 **Phase 1: Agent Execution**
 1. **Define reusable function** that encapsulates logic
 2. **Execute and display** summary
-3. **Return skill code** to main agent (Python + Markdown)
+3. **Return skill code in folder format** to main agent:
+   - Skill folder name
+   - SKILL.md (with YAML frontmatter)
+   - Python script
 
 **Phase 2: Main Agent Persistence**
-4. **Extract code from response** (parse code blocks)
-5. **Save function** to `.claude/skills/[function_name].py` (Write tool)
-6. **Save documentation** to `.claude/skills/[function_name].md` (Write tool)
+4. **Extract components from response** (parse folder name and code blocks)
+5. **Create folder structure** `.claude/skills/[skill-folder-name]/`
+6. **Save SKILL.md** with frontmatter (Write tool)
+7. **Create scripts/** subdirectory
+8. **Save Python function** to `scripts/[function_name].py` (Write tool)
+9. **Update index.json** with folder structure entry
 
 **Why two-phase?**
 - Sub-agents cannot directly persist files to filesystem
@@ -284,8 +361,8 @@ if __name__ == "__main__":
 ```
 
 **Benefits**:
-- ✅ Importable: `from .claude.skills.get_kras_inhibitor_trials import get_kras_inhibitor_trials`
-- ✅ Executable: `PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/get_kras_inhibitor_trials.py`
+- ✅ Importable: `from .claude.skills.kras_inhibitor_trials.scripts.get_kras_inhibitor_trials import get_kras_inhibitor_trials`
+- ✅ Executable: `PYTHONPATH=scripts:$PYTHONPATH python3 .claude/skills/kras-inhibitor-trials/scripts/get_kras_inhibitor_trials.py`
 - ✅ Testable: Can run directly to validate data collection
 - ✅ Debuggable: Easy to test individual skills in isolation
 

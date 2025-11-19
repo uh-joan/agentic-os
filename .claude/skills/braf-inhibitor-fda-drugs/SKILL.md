@@ -1,3 +1,24 @@
+---
+name: get_braf_inhibitor_fda_drugs
+description: >
+  Get FDA approved BRAF inhibitor drugs with comprehensive metadata. Returns drug labels, approval dates, indications, and manufacturer information for BRAF-targeted therapeutics. Use when analyzing approved BRAF inhibitors, regulatory milestones, or melanoma/oncology drug landscape. Keywords: BRAF, BRAF V600E, dabrafenib, vemurafenib, encorafenib, FDA approval, melanoma drugs.
+category: drug-discovery
+mcp_servers:
+  - fda_mcp
+patterns:
+  - fda_json_parsing
+  - drug_metadata_extraction
+data_scope:
+  total_results: varies
+  geographical: US
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~2 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_braf_inhibitor_fda_drugs
 
 Get FDA approved BRAF inhibitor drugs from the FDA drugs database.
@@ -35,7 +56,7 @@ Retrieves structured information about FDA-approved BRAF inhibitor drugs includi
 
 ### As importable module:
 ```python
-from .claude.skills.get_braf_inhibitor_fda_drugs import get_braf_inhibitor_fda_drugs
+from .claude.skills.braf_inhibitor_fda_drugs.scripts.get_braf_inhibitor_fda_drugs import get_braf_inhibitor_fda_drugs
 
 result = get_braf_inhibitor_fda_drugs()
 print(f"Found {result['total_count']} BRAF inhibitor drugs")

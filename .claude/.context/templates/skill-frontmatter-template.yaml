@@ -1,0 +1,21 @@
+---
+name: {skill_name}
+description: >
+  {What this skill does and when to use it. Be specific about use cases.
+  Include: data source, scope, special capabilities (pagination, etc.).
+  Triggers: keywords that indicate this skill should be used.}
+category: {clinical-trials|drug-discovery|financial|regulatory|target-validation}
+mcp_servers:
+  - {server_name}
+patterns:
+  - {pattern_name}
+data_scope:
+  total_results: {number}
+  geographical: {US|Global|EU|etc}
+  temporal: {All time|Recent|2020-2025|etc}
+created: {YYYY-MM-DD}
+last_updated: {YYYY-MM-DD}
+complexity: {simple|medium|complex}
+execution_time: {~N seconds}
+token_efficiency: {N% reduction vs raw data}
+---

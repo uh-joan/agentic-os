@@ -1,3 +1,25 @@
+---
+name: get_glp1_fda_drugs
+description: >
+  Get FDA approved GLP-1 drugs with deduplication by active ingredient. Returns comprehensive drug metadata including manufacturer, application info, and indications. Use when analyzing FDA-approved GLP-1 therapeutics, market landscape, or drug development milestones. Keywords: GLP-1, semaglutide, tirzepatide, FDA approval, drug labels, obesity drugs, diabetes drugs.
+category: drug-discovery
+mcp_servers:
+  - fda_mcp
+patterns:
+  - fda_json_parsing
+  - drug_deduplication
+  - metadata_extraction
+data_scope:
+  total_results: 21
+  geographical: US
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~2-3 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_glp1_fda_drugs
 
 Get FDA approved GLP-1 receptor agonist drugs with comprehensive information.
@@ -44,7 +66,7 @@ Each drug dict contains:
 
 ### As Import
 ```python
-from .claude.skills.get_glp1_fda_drugs import get_glp1_fda_drugs
+from .claude.skills.glp1_fda_drugs.scripts.get_glp1_fda_drugs import get_glp1_fda_drugs
 
 result = get_glp1_fda_drugs()
 print(f"Found {result['total_count']} GLP-1 drugs")

@@ -1,3 +1,24 @@
+---
+name: get_covid19_vaccine_trials_recruiting
+description: >
+  Get currently recruiting COVID-19 vaccine clinical trials from ClinicalTrials.gov. Filters by recruiting status to show active enrollment opportunities. Use when analyzing active COVID-19 vaccine development or enrollment landscape. Keywords: COVID-19, vaccine, recruiting, clinical trials, active trials.
+category: clinical-trials
+mcp_servers:
+  - ct_gov_mcp
+patterns:
+  - ct_gov_status_filtering
+  - vaccine_trial_search
+data_scope:
+  total_results: varies
+  geographical: Global
+  temporal: Current
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~2 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_covid19_vaccine_trials_recruiting
 
 **Category**: Clinical Trials Research
@@ -49,7 +70,7 @@ def get_covid19_vaccine_trials_recruiting() -> dict
 ## Usage Example
 
 ```python
-from .claude.skills.get_covid19_vaccine_trials_recruiting import get_covid19_vaccine_trials_recruiting
+from .claude.skills.covid19_vaccine_trials_recruiting.scripts.get_covid19_vaccine_trials_recruiting import get_covid19_vaccine_trials_recruiting
 
 # Get current COVID-19 vaccine trial landscape
 results = get_covid19_vaccine_trials_recruiting()

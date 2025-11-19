@@ -1,3 +1,24 @@
+---
+name: get_phase2_alzheimers_trials_us
+description: >
+  Get Phase 2 Alzheimer's disease trials in the United States from ClinicalTrials.gov. Filters by phase and geography for targeted pipeline analysis. Use when analyzing mid-stage Alzheimer's development pipeline or US-specific trial activity. Keywords: Alzheimer's, Phase 2, United States, neurology, dementia, clinical trials.
+category: clinical-trials
+mcp_servers:
+  - ct_gov_mcp
+patterns:
+  - ct_gov_phase_filtering
+  - geographic_filtering
+data_scope:
+  total_results: varies
+  geographical: US
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~2 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_phase2_alzheimers_trials_us
 
 ## Purpose
@@ -5,7 +26,7 @@ Find Phase 2 clinical trials for Alzheimer's disease that are actively recruitin
 
 ## Usage
 ```python
-from .claude.skills.get_phase2_alzheimers_trials_us import get_phase2_alzheimers_trials_us
+from .claude.skills.phase2_alzheimers_trials_us.scripts.get_phase2_alzheimers_trials_us import get_phase2_alzheimers_trials_us
 
 results = get_phase2_alzheimers_trials_us()
 print(f"Found {results['total_trials']} trials")

@@ -62,13 +62,15 @@ Determine which MCP server(s) the query requires:
 **Pattern Discovery Process**:
 
 1. **Check Skills Library**:
-   - Look in `.claude/skills/` for similar implementations
-   - CT.gov trial search? → Check `get_*_trials.py` files
-   - FDA drug search? → Check `get_*_fda_drugs.py` files
+   - Use `.claude/scripts/discover_skills.py` to find similar skills
+   - Look in `.claude/skills/` for both folder and flat structures
+   - CT.gov trial search? → Check folder skills like `glp1-trials/` or flat `get_*_trials.py`
+   - FDA drug search? → Check folder skills like `glp1-fda-drugs/` or flat `get_*_fda_drugs.py`
    - Same MCP server? → Reference that implementation
 
 2. **Read Reference Implementation**:
-   - Read the existing skill file completely
+   - **Folder structure**: Read `{skill-name}/scripts/{function}.py`
+   - **Flat structure**: Read `{function}.py`
    - Identify proven patterns:
      * Pagination logic (critical for CT.gov!)
      * Response parsing approach
@@ -139,7 +141,9 @@ Follow the pattern from the code example you read.
 
 Use Bash tool to execute the Python code and get results.
 
-### Step 5: Return Skill Code to Main Agent
+### Step 5: Return Skill Code to Main Agent (Folder Structure Format)
+
+**IMPORTANT**: Generate skills in **Anthropic folder structure format**.
 
 You cannot save files directly - return the skill code in your response instead.
 
@@ -149,12 +153,109 @@ You cannot save files directly - return the skill code in your response instead.
 - `Path.write_text()`
 - Any file writing commands
 
-**Return in your response**:
-1. Summary of findings (what data was retrieved)
-2. Complete Python code in a code block: ` ```python ... ``` `
-3. Complete Markdown documentation in a code block: ` ```markdown ... ``` `
+**Return Structure**:
+```
+Skill folder: {skill-folder-name}/
+├── SKILL.md (with YAML frontmatter)
+└── scripts/{skill_function_name}.py
+```
 
-The main agent will extract the code blocks and save the files.
+**YAML Frontmatter Template**:
+```yaml
+---
+name: {skill_function_name}
+description: >
+  {Detailed description with use cases and trigger keywords.
+  Be specific about data source, scope, special capabilities.
+  Include keywords that indicate when this skill should be used.}
+category: {clinical-trials|drug-discovery|financial|regulatory|target-validation}
+mcp_servers:
+  - {server_name}
+patterns:
+  - {pattern_name}
+data_scope:
+  total_results: {number}
+  geographical: {Global|US|etc}
+  temporal: {All time|Recent|etc}
+created: {YYYY-MM-DD}
+last_updated: {YYYY-MM-DD}
+complexity: {simple|medium|complex}
+execution_time: ~{N} seconds
+token_efficiency: ~99% reduction vs raw data
+---
+```
+
+**Return in your response**:
+
+1. **Skill folder name**:
+```
+Skill folder: {skill-folder-name}/
+```
+
+2. **Complete SKILL.md** (with frontmatter):
+```markdown
+---
+name: get_example_data
+description: >
+  [Full description with use cases and keywords]
+category: clinical-trials
+mcp_servers:
+  - ct_gov_mcp
+patterns:
+  - pagination
+  - markdown_parsing
+data_scope:
+  total_results: 1234
+  geographical: Global
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: medium
+execution_time: ~3 seconds
+token_efficiency: ~99% reduction
+---
+
+# get_example_data
+
+## Purpose
+[What this skill does]
+
+## Usage
+[When to use this skill]
+
+## Implementation Details
+[How it works]
+
+[Rest of documentation...]
+```
+
+3. **Complete Python script**:
+```python
+import sys
+sys.path.insert(0, "scripts")
+from mcp.servers.{server} import {function}
+
+def get_example_data():
+    \"\"\"[Brief description].
+
+    Returns:
+        dict: Contains summary and data
+    \"\"\"
+    # Implementation
+    pass
+
+if __name__ == "__main__":
+    result = get_example_data()
+    print(result['summary'])
+```
+
+**Main agent will**:
+1. Extract folder name from your response
+2. Create folder: `.claude/skills/{skill-folder-name}/`
+3. Write SKILL.md with frontmatter
+4. Create `scripts/` subdirectory
+5. Write Python script to `scripts/{function_name}.py`
+6. Update index.json with folder structure entry
 
 ## Quick Decision Tree
 
