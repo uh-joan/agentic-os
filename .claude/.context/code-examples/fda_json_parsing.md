@@ -77,8 +77,10 @@ Get all GLP-1 receptor agonist drugs approved for obesity.
 
 ## Usage
 \`\`\`python
-from .claude.skills.get_glp1_obesity_drugs import get_glp1_obesity_drugs
-brands = get_glp1_obesity_drugs()
+# Note: This example uses a hypothetical skill name
+# Actual folder structure would be: from .claude.skills.glp1_obesity_drugs.scripts.get_glp1_obesity_drugs import get_glp1_obesity_drugs
+from .claude.skills.glp1_fda_drugs.scripts.get_glp1_fda_drugs import get_glp1_fda_drugs
+brands = get_glp1_fda_drugs()
 \`\`\`
 
 ## MCP Tools Used

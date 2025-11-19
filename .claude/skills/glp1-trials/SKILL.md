@@ -1,3 +1,32 @@
+---
+name: get_glp1_trials
+description: >
+  Collect comprehensive GLP-1 clinical trial data from ClinicalTrials.gov
+  with full pagination support. Retrieves complete dataset of 1800+ trials
+  across all phases, statuses, and geographic regions. Use when analyzing
+  GLP-1 drug development pipeline, competitive landscape, or clinical trial
+  activity. Handles large result sets automatically via pagination.
+  Keywords: GLP-1, semaglutide, tirzepatide, liraglutide, dulaglutide,
+  obesity, diabetes, weight loss, clinical trials, pipeline analysis.
+category: clinical-trials
+mcp_servers:
+  - ct_gov_mcp
+patterns:
+  - pagination
+  - markdown_parsing
+  - status_aggregation
+  - multi_page_data_collection
+data_scope:
+  total_results: 1803
+  geographical: Global
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: medium
+execution_time: ~3-5 seconds
+token_efficiency: 98.7% reduction vs raw data
+---
+
 # get_glp1_trials
 
 ## Overview
@@ -50,7 +79,7 @@ Searches for trials matching:
 
 ### Basic Usage
 ```python
-from .claude.skills.get_glp1_trials import get_glp1_trials
+from .claude.skills.glp1_trials.scripts.get_glp1_trials import get_glp1_trials
 
 result = get_glp1_trials()
 print(f"Found {result['total_count']} GLP-1 trials")

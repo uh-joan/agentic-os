@@ -1,3 +1,24 @@
+---
+name: get_glp1_diabetes_drugs
+description: >
+  Get GLP-1 drugs specifically for diabetes indication from FDA database. Filters by diabetes indication to distinguish from obesity-focused GLP-1s. Use when analyzing diabetes therapeutics market or indication-specific development. Keywords: GLP-1, diabetes, type 2 diabetes, FDA approval, diabetes drugs.
+category: drug-discovery
+mcp_servers:
+  - fda_mcp
+patterns:
+  - fda_json_parsing
+  - indication_filtering
+data_scope:
+  total_results: varies
+  geographical: US
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~2 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_glp1_diabetes_drugs
 
 **Category**: FDA Drug Information
@@ -34,7 +55,7 @@ def get_glp1_diabetes_drugs() -> dict
 ## Example Usage
 
 ```python
-from .claude.skills.get_glp1_diabetes_drugs import get_glp1_diabetes_drugs
+from .claude.skills.glp1_diabetes_drugs.scripts.get_glp1_diabetes_drugs import get_glp1_diabetes_drugs
 
 # Get all GLP-1 diabetes drugs
 results = get_glp1_diabetes_drugs()

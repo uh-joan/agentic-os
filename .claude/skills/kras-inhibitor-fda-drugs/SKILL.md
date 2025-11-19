@@ -1,3 +1,24 @@
+---
+name: get_kras_inhibitor_fda_drugs
+description: >
+  Get FDA approved KRAS inhibitor drugs with metadata. Returns drug labels, approval dates, and manufacturer information. Use when analyzing approved KRAS therapeutics or regulatory milestones. Keywords: KRAS, KRAS G12C, sotorasib, adagrasib, LUMAKRAS, KRAZATI, FDA approval, oncology drugs.
+category: drug-discovery
+mcp_servers:
+  - fda_mcp
+patterns:
+  - fda_json_parsing
+  - drug_metadata_extraction
+data_scope:
+  total_results: 2
+  geographical: US
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~1-2 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_kras_inhibitor_fda_drugs
 
 ## Purpose
@@ -16,7 +37,7 @@ As of execution date:
 
 ## Usage
 ```python
-from .claude.skills.get_kras_inhibitor_fda_drugs import get_kras_inhibitor_fda_drugs
+from .claude.skills.kras_inhibitor_fda_drugs.scripts.get_kras_inhibitor_fda_drugs import get_kras_inhibitor_fda_drugs
 
 # Get all KRAS inhibitors
 kras_drugs = get_kras_inhibitor_fda_drugs()

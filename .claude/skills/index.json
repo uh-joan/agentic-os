@@ -1,213 +1,245 @@
 {
-  "version": "1.0",
+  "version": "2.0",
+  "format": "folder-structure",
   "last_updated": "2025-11-19",
-  "description": "Skills library index for pattern discovery and reuse",
+  "description": "Skills library index for pattern discovery and reuse - Anthropic folder structure format",
   "usage": "Agent reads this to discover similar skills before creating new ones. Enables evolutionary skill development where new skills build on proven patterns from existing implementations.",
+  "migration_status": {
+    "phase": "4-migration-complete",
+    "all_skills_have_frontmatter": true,
+    "structure": "folder",
+    "folder_skills_count": 11,
+    "flat_skills_count": 0,
+    "deprecated_flat_count": 11,
+    "note": "All skills migrated to folder structure. Flat files kept for 30-day backward compatibility period."
+  },
   "skills": [
     {
       "name": "get_glp1_trials",
-      "file": "get_glp1_trials.py",
+      "structure": "folder",
+      "folder": "glp1-trials",
+      "skill_md": "glp1-trials/SKILL.md",
+      "script": "glp1-trials/scripts/get_glp1_trials.py",
+      "has_frontmatter": true,
       "description": "Get GLP-1 clinical trials with full pagination support (1803 trials across 2 pages)",
       "function_signature": "get_glp1_trials() -> dict",
       "servers_used": ["ct_gov_mcp"],
-      "patterns_demonstrated": [
-        "ct_gov_pagination",
-        "markdown_response_parsing",
-        "status_aggregation",
-        "multi_page_data_collection",
-        "progress_reporting"
-      ],
-      "reference_for": [
-        "clinical_trial_search",
-        "pagination_implementation",
-        "ct_gov_queries",
-        "large_dataset_handling"
-      ],
-      "key_features": [
-        "Handles 1000+ results with automatic pagination",
-        "Extracts nextPageToken using regex pattern",
-        "Aggregates status breakdown across all trials",
-        "Progress reporting during multi-page fetch",
-        "100% data retrieval (1803/1803 trials)"
-      ],
-      "technical_details": {
-        "pagination_method": "pageToken-based loop",
-        "token_regex": "`pageToken:\\s*\"([^\"]+)\"",
-        "page_size": 1000,
-        "response_format": "markdown"
-      },
-      "created": "2025-11-19",
-      "last_modified": "2025-11-19",
+      "patterns_demonstrated": ["pagination", "markdown_parsing", "status_aggregation", "multi_page_data_collection"],
+      "category": "clinical-trials",
       "complexity": "medium",
-      "lines_of_code": 94
+      "deprecated_flat_files": {
+        "py": "get_glp1_trials.py",
+        "md": "get_glp1_trials.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
     },
     {
       "name": "get_glp1_fda_drugs",
-      "file": "get_glp1_fda_drugs.py",
+      "structure": "folder",
+      "folder": "glp1-fda-drugs",
+      "skill_md": "glp1-fda-drugs/SKILL.md",
+      "script": "glp1-fda-drugs/scripts/get_glp1_fda_drugs.py",
+      "has_frontmatter": true,
       "description": "Get FDA approved GLP-1 drugs with deduplication (21 unique drugs)",
       "function_signature": "get_glp1_fda_drugs() -> dict",
       "servers_used": ["fda_mcp"],
-      "patterns_demonstrated": [
-        "fda_json_parsing",
-        "drug_deduplication",
-        "metadata_extraction",
-        "multi_query_aggregation"
-      ],
-      "reference_for": [
-        "fda_drug_search",
-        "json_response_handling",
-        "drug_database_queries"
-      ],
-      "key_features": [
-        "Deduplicates drugs by active ingredient",
-        "Extracts manufacturer and application info",
-        "Handles multiple search terms (GLP-1, semaglutide, etc.)",
-        "Comprehensive drug metadata"
-      ],
-      "technical_details": {
-        "deduplication_key": "active_ingredient",
-        "response_format": "json"
-      },
-      "created": "2025-11-19",
-      "complexity": "simple"
+      "patterns_demonstrated": ["fda_json_parsing", "drug_deduplication", "metadata_extraction"],
+      "category": "drug-discovery",
+      "complexity": "simple",
+      "deprecated_flat_files": {
+        "py": "get_glp1_fda_drugs.py",
+        "md": "get_glp1_fda_drugs.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
     },
     {
       "name": "get_kras_inhibitor_trials",
-      "file": "get_kras_inhibitor_trials.py",
-      "description": "Get KRAS inhibitor clinical trials (simple implementation without pagination)",
+      "structure": "folder",
+      "folder": "kras-inhibitor-trials",
+      "skill_md": "kras-inhibitor-trials/SKILL.md",
+      "script": "kras-inhibitor-trials/scripts/get_kras_inhibitor_trials.py",
+      "has_frontmatter": true,
+      "description": "Get KRAS inhibitor clinical trials",
       "function_signature": "get_kras_inhibitor_trials() -> dict",
       "servers_used": ["ct_gov_mcp"],
-      "patterns_demonstrated": [
-        "basic_ct_gov_search",
-        "markdown_response_parsing"
-      ],
-      "reference_for": [
-        "simple_trial_search"
-      ],
-      "key_features": [
-        "Basic CT.gov search",
-        "Simple markdown parsing"
-      ],
-      "limitations": [
-        "No pagination - may miss trials if >1000 results"
-      ],
-      "technical_details": {
-        "page_size": 100,
-        "response_format": "markdown"
-      },
-      "created": "2025-11-19",
+      "patterns_demonstrated": ["basic_ct_gov_search", "markdown_response_parsing"],
+      "category": "clinical-trials",
       "complexity": "simple",
-      "lines_of_code": 53,
-      "note": "Consider upgrading with pagination pattern from get_glp1_trials.py"
+      "deprecated_flat_files": {
+        "py": "get_kras_inhibitor_trials.py",
+        "md": "get_kras_inhibitor_trials.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
     },
     {
       "name": "get_kras_inhibitor_fda_drugs",
-      "file": "get_kras_inhibitor_fda_drugs.py",
+      "structure": "folder",
+      "folder": "kras-inhibitor-fda-drugs",
+      "skill_md": "kras-inhibitor-fda-drugs/SKILL.md",
+      "script": "kras-inhibitor-fda-drugs/scripts/get_kras_inhibitor_fda_drugs.py",
+      "has_frontmatter": true,
       "description": "Get FDA approved KRAS inhibitor drugs",
       "function_signature": "get_kras_inhibitor_fda_drugs() -> dict",
       "servers_used": ["fda_mcp"],
-      "patterns_demonstrated": [
-        "fda_json_parsing",
-        "drug_metadata_extraction"
-      ],
-      "reference_for": [
-        "fda_drug_search"
-      ],
-      "key_features": [
-        "FDA drug search by mechanism",
-        "JSON response parsing"
-      ],
-      "created": "2025-11-19",
-      "complexity": "simple"
+      "patterns_demonstrated": ["fda_json_parsing", "drug_metadata_extraction"],
+      "category": "drug-discovery",
+      "complexity": "simple",
+      "deprecated_flat_files": {
+        "py": "get_kras_inhibitor_fda_drugs.py",
+        "md": "get_kras_inhibitor_fda_drugs.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
     },
     {
       "name": "get_glp1_diabetes_drugs",
-      "file": "get_glp1_diabetes_drugs.py",
+      "structure": "folder",
+      "folder": "glp1-diabetes-drugs",
+      "skill_md": "glp1-diabetes-drugs/SKILL.md",
+      "script": "glp1-diabetes-drugs/scripts/get_glp1_diabetes_drugs.py",
+      "has_frontmatter": true,
       "description": "Get GLP-1 drugs specifically for diabetes indication",
       "function_signature": "get_glp1_diabetes_drugs() -> dict",
       "servers_used": ["fda_mcp"],
-      "patterns_demonstrated": [
-        "fda_json_parsing",
-        "indication_filtering"
-      ],
-      "reference_for": [
-        "indication_specific_search"
-      ],
-      "key_features": [
-        "Filters by indication (diabetes)",
-        "FDA drug database query"
-      ],
-      "created": "2025-11-18",
-      "complexity": "simple"
+      "patterns_demonstrated": ["fda_json_parsing", "indication_filtering"],
+      "category": "drug-discovery",
+      "complexity": "simple",
+      "deprecated_flat_files": {
+        "py": "get_glp1_diabetes_drugs.py",
+        "md": "get_glp1_diabetes_drugs.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
     },
     {
       "name": "get_covid19_vaccine_trials_recruiting",
-      "file": "get_covid19_vaccine_trials_recruiting.py",
+      "structure": "folder",
+      "folder": "covid19-vaccine-trials-recruiting",
+      "skill_md": "covid19-vaccine-trials-recruiting/SKILL.md",
+      "script": "covid19-vaccine-trials-recruiting/scripts/get_covid19_vaccine_trials_recruiting.py",
+      "has_frontmatter": true,
       "description": "Get recruiting COVID-19 vaccine trials",
       "function_signature": "get_covid19_vaccine_trials_recruiting() -> dict",
       "servers_used": ["ct_gov_mcp"],
-      "patterns_demonstrated": [
-        "ct_gov_status_filtering",
-        "vaccine_trial_search"
-      ],
-      "reference_for": [
-        "status_filtered_search",
-        "vaccine_queries"
-      ],
-      "key_features": [
-        "Status filter (RECRUITING)",
-        "COVID-19 vaccine specific"
-      ],
-      "created": "2025-11-18",
-      "complexity": "simple"
+      "patterns_demonstrated": ["ct_gov_status_filtering", "vaccine_trial_search"],
+      "category": "clinical-trials",
+      "complexity": "simple",
+      "deprecated_flat_files": {
+        "py": "get_covid19_vaccine_trials_recruiting.py",
+        "md": "get_covid19_vaccine_trials_recruiting.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
     },
     {
       "name": "get_phase2_alzheimers_trials_us",
-      "file": "get_phase2_alzheimers_trials_us.py",
+      "structure": "folder",
+      "folder": "phase2-alzheimers-trials-us",
+      "skill_md": "phase2-alzheimers-trials-us/SKILL.md",
+      "script": "phase2-alzheimers-trials-us/scripts/get_phase2_alzheimers_trials_us.py",
+      "has_frontmatter": true,
       "description": "Get Phase 2 Alzheimer's trials in the United States",
       "function_signature": "get_phase2_alzheimers_trials_us() -> dict",
       "servers_used": ["ct_gov_mcp"],
-      "patterns_demonstrated": [
-        "ct_gov_phase_filtering",
-        "geographic_filtering"
-      ],
-      "reference_for": [
-        "phase_specific_search",
-        "geographic_queries"
-      ],
-      "key_features": [
-        "Phase filter (PHASE2)",
-        "Geographic filter (United States)"
-      ],
-      "created": "2025-11-18",
-      "complexity": "simple"
+      "patterns_demonstrated": ["ct_gov_phase_filtering", "geographic_filtering"],
+      "category": "clinical-trials",
+      "complexity": "simple",
+      "deprecated_flat_files": {
+        "py": "get_phase2_alzheimers_trials_us.py",
+        "md": "get_phase2_alzheimers_trials_us.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
     },
     {
       "name": "get_us_phase3_obesity_recruiting_trials",
-      "file": "get_us_phase3_obesity_recruiting_trials.py",
+      "structure": "folder",
+      "folder": "us-phase3-obesity-recruiting-trials",
+      "skill_md": "us-phase3-obesity-recruiting-trials/SKILL.md",
+      "script": "us-phase3-obesity-recruiting-trials/scripts/get_us_phase3_obesity_recruiting_trials.py",
+      "has_frontmatter": true,
       "description": "Get Phase 3 obesity trials recruiting in the US",
       "function_signature": "get_us_phase3_obesity_recruiting_trials() -> dict",
       "servers_used": ["ct_gov_mcp"],
-      "patterns_demonstrated": [
-        "ct_gov_multi_filter",
-        "phase_status_location_filtering"
-      ],
-      "reference_for": [
-        "complex_filtered_search"
-      ],
-      "key_features": [
-        "Multiple filters (phase + status + location)",
-        "Obesity indication"
-      ],
-      "created": "2025-11-18",
-      "complexity": "simple"
+      "patterns_demonstrated": ["ct_gov_multi_filter", "phase_status_location_filtering"],
+      "category": "clinical-trials",
+      "complexity": "simple",
+      "deprecated_flat_files": {
+        "py": "get_us_phase3_obesity_recruiting_trials.py",
+        "md": "get_us_phase3_obesity_recruiting_trials.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
+    },
+    {
+      "name": "get_adc_trials",
+      "structure": "folder",
+      "folder": "adc-trials",
+      "skill_md": "adc-trials/SKILL.md",
+      "script": "adc-trials/scripts/get_adc_trials.py",
+      "has_frontmatter": true,
+      "description": "Get antibody-drug conjugate (ADC) clinical trials with pagination",
+      "function_signature": "get_adc_trials() -> dict",
+      "servers_used": ["ct_gov_mcp"],
+      "patterns_demonstrated": ["pagination", "markdown_parsing", "adc_search"],
+      "category": "clinical-trials",
+      "complexity": "medium",
+      "deprecated_flat_files": {
+        "py": "get_adc_trials.py",
+        "md": "get_adc_trials.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
+    },
+    {
+      "name": "get_braf_inhibitor_trials",
+      "structure": "folder",
+      "folder": "braf-inhibitor-trials",
+      "skill_md": "braf-inhibitor-trials/SKILL.md",
+      "script": "braf-inhibitor-trials/scripts/get_braf_inhibitor_trials.py",
+      "has_frontmatter": true,
+      "description": "Get BRAF inhibitor clinical trials",
+      "function_signature": "get_braf_inhibitor_trials() -> dict",
+      "servers_used": ["ct_gov_mcp"],
+      "patterns_demonstrated": ["basic_ct_gov_search", "markdown_response_parsing"],
+      "category": "clinical-trials",
+      "complexity": "simple",
+      "deprecated_flat_files": {
+        "py": "get_braf_inhibitor_trials.py",
+        "md": "get_braf_inhibitor_trials.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
+    },
+    {
+      "name": "get_braf_inhibitor_fda_drugs",
+      "structure": "folder",
+      "folder": "braf-inhibitor-fda-drugs",
+      "skill_md": "braf-inhibitor-fda-drugs/SKILL.md",
+      "script": "braf-inhibitor-fda-drugs/scripts/get_braf_inhibitor_fda_drugs.py",
+      "has_frontmatter": true,
+      "description": "Get FDA approved BRAF inhibitor drugs",
+      "function_signature": "get_braf_inhibitor_fda_drugs() -> dict",
+      "servers_used": ["fda_mcp"],
+      "patterns_demonstrated": ["fda_json_parsing", "drug_metadata_extraction"],
+      "category": "drug-discovery",
+      "complexity": "simple",
+      "deprecated_flat_files": {
+        "py": "get_braf_inhibitor_fda_drugs.py",
+        "md": "get_braf_inhibitor_fda_drugs.md",
+        "status": "deprecated",
+        "removal_date": "2025-12-19"
+      }
     }
   ],
   "pattern_categories": {
     "pagination": {
       "description": "Patterns for handling large datasets across multiple API pages",
       "best_reference": "get_glp1_trials",
-      "skills": ["get_glp1_trials"]
+      "skills": ["get_glp1_trials", "get_adc_trials"]
     },
     "ct_gov_queries": {
       "description": "ClinicalTrials.gov search patterns (markdown response)",
@@ -217,7 +249,9 @@
         "get_kras_inhibitor_trials",
         "get_covid19_vaccine_trials_recruiting",
         "get_phase2_alzheimers_trials_us",
-        "get_us_phase3_obesity_recruiting_trials"
+        "get_us_phase3_obesity_recruiting_trials",
+        "get_adc_trials",
+        "get_braf_inhibitor_trials"
       ]
     },
     "fda_queries": {
@@ -226,7 +260,8 @@
       "skills": [
         "get_glp1_fda_drugs",
         "get_kras_inhibitor_fda_drugs",
-        "get_glp1_diabetes_drugs"
+        "get_glp1_diabetes_drugs",
+        "get_braf_inhibitor_fda_drugs"
       ]
     },
     "filtering": {
@@ -240,13 +275,25 @@
   },
   "best_practices": {
     "ct_gov_searches": {
-      "pagination": "Use get_glp1_trials.py as reference for pagination implementation",
+      "pagination": "Use glp1-trials/scripts/get_glp1_trials.py as reference for pagination implementation",
       "status_filtering": "Use uppercase format: RECRUITING, COMPLETED, etc.",
       "phase_filtering": "Use format: PHASE2, PHASE3 (not 'Phase 2')"
     },
     "fda_searches": {
-      "deduplication": "Use get_glp1_fda_drugs.py as reference for drug deduplication",
+      "deduplication": "Use glp1-fda-drugs/scripts/get_glp1_fda_drugs.py as reference for drug deduplication",
       "response_format": "JSON (use .get() methods for safe access)"
+    },
+    "folder_structure": {
+      "format": "skill-name/ with SKILL.md and scripts/ subdirectory",
+      "frontmatter": "YAML frontmatter required in SKILL.md",
+      "discovery": "Use discover_skills.py to find skills by pattern, server, or category"
     }
+  },
+  "deprecation_notice": {
+    "flat_files": "All flat structure files (.py and .md at root) are deprecated as of 2025-11-19",
+    "removal_date": "2025-12-19",
+    "grace_period": "30 days",
+    "action_required": "Update imports to use folder structure: from .claude.skills.{folder}.scripts.{function} import {function}",
+    "backward_compatibility": "Flat files kept during grace period for backward compatibility"
   }
 }

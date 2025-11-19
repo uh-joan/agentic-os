@@ -1,3 +1,25 @@
+---
+name: get_adc_trials
+description: >
+  Get antibody-drug conjugate (ADC) clinical trials from ClinicalTrials.gov with full pagination support. Retrieves complete dataset across all phases and statuses. Use when analyzing ADC pipeline, competitive landscape, or targeted oncology therapeutic development. Handles large result sets via pagination. Keywords: ADC, antibody-drug conjugate, oncology, targeted therapy, clinical trials, cancer.
+category: clinical-trials
+mcp_servers:
+  - ct_gov_mcp
+patterns:
+  - pagination
+  - markdown_parsing
+  - multi_page_data_collection
+data_scope:
+  total_results: 363
+  geographical: Global
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: medium
+execution_time: ~3-4 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_adc_trials
 
 Get antibody-drug conjugate (ADC) clinical trials across all phases from ClinicalTrials.gov.
@@ -27,7 +49,7 @@ Dictionary containing:
 ## Example Usage
 
 ```python
-from .claude.skills.get_adc_trials import get_adc_trials
+from .claude.skills.adc_trials.scripts.get_adc_trials import get_adc_trials
 
 # Get all ADC trials
 result = get_adc_trials()

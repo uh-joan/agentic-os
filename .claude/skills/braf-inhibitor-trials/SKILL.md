@@ -1,3 +1,24 @@
+---
+name: get_braf_inhibitor_trials
+description: >
+  Get BRAF inhibitor clinical trials from ClinicalTrials.gov. Returns trials for BRAF-targeted oncology therapeutics across all phases. Use when analyzing BRAF inhibitor pipeline, melanoma/cancer therapeutics, or targeted therapy development. Keywords: BRAF, BRAF V600E, melanoma, oncology, targeted therapy, clinical trials.
+category: clinical-trials
+mcp_servers:
+  - ct_gov_mcp
+patterns:
+  - basic_ct_gov_search
+  - markdown_parsing
+data_scope:
+  total_results: varies
+  geographical: Global
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~2 seconds
+token_efficiency: ~99% reduction vs raw data
+---
+
 # get_braf_inhibitor_trials
 
 Get BRAF inhibitor clinical trials across all phases from ClinicalTrials.gov.
@@ -6,7 +27,7 @@ Get BRAF inhibitor clinical trials across all phases from ClinicalTrials.gov.
 
 ### As importable function
 ```python
-from .claude.skills.get_braf_inhibitor_trials import get_braf_inhibitor_trials
+from .claude.skills.braf_inhibitor_trials.scripts.get_braf_inhibitor_trials import get_braf_inhibitor_trials
 
 result = get_braf_inhibitor_trials()
 print(f"Total trials: {result['total_count']}")

@@ -1,8 +1,8 @@
-# Skills Library Pattern
+# Skills Library Pattern (Folder Structure)
 
 ## When to Use This Example
 - Every query! Always save reusable functions to skills library
-- Following Anthropic's code execution pattern
+- Following Anthropic's code execution pattern + folder structure
 - Building persistent expertise across sessions
 
 ## Why Skills Library?
@@ -15,17 +15,21 @@ From Anthropic's article:
 - Agent builds expertise across sessions
 - Reduces duplicate code generation
 - Creates composable building blocks
+- **Folder structure**: Self-contained, shareable packages
+- **YAML frontmatter**: Standardized metadata for discovery
 
-## Complete Pattern
+## Complete Pattern (Folder Structure - v2.0)
+
+**Agent executes code and returns folder structure to main agent**:
+
+### 1. Define and Execute Function
 
 ```python
 import sys
 sys.path.insert(0, 'scripts')
-from pathlib import Path
-
 from mcp.servers.fda_mcp import lookup_drug
 
-# 1. Define reusable function
+# Define reusable function
 def search_drug_brands(search_term, limit=100):
     """Reusable function to search drug brands."""
     results = lookup_drug(search_term=search_term, limit=limit)
@@ -36,16 +40,112 @@ def search_drug_brands(search_term, limit=100):
         brands.update(openfda.get('brand_name', []))
     return brands
 
-# 2. Execute and display
+# Execute and display
 brands = search_drug_brands("obesity", limit=50)
 print(f"Found {len(brands)} brands")
 for brand in sorted(brands)[:10]:
     print(f"  • {brand}")
+```
 
-# 3. Save function to skills library
-skill_path = Path('.claude/skills/search_drug_brands.py')
-skill_path.parent.mkdir(parents=True, exist_ok=True)
-skill_path.write_text('''import sys
+### 2. Agent Returns Folder Structure to Main Agent
+
+**DO NOT use Path.write_text() in agent code**. Instead, return the skill in your response:
+
+```
+Found 21 brands for obesity drugs.
+
+Skill folder: drug-brands-search/
+
+SKILL.md:
+\```markdown
+---
+name: search_drug_brands
+description: >
+  Search FDA database for drug brands by search term with deduplication.
+  Returns unique brand names. Use when analyzing drug markets, competitive
+  landscapes, or brand portfolios. Keywords: FDA drugs, brand names, drug search.
+category: drug-discovery
+mcp_servers:
+  - fda_mcp
+patterns:
+  - fda_json_parsing
+  - drug_deduplication
+data_scope:
+  total_results: varies
+  geographical: US
+  temporal: All time
+created: 2025-11-19
+last_updated: 2025-11-19
+complexity: simple
+execution_time: ~2 seconds
+token_efficiency: ~99% reduction
+---
+
+# search_drug_brands
+
+## Purpose
+Search FDA database for drug brands matching a search term.
+
+## Parameters
+- `search_term` (str): Search term for FDA lookup
+- `limit` (int, optional): Maximum results (default: 100)
+
+## Returns
+- `set[str]`: Set of unique brand names
+
+## Usage
+\```python
+from .claude.skills.drug_brands_search.scripts.search_drug_brands import search_drug_brands
+brands = search_drug_brands("obesity", limit=50)
+\```
+
+## MCP Tools Used
+- fda_mcp.lookup_drug
+\```
+
+Python script (scripts/search_drug_brands.py):
+\```python
+import sys
+sys.path.insert(0, "scripts")
+from mcp.servers.fda_mcp import lookup_drug
+
+def search_drug_brands(search_term, limit=100):
+    \"\"\"Reusable function to search drug brands.\"\"\"
+    results = lookup_drug(search_term=search_term, limit=limit)
+    brands = set()
+    for result in results.get("data", {}).get("results", []):
+        openfda = result.get("openfda", {})
+        brands.update(openfda.get("brand_name", []))
+    return brands
+
+if __name__ == "__main__":
+    brands = search_drug_brands("obesity", limit=50)
+    print(f"Found {len(brands)} brands")
+    for brand in sorted(brands)[:10]:
+        print(f"  • {brand}")
+\```
+```
+
+### 3. Main Agent Saves Files
+
+Main Claude Code agent extracts and saves:
+
+```python
+# Main agent creates folder structure
+skill_folder = Path('.claude/skills/drug-brands-search')
+skill_folder.mkdir(parents=True, exist_ok=True)
+(skill_folder / 'scripts').mkdir(exist_ok=True)
+
+# Save SKILL.md (extracted from markdown block)
+(skill_folder / 'SKILL.md').write_text(skill_md_content)
+
+# Save Python script (extracted from python block)
+(skill_folder / 'scripts' / 'search_drug_brands.py').write_text(python_content)
+```
+
+## OLD Pattern (Flat Structure - v1.0 Deprecated)
+
+```python
 sys.path.insert(0, "scripts")
 from mcp.servers.fda_mcp import lookup_drug
 
@@ -75,7 +175,7 @@ Search for drug brands by search term.
 
 ## Usage
 \`\`\`python
-from .claude.skills.search_drug_brands import search_drug_brands
+from .claude.skills.drug_brands_search.scripts.search_drug_brands import search_drug_brands
 brands = search_drug_brands("obesity", limit=50)
 \`\`\`
 
@@ -160,7 +260,7 @@ def process()
 
 ## Usage
 \`\`\`python
-from .claude.skills.function_name import function_name
+from .claude.skills.skill_folder_name.scripts.function_name import function_name
 result = function_name(arg1, arg2)
 \`\`\`
 
@@ -198,13 +298,13 @@ def my_function():
 ### Future Query Example
 
 ```python
-# Instead of re-implementing, import existing skill
-from .claude.skills.search_drug_brands import search_drug_brands
-from .claude.skills.get_us_phase3_obesity_trials import get_us_phase3_obesity_trials
+# Instead of re-implementing, import existing skills (folder structure)
+from .claude.skills.drug_brands_search.scripts.search_drug_brands import search_drug_brands
+from .claude.skills.us_phase3_obesity_recruiting_trials.scripts.get_us_phase3_obesity_recruiting_trials import get_us_phase3_obesity_recruiting_trials
 
 # Use them
 obesity_brands = search_drug_brands("obesity")
-trial_count = get_us_phase3_obesity_trials()
+trial_count = get_us_phase3_obesity_recruiting_trials()
 
 print(f"Obesity market: {len(obesity_brands)} brands")
 print(f"Pipeline: {trial_count} Phase 3 trials")
