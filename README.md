@@ -206,7 +206,6 @@ The platform integrates **12 specialized data sources** via Model Context Protoc
 | Method | Tokens | Efficiency |
 |--------|--------|-----------|
 | Direct MCP call | 60,000 | ❌ Raw data in context |
-| Old scripts | 2,000 | ⚠️ Data flows through context |
 | **Code execution + MCP** | **500** | ✅ **98.7% reduction** |
 
 **How it works**:
