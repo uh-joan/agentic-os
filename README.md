@@ -108,57 +108,23 @@ Report saved: reports/competitive-landscape/YYYY-MM-DD_kras-inhibitor.md
 
 ---
 
-## Skills Library (v2.0)
+## Skills Library
 
-**Current Skills** (26 active):
+The skills library is a **growing collection of reusable data collection functions** that the system builds over time through usage. Each query creates a new skill that can be reused in future sessions.
 
-### Clinical Trials (CT.gov)
-- `adc-trials` - Antibody-drug conjugate trials with pagination
-- `braf-inhibitor-trials` - BRAF inhibitor trials
-- `covid19-vaccine-trials-recruiting` - COVID-19 vaccine trials
-- `diabetes-recruiting-trials` - Diabetes recruiting trials
-- `egfr-inhibitor-trials` - EGFR inhibitor trials across all phases
-- `glp1-trials` - GLP-1 trials (1803 trials, full pagination)
-- `kras-inhibitor-trials` - KRAS inhibitor trials
-- `phase2-alzheimers-trials-us` - Phase 2 Alzheimer's trials (US)
-- `rheumatoid-arthritis-trials` - Rheumatoid arthritis trials
-- `us-phase3-obesity-recruiting-trials` - Phase 3 obesity trials
+**How It Works:**
+- User asks a question → Agent creates executable Python skill
+- Skill saved to `.claude/skills/` with documentation
+- Future queries reuse existing skills
+- Library grows organically with each new query type
 
-### FDA Drugs
-- `braf-inhibitor-fda-drugs` - FDA approved BRAF inhibitors
-- `glp1-diabetes-drugs` - GLP-1 drugs for diabetes
-- `glp1-fda-drugs` - FDA approved GLP-1 drugs (21 drugs, deduplication)
-- `hypertension-fda-drugs` - FDA approved hypertension drugs
-- `kras-inhibitor-fda-drugs` - FDA approved KRAS inhibitors
-- `rheumatoid-arthritis-fda-drugs` - FDA approved RA drugs
+**Current Library:** 26+ skills across clinical trials, FDA drugs, chemical properties, medical coding, literature search, and healthcare provider data.
 
-### Chemical Properties (PubChem)
-- `anticoagulant-chemical-properties` - Anticoagulant chemical properties
-- `aspirin-properties` - Aspirin chemical and physical properties
-
-### Multi-Server Analysis
-- `cart-therapy-landscape` - CAR-T therapy trials and targets
-- `kras-comprehensive-analysis` - KRAS trials, FDA drugs, and targets
-- `ra-targets-and-trials` - Rheumatoid arthritis targets and trials
-
-### Medical Coding & Statistics
-- `diabetes-icd10-codes` - ICD-10 codes for diabetes
-- `disease-burden-per-capita` - Disease burden per capita analysis
-
-### Literature & Publications
-- `crispr-2024-papers` - CRISPR papers published in 2024
-
-### Healthcare Providers
-- `texas-cardiologists` - Cardiologists in Texas (CMS data)
-
-### Demographics
-- `california-population` - California population statistics
-
-### Folder Structure (Anthropic Format)
+### Folder Structure
 
 ```
 .claude/skills/
-├── index.json                          # Skills discovery index (v2.0)
+├── index.json                          # Skills discovery index
 ├── README.md                           # Skills library documentation
 └── [skill-name]/                       # Each skill is self-contained
     ├── SKILL.md                        # YAML frontmatter + documentation
@@ -166,50 +132,7 @@ Report saved: reports/competitive-landscape/YYYY-MM-DD_kras-inhibitor.md
         └── [function_name].py          # Executable Python function
 ```
 
-### Skills Discovery
-
-```bash
-# Find all skills
-python3 .claude/tools/discover_skills.py
-
-# Find skills by pattern (e.g., pagination)
-python3 -c "from discover_skills import find_skill_by_pattern; print(find_skill_by_pattern('pagination'))"
-
-# Find skills by MCP server
-python3 -c "from discover_skills import find_skill_by_server; print(find_skill_by_server('ct_gov_mcp'))"
-```
-
-### Creating New Skills
-
-**Primary Method (Automatic):**
-
-Skills are created automatically by the pharma-search-specialist agent:
-
-```
-User: "Get rheumatoid arthritis trials"
-    ↓
-pharma-search-specialist:
-  - Reads MCP tool guides + code examples
-  - Generates complete Python code (not templates)
-  - Executes code and validates
-  - Returns: summary + working skill + documentation
-    ↓
-Main Claude Code agent:
-  - Saves SKILL.md with rich YAML frontmatter
-  - Saves scripts/function.py with working implementation
-  - Skill immediately ready to use
-```
-
-**Manual Method (Rarely Used):**
-
-For creating empty skill scaffolds manually:
-
-```bash
-# Creates template files with TODOs (not used by agent system)
-python3 .claude/tools/init_skill.py get_new_data --server ct_gov_mcp
-```
-
-**Note**: The agent-generated skills are fully implemented with working code, real metadata, and detailed documentation. The manual `init_skill.py` utility only creates placeholder templates.
+**Both importable and executable:** Skills can be imported as Python modules or run standalone for testing.
 
 ---
 
