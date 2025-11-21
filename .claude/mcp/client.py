@@ -147,7 +147,7 @@ def load_config():
     """Load MCP configuration from .mcp.json"""
     global _config
     if _config is None:
-        config_path = Path.home() / 'code' / 'agentic-os' / '.mcp.json'
+        config_path = Path.home() / 'code' / 'pharma-agentic-os' / '.mcp.json'
         with open(config_path) as f:
             data = json.load(f)
             _config = data.get('mcpServers', {})
