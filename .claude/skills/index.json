@@ -1,14 +1,14 @@
 {
   "version": "2.0",
   "format": "folder-structure",
-  "last_updated": "2025-11-19",
+  "last_updated": "2025-11-21",
   "description": "Skills library index for pattern discovery and reuse - Anthropic folder structure format",
   "usage": "Agent reads this to discover similar skills before creating new ones. Enables evolutionary skill development where new skills build on proven patterns from existing implementations.",
   "migration_status": {
     "phase": "4-migration-complete",
     "all_skills_have_frontmatter": true,
     "structure": "folder",
-    "folder_skills_count": 14,
+    "folder_skills_count": 17,
     "flat_skills_count": 0,
     "deprecated_flat_count": 11,
     "note": "All skills migrated to folder structure. Flat files kept for 30-day backward compatibility period."
@@ -352,6 +352,48 @@
       ],
       "category": "target-validation",
       "complexity": "simple"
+    },
+    {
+      "name": "get_disease_genetic_targets",
+      "structure": "folder",
+      "folder": "disease-genetic-targets",
+      "skill_md": "disease-genetic-targets/SKILL.md",
+      "script": "disease-genetic-targets/scripts/get_disease_genetic_targets.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_disease_genetic_targets() -> dict",
+      "servers_used": [
+        "opentargets_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "api_aggregation",
+        "score_filtering"
+      ],
+      "category": "target-validation",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_biotech_ma_deals_sec_edgar",
+      "structure": "folder",
+      "folder": "biotech-ma-deals-sec",
+      "skill_md": "biotech-ma-deals-sec/SKILL.md",
+      "script": "biotech-ma-deals-sec/scripts/get_biotech_ma_deals_sec_edgar.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_biotech_ma_deals_sec_edgar() -> dict",
+      "servers_used": [
+        "sec_edgar_mcp"
+      ],
+      "patterns_demonstrated": [
+        "company_submissions",
+        "filing_metadata_parsing",
+        "date_filtering",
+        "deduplication",
+        "known_deals_matching"
+      ],
+      "category": "financial",
+      "complexity": "complex"
     }
   ],
   "pattern_categories": {
