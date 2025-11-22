@@ -193,6 +193,20 @@ def lookup_drug(
             limit=50  # No count needed - small dataset
         )
     """
+    # VALIDATION: Count-first pattern mandatory for general/adverse_events
+    if search_type in ('general', 'adverse_events') and not count:
+        import warnings
+        warnings.warn(
+            f"Count parameter MANDATORY for search_type='{search_type}' to avoid token overflow. "
+            f"Without count: query returns 50k-67k tokens → EXCEEDS MCP limit → WILL FAIL. "
+            f"Add count='openfda.brand_name.exact' for general searches.",
+            UserWarning
+        )
+
+    # NOTE: FDA API enforces max 100 results per query
+    # We don't cap it here - let the API return its natural error message
+    # For comprehensive data, use OpenTargets → FDA two-step pattern
+
     client = get_client('fda-mcp')
 
     params = {
