@@ -77,12 +77,30 @@ class MCPClient:
         self.process.stdin.write(request_json)
         self.process.stdin.flush()
 
-        # Read response
-        response_line = self.process.stdout.readline()
-        if not response_line:
-            raise Exception(f"No response from MCP server {self.server_name}")
+        # Read response (skip non-JSON lines like debug output)
+        max_attempts = 10
+        response_line = None
 
-        response = json.loads(response_line)
+        for _ in range(max_attempts):
+            line = self.process.stdout.readline()
+            if not line:
+                raise Exception(f"No response from MCP server {self.server_name}")
+
+            line = line.strip()
+            if not line:
+                continue
+
+            # Try to parse as JSON - skip non-JSON lines (debug output)
+            try:
+                response = json.loads(line)
+                response_line = line
+                break
+            except json.JSONDecodeError:
+                # This is likely debug output, skip it and try next line
+                continue
+
+        if not response_line:
+            raise Exception(f"No valid JSON response from MCP server {self.server_name} after {max_attempts} attempts")
 
         # Check for errors
         if 'error' in response:
