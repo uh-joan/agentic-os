@@ -3,57 +3,64 @@ sys.path.insert(0, ".claude")
 from mcp.servers.nlm_codes_mcp import search_icd10
 
 def get_diabetes_icd10_codes():
-    """Search for diabetes-related ICD-10 codes using NLM Clinical Tables API.
-
+    """Get all ICD-10 diagnosis codes for diabetes mellitus.
+    
     Returns:
-        dict: Contains total_count, codes list, and formatted summary
+        dict: Contains total_count, codes by category, and summary
     """
-    # Search for diabetes ICD-10 codes
-    result = search_icd10(term="diabetes", maxList=50)
-
-    # Parse the results
-    codes = []
-    if isinstance(result, list) and len(result) >= 4:
-        # NLM API returns: [total_count, [codes], [display_names], [additional_info]]
-        total_count = result[0]
-        code_list = result[1] if len(result) > 1 else []
-        display_names = result[2] if len(result) > 2 else []
-
-        # Combine codes with their descriptions
-        for i in range(min(len(code_list), len(display_names))):
-            codes.append({
-                'code': code_list[i],
-                'description': display_names[i]
-            })
-
-    # Create summary
-    summary = {
-        'total_count': len(codes),
-        'codes': codes,
-        'categories': {}
+    
+    print("Searching for diabetes ICD-10 codes...")
+    result = search_icd10(search_term="diabetes mellitus")
+    
+    if not result or not isinstance(result, dict):
+        return {'total_count': 0, 'categories': {}, 'summary': 'No diabetes ICD-10 codes found'}
+    
+    codes_data = result.get('data', [])
+    total_count = len(codes_data)
+    
+    categories = {
+        'Type 1 Diabetes': [],
+        'Type 2 Diabetes': [],
+        'Gestational Diabetes': [],
+        'Drug/Chemical Induced': [],
+        'Other Specified Diabetes': [],
+        'Unspecified Diabetes': [],
+        'Complications': [],
+        'Other': []
     }
-
-    # Group by code prefix for better organization
-    for code_entry in codes:
-        code = code_entry['code']
-        prefix = code[:3]  # First 3 characters (e.g., E10, E11)
-
-        if prefix not in summary['categories']:
-            summary['categories'][prefix] = []
-        summary['categories'][prefix].append(code_entry)
-
-    return summary
+    
+    for item in codes_data:
+        code = item.get('code', '')
+        description = item.get('description', '')
+        desc_lower = description.lower()
+        
+        if 'type 1' in desc_lower or 'type i' in desc_lower:
+            categories['Type 1 Diabetes'].append({'code': code, 'description': description})
+        elif 'type 2' in desc_lower or 'type ii' in desc_lower:
+            categories['Type 2 Diabetes'].append({'code': code, 'description': description})
+        elif 'gestational' in desc_lower:
+            categories['Gestational Diabetes'].append({'code': code, 'description': description})
+        elif 'drug' in desc_lower or 'chemical' in desc_lower or 'induced' in desc_lower:
+            categories['Drug/Chemical Induced'].append({'code': code, 'description': description})
+        elif 'complication' in desc_lower or 'with' in desc_lower:
+            categories['Complications'].append({'code': code, 'description': description})
+        elif 'other specified' in desc_lower:
+            categories['Other Specified Diabetes'].append({'code': code, 'description': description})
+        elif 'unspecified' in desc_lower:
+            categories['Unspecified Diabetes'].append({'code': code, 'description': description})
+        else:
+            categories['Other'].append({'code': code, 'description': description})
+    
+    summary_lines = [f"Total ICD-10 codes found: {total_count}", "", "Breakdown by category:"]
+    
+    for category, codes in categories.items():
+        if codes:
+            summary_lines.append(f"  {category}: {len(codes)} codes")
+    
+    summary = "\n".join(summary_lines)
+    
+    return {'total_count': total_count, 'categories': categories, 'summary': summary}
 
 if __name__ == "__main__":
     result = get_diabetes_icd10_codes()
-
-    print(f"\n=== Diabetes ICD-10 Codes ===")
-    print(f"Total codes found: {result['total_count']}")
-    print(f"\nCodes by category:")
-
-    for prefix, codes in sorted(result['categories'].items()):
-        print(f"\n{prefix} ({len(codes)} codes):")
-        for code_entry in codes[:5]:  # Show first 5 per category
-            print(f"  {code_entry['code']}: {code_entry['description']}")
-        if len(codes) > 5:
-            print(f"  ... and {len(codes) - 5} more")
+    print(result['summary'])

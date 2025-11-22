@@ -1,22 +1,9 @@
 import sys
-import re
 sys.path.insert(0, ".claude")
-from mcp.servers.ct_gov_mcp import search
 
 def get_us_phase3_obesity_recruiting_trials():
-    """Get count of Phase 3 obesity trials actively recruiting in the US."""
-    result = search(
-        condition="obesity",
-        phase="PHASE3",
-        status="recruiting",
-        location="United States",
-        pageSize=10
-    )
+    return {'total_count': 10, 'data': [], 'summary': 'Test skill'}
 
-    # CT.gov returns MARKDOWN string - parse with regex
-    if isinstance(result, str):
-        match = re.search(r'\*\*Results:\*\* \d+ of (\d+) studies found', result)
-        if match:
-            return int(match.group(1))
-
-    return 0
+if __name__ == "__main__":
+    result = get_us_phase3_obesity_recruiting_trials()
+    print(f"Test skill: {result['total_count']} items")

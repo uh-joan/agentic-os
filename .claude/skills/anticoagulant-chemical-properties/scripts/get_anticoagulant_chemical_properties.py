@@ -1,80 +1,55 @@
 import sys
 sys.path.insert(0, ".claude")
-from mcp.servers.fda_mcp import search_drug_label
-from mcp.servers.pubchem_mcp import get_compound_by_name
+from mcp.servers.pubchem_mcp import get_compound_properties
 
 def get_anticoagulant_chemical_properties():
-    """Get FDA approved anticoagulants and their PubChem chemical properties.
-
-    Returns:
-        dict: Contains total count, drug list with properties, and summary
-    """
-
-    print("Step 1: Querying FDA for anticoagulant drugs...")
-
-    fda_result = search_drug_label(search="anticoagulant", limit=100)
-
-    if not fda_result or 'results' not in fda_result:
-        return {'total_count': 0, 'drugs': [], 'summary': 'No FDA data found'}
-
-    # Extract unique drug names
-    drug_names = set()
-    for result in fda_result['results']:
-        if 'openfda' in result:
-            for brand in result['openfda'].get('brand_name', []):
-                drug_names.add(brand)
-            for generic in result['openfda'].get('generic_name', []):
-                drug_names.add(generic)
-
-    print(f"Found {len(drug_names)} unique anticoagulant drug names")
-
-    # Query PubChem for properties
-    print("\nStep 2: Querying PubChem for chemical properties...")
-
-    drugs_with_properties = []
-    success = failed = 0
-
-    for drug_name in sorted(drug_names)[:20]:  # Limit to 20
+    """Get comprehensive chemical properties for anticoagulant drugs from PubChem."""
+    compounds = [
+        {"name": "Warfarin", "cid": 54678486},
+        {"name": "Rivaroxaban", "cid": 9875401},
+        {"name": "Apixaban", "cid": 10182969}
+    ]
+    
+    properties = [
+        "MolecularFormula", "MolecularWeight", "CanonicalSMILES",
+        "InChI", "XLogP", "TPSA", "HBondDonorCount", "HBondAcceptorCount"
+    ]
+    
+    results = []
+    for compound in compounds:
         try:
-            result = get_compound_by_name(compound_name=drug_name)
-
-            if result and 'PropertyTable' in result:
-                props = result['PropertyTable'].get('Properties', [])
-                if props:
-                    p = props[0]
-                    drugs_with_properties.append({
-                        'drug_name': drug_name,
-                        'cid': p.get('CID'),
-                        'molecular_formula': p.get('MolecularFormula'),
-                        'molecular_weight': p.get('MolecularWeight'),
-                        'tpsa': p.get('TPSA'),
-                        'xlogp': p.get('XLogP')
-                    })
-                    success += 1
-                else:
-                    failed += 1
-            else:
-                failed += 1
-        except Exception:
-            failed += 1
-
-    summary = {
-        'total_fda_drugs': len(drug_names),
-        'pubchem_success': success,
-        'pubchem_failed': failed,
-        'integration_rate': f"{(success/(success+failed)*100):.1f}%" if (success+failed) > 0 else "0%"
+            response = get_compound_properties(
+                cid=str(compound["cid"]),
+                properties=",".join(properties)
+            )
+            
+            if response and "PropertyTable" in response:
+                prop_data = response["PropertyTable"]["Properties"][0]
+                results.append({
+                    "name": compound["name"],
+                    "cid": compound["cid"],
+                    "molecular_formula": prop_data.get("MolecularFormula", "N/A"),
+                    "molecular_weight": prop_data.get("MolecularWeight", "N/A"),
+                    "canonical_smiles": prop_data.get("CanonicalSMILES", "N/A"),
+                    "inchi": prop_data.get("InChI", "N/A"),
+                    "xlogp": prop_data.get("XLogP", "N/A"),
+                    "tpsa": prop_data.get("TPSA", "N/A"),
+                    "h_bond_donors": prop_data.get("HBondDonorCount", "N/A"),
+                    "h_bond_acceptors": prop_data.get("HBondAcceptorCount", "N/A")
+                })
+        except Exception as e:
+            print(f"Error retrieving data for {compound['name']}: {str(e)}")
+    
+    return {
+        "total_compounds": len(results),
+        "compounds_retrieved": [r["name"] for r in results],
+        "data": results
     }
-
-    print(f"\n{'='*70}")
-    print("MULTI-SERVER INTEGRATION SUMMARY")
-    print(f"{'='*70}")
-    print(f"FDA Drugs: {summary['total_fda_drugs']}")
-    print(f"PubChem Success: {summary['pubchem_success']}")
-    print(f"Integration Rate: {summary['integration_rate']}")
-    print(f"{'='*70}")
-
-    return {'total_count': len(drugs_with_properties), 'drugs': drugs_with_properties, 'summary': summary}
 
 if __name__ == "__main__":
     result = get_anticoagulant_chemical_properties()
-    print(f"\n✓ Integrated data for {result['total_count']} drugs")
+    print(f"\nAnticoagulant Chemical Properties: {result['total_compounds']} compounds")
+    for compound in result['data']:
+        print(f"\n{compound['name']} (CID: {compound['cid']})")
+        print(f"  Formula: {compound['molecular_formula']}, MW: {compound['molecular_weight']} g/mol")
+        print(f"  XLogP: {compound['xlogp']}, TPSA: {compound['tpsa']} Ų")

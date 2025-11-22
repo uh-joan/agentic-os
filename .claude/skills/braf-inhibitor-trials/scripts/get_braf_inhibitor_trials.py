@@ -1,68 +1,55 @@
 import sys
 import re
+from collections import Counter
 sys.path.insert(0, ".claude")
 from mcp.servers.ct_gov_mcp import search
 
 def get_braf_inhibitor_trials():
-    """Get BRAF inhibitor clinical trials across all phases.
-
-    Handles pagination to retrieve all results (not limited to first 1000).
-
-    Returns:
-        dict: Contains total_count and trials_summary (markdown string)
-    """
-    all_results = []
-    page_size = 1000
+    """Get all BRAF inhibitor clinical trials with pagination."""
+    
+    all_trials = []
     page_token = None
-
-    # First request to get total count and first page
-    result = search(term="BRAF inhibitor", pageSize=page_size)
-
-    # Extract total count from markdown
-    count_match = re.search(r'\*\*Results:\*\* (\d+) of (\d+) studies found', result)
-    if not count_match:
-        return {'total_count': 0, 'trials_summary': result}
-
-    total_count = int(count_match.group(2))
-    all_results.append(result)
-
-    # Extract pageToken if present
-    token_match = re.search(r'Next page token: `([^`]+)`', result)
-    if token_match:
-        page_token = token_match.group(1)
-
-    # Keep fetching pages until we have all results
-    fetched_count = min(page_size, total_count)
-
-    while page_token and fetched_count < total_count:
-        result = search(
-            term="BRAF inhibitor",
-            pageSize=page_size,
-            pageToken=page_token
-        )
-        all_results.append(result)
-
-        # Update fetched count
-        fetched_count += page_size
-
-        # Check for next page token
-        token_match = re.search(r'Next page token: `([^`]+)`', result)
-        if token_match:
-            page_token = token_match.group(1)
+    
+    while True:
+        if page_token:
+            result = search(term="BRAF inhibitor", pageSize=1000, pageToken=page_token)
         else:
-            page_token = None
-
-    # Combine all results
-    combined_summary = "\n\n---\n\n".join(all_results)
-
+            result = search(term="BRAF inhibitor", pageSize=1000)
+        
+        trial_blocks = re.split(r'###\s+\d+\.\s+(NCT\d{8})', result)
+        
+        for i in range(1, len(trial_blocks), 2):
+            if i + 1 < len(trial_blocks):
+                nct_id = trial_blocks[i]
+                block = trial_blocks[i + 1]
+                
+                title_match = re.search(r'\*\*Title:\*\*\s*(.+?)(?:\n|$)', block)
+                phases_match = re.search(r'\*\*Phases:\*\*\s*(.+?)(?:\n|$)', block)
+                status_match = re.search(r'\*\*Status:\*\*\s*(.+?)(?:\n|$)', block)
+                
+                trial = {
+                    'nct_id': nct_id,
+                    'title': title_match.group(1).strip() if title_match else '',
+                    'phases': phases_match.group(1).strip() if phases_match else '',
+                    'status': status_match.group(1).strip() if status_match else ''
+                }
+                all_trials.append(trial)
+        
+        page_token_match = re.search(r'Page Token:\s*`([^`]+)`', result)
+        if page_token_match:
+            page_token = page_token_match.group(1)
+        else:
+            break
+    
+    phase_counts = Counter([t['phases'] for t in all_trials if t['phases']])
+    
     return {
-        'total_count': total_count,
-        'trials_summary': combined_summary
+        'total_count': len(all_trials),
+        'phase_distribution': dict(phase_counts),
+        'trials': all_trials
     }
 
-# REQUIRED: Make skill executable standalone
 if __name__ == "__main__":
     result = get_braf_inhibitor_trials()
-    print(f"Total BRAF inhibitor trials found: {result['total_count']}")
-    print("\nTrials summary:")
-    print(result['trials_summary'])
+    print(f"BRAF inhibitor trials: {result['total_count']} total")
+    print(f"Phase distribution: {result['phase_distribution']}")
