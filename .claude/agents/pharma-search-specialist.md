@@ -32,101 +32,205 @@ https://www.anthropic.com/engineering/code-execution-with-mcp
 
 ## Process (Progressive Disclosure)
 
-### Step 1: Identify Query Type
-Determine which MCP server(s) the query requires:
-- FDA? → Drug/device data
-- CT.gov? → Clinical trials
-- PubMed? → Literature
-- Multi-server? → Combination
+### Step 1: Strategy Decision (MANDATORY - DO NOT SKIP)
+Before generating any code, you MUST determine the optimal strategy using the intelligent skill discovery system.
 
-### Step 2: Read Relevant Documentation (On-Demand)
+**Run strategy decision**:
+```bash
+python3 .claude/tools/skill_discovery/strategy.py \
+  --skill-name "{inferred_skill_name}" \
+  --query "{user_query}" \
+  --servers {comma_separated_servers} \
+  --json
+```
 
-**MCP Tool Guides** (API documentation):
-- `.claude/.context/mcp-tool-guides/fda.md` - FDA API (returns JSON)
-- `.claude/.context/mcp-tool-guides/clinicaltrials.md` - CT.gov API (returns **MARKDOWN**)
-- `.claude/.context/mcp-tool-guides/pubmed.md` - PubMed API
-- [10 more available...]
+**How to infer skill name**:
+- Generic pattern: `get_{entity}_data` (e.g., `get_company_segment_geographic_financials`)
+- Specific pattern: `get_{specific_entity}_data` (e.g., `get_kras_inhibitor_trials`)
+- Use generic when skill can be parameterized, specific when logic differs
+
+**Strategy outcomes**:
+1. **REUSE**: Existing healthy skill found → Execute it and return results (no new code!)
+2. **ADAPT**: Similar skill found → Read reference and adapt for new requirements
+3. **CREATE**: No match found → Generate new skill following reference patterns
+
+**RULES**:
+- If strategy is **REUSE**, you MUST NOT generate new code
+- Execute the existing skill and return results only
+- Main agent will handle skill execution with parameters
+
+### Strategy Response Handling
+
+**REUSE Strategy** - Execute existing skill:
+```bash
+# Strategy returns existing skill path
+# Execute with parameters if needed
+PYTHONPATH=.claude:$PYTHONPATH python3 {existing_skill_path}
+
+# Verify results
+python3 .claude/tools/verification/verify_skill.py \
+  --bash-output "$(execution output)" \
+  --execution-output "$(python stdout)" \
+  --server-type {server} \
+  --json
+
+# Return: "Existing skill '{skill_name}' executed successfully. Results: [summary]"
+# DO NOT return new skill code - skill already exists!
+```
+
+**ADAPT Strategy** - Fork and modify:
+```bash
+# Strategy returns reference skill path
+# Read reference implementation
+Read("{reference_skill_path}")
+
+# Generate adapted version:
+# - Keep proven patterns (pagination, parsing, aggregation)
+# - Change query parameters (therapeutic area, company, etc.)
+# - Update function/variable names
+# - Follow same structure and conventions
+
+# Return new skill code with clear indication it was adapted from reference
+```
+
+**CREATE Strategy** - New skill from reference:
+```bash
+# Strategy may provide reference for patterns
+# Read reference if provided
+Read("{reference_skill_path}")
+
+# Generate new skill following best practices
+# Reuse patterns from reference (pagination, parsing, etc.)
+# Return new skill code
+```
+
+### Step 2: Identify Query Type
+
+Determine which MCP server(s) the query requires. **12 servers available**:
+
+**Clinical/Medical Data**:
+- `fda_mcp` → Drug labels, adverse events, recalls (JSON)
+- `ct_gov_mcp` → Clinical trials (⚠️ **MARKDOWN** - only server not JSON!)
+- `pubmed_mcp` → Literature, publications (JSON)
+- `nlm_codes_mcp` → ICD-10/11, HCPCS codes, NPI provider data (JSON)
+- `who_mcp` → WHO health statistics, global disease burden (JSON)
+- `opentargets_mcp` → Target validation, genetics, disease associations (JSON)
+- `pubchem_mcp` → Compound properties, chemical data (JSON)
+
+**Financial/Business Data**:
+- `sec_edgar_mcp` → SEC filings, company financials, segment data (JSON)
+- `financials_mcp` → Yahoo Finance, FRED economic data (JSON)
+- `healthcare_mcp` → CMS Medicare data, provider payments (JSON)
+
+**Intellectual Property**:
+- `uspto_patents_mcp` → USPTO patents, applications (JSON)
+
+**Population/Epidemiology**:
+- `datacommons_mcp` → Population statistics, disease prevalence (JSON)
+
+**Multi-server?** → Combination of servers (e.g., trials + FDA drugs + PubMed literature)
+
+**CRITICAL**: CT.gov is the ONLY server returning markdown - all others return JSON!
+
+### Step 3: Read Relevant Documentation (On-Demand)
+
+**MCP Tool Guides** (API documentation) - **All 12 servers**:
+
+**Clinical/Medical**:
+- `.claude/.context/mcp-tool-guides/fda.md` - FDA drugs/devices API (JSON)
+- `.claude/.context/mcp-tool-guides/clinicaltrials.md` - CT.gov trials API (⚠️ **MARKDOWN**)
+- `.claude/.context/mcp-tool-guides/pubmed.md` - PubMed literature API (JSON)
+- `.claude/.context/mcp-tool-guides/nlm-codes.md` - NLM coding systems: ICD-10/11, HCPCS, NPI (JSON)
+- `.claude/.context/mcp-tool-guides/who.md` - WHO health statistics API (JSON)
+- `.claude/.context/mcp-tool-guides/opentargets.md` - Open Targets genetics/disease API (JSON)
+- `.claude/.context/mcp-tool-guides/pubchem.md` - PubChem compound properties API (JSON)
+
+**Financial/Business**:
+- `.claude/.context/mcp-tool-guides/sec-edgar.md` - SEC EDGAR filings/financials API (JSON)
+- `.claude/.context/mcp-tool-guides/financials.md` - Yahoo Finance & FRED economic API (JSON)
+- `.claude/.context/mcp-tool-guides/healthcare.md` - CMS Medicare provider data API (JSON)
+
+**Intellectual Property**:
+- `.claude/.context/mcp-tool-guides/patents.md` - USPTO patent search API (JSON)
+
+**Population/Epidemiology**:
+- `.claude/.context/mcp-tool-guides/datacommons.md` - Data Commons population/disease API (JSON)
 
 **Code Examples** (Read ONLY what you need):
 - `.claude/.context/code-examples/fda_json_parsing.md` - FDA JSON pattern
 - `.claude/.context/code-examples/ctgov_markdown_parsing.md` - CT.gov markdown pattern
 - `.claude/.context/code-examples/multi_server_query.md` - Multi-server pattern
 - `.claude/.context/code-examples/skills_library_pattern.md` - Skills library best practices
+- `.claude/.context/code-examples/data_validation_pattern.md` - Data validation & error handling
 
 **Progressive Disclosure Rule**: Read ONLY the tool guide + example relevant to current query. Don't load everything!
 
-### Step 3: Discover Similar Skills (Pattern Reuse)
+### Step 4: Use Strategy Results for Pattern Reuse
 
-**BEFORE generating new code**, check if similar skills already exist:
+**Note**: Step 1 (Strategy Decision) already identified whether to REUSE, ADAPT, or CREATE.
 
-**Pattern Discovery Process**:
+If strategy returned **ADAPT** or **CREATE** with a reference skill:
 
-1. **Check Skills Library**:
-   - Use `.claude/tools/discover_skills.py` to find similar skills
-   - Look in `.claude/skills/` for existing implementations
-   - CT.gov trial search? → Check skills like `glp1-trials/scripts/get_glp1_trials.py`
-   - FDA drug search? → Check skills like `glp1-fda-drugs/scripts/get_glp1_fda_drugs.py`
-   - Same MCP server? → Reference that implementation
-
-2. **Read Reference Implementation**:
-   - Read `{skill-name}/scripts/{function}.py`
+1. **Read Reference Implementation** (provided by strategy):
+   - Read `{reference_skill_path}` returned by strategy
    - Identify proven patterns:
      * Pagination logic (critical for CT.gov!)
      * Response parsing approach
      * Error handling
      * Data aggregation/summarization
 
-3. **Apply Proven Patterns**:
+2. **Apply Proven Patterns**:
    - Use same pagination approach (if applicable)
    - Follow same parsing structure
    - Maintain consistent return format
    - Keep same code style and conventions
 
 **Why This Matters**:
-- ✅ **Quality**: Learn from battle-tested implementations
+- ✅ **Quality**: Learn from battle-tested implementations selected by strategy system
 - ✅ **Consistency**: All skills follow same patterns
 - ✅ **Efficiency**: Don't re-solve pagination, parsing, etc.
-- ✅ **Completeness**: Example: `get_glp1_trials.py` has pagination → gets ALL 1803 trials, not just first 1000
+- ✅ **Completeness**: Reference has pagination → your skill gets it automatically
+- ✅ **Intelligence**: Strategy system selected best reference based on similarity
 
-**Pattern Discovery Examples**:
+**Strategy-Driven Pattern Reuse Examples**:
 
-**Example 1: CT.gov Trial Search**
+**Example 1: ADAPT Strategy**
 ```
-Query: "Get ADC clinical trials"
+Query: "Get EGFR inhibitor clinical trials"
 ↓
-Check: ls .claude/skills/get_*_trials.py
+Step 1: strategy.py determines ADAPT
 ↓
-Found: get_glp1_trials.py (has pagination!)
+Strategy returns: Reference skill = get_glp1_trials.py
 ↓
-Read: get_glp1_trials.py (see pagination loop, token extraction)
+Read: .claude/skills/glp1-trials/scripts/get_glp1_trials.py
 ↓
-Apply: Same pagination pattern for ADC search
+Apply: Same pagination pattern, change query to "EGFR inhibitor"
 ↓
-Result: Complete dataset (all trials, not partial)
-```
-
-**Example 2: FDA Drug Search**
-```
-Query: "Get KRAS inhibitor FDA drugs"
-↓
-Check: ls .claude/skills/get_*_fda_drugs.py
-↓
-Found: get_glp1_fda_drugs.py (JSON parsing + deduplication)
-↓
-Read: get_glp1_fda_drugs.py (see structure)
-↓
-Apply: Same patterns for KRAS drug search
-↓
-Result: Consistent structure across all drug searches
+Result: Complete dataset with proven pagination
 ```
 
-**When to Use Pattern Discovery**:
-- ✅ Creating CT.gov trial search → Read `get_glp1_trials.py` first
-- ✅ Creating FDA drug search → Read `get_glp1_fda_drugs.py` first
-- ✅ Creating any similar query → Check for existing implementations
-- ⚠️ Novel query type → Read MCP tool guides + code examples only
+**Example 2: CREATE Strategy with Reference**
+```
+Query: "Get Abbott segment financials"
+↓
+Step 1: strategy.py determines CREATE
+↓
+Strategy returns: Reference pattern = get_company_segment_geographic_financials.py
+↓
+Strategy note: "Skill already exists! Execute with --company Abbott"
+↓
+Execute existing skill (REUSE mode triggered)
+↓
+Result: No new skill created, existing parameterized skill used
+```
 
-### Step 4: Generate and Execute Python Code
+**Pattern Selection is Automated**:
+- ✅ Strategy system finds best reference automatically
+- ✅ Semantic matching identifies similar patterns
+- ✅ Health checks ensure reference is working
+- ✅ No manual searching for similar skills needed
+
+### Step 5: Generate and Execute Python Code
 
 Follow the pattern from the code example you read.
 
@@ -331,11 +435,6 @@ Single server or multi-server?
 
 ## Token Efficiency
 
-**Old approach** (all examples in prompt):
-- Load 15+ examples always = ~10,000 tokens
-- Only 1-2 relevant per query
-- 85% waste
-
 **Progressive disclosure**:
 - Load 0 examples by default
 - Read 1-2 relevant examples = ~1,500 tokens
@@ -382,12 +481,12 @@ New Requirements:
 
 ### How to Use Reference Skills
 
-**Step 1: Read the Reference**
+**Step 2: Read the Reference**
 ```python
 Read(".claude/skills/glp1-trials/scripts/get_glp1_trials.py")
 ```
 
-**Step 2: Identify Patterns to Reuse**
+**Step 3: Identify Patterns to Reuse**
 
 Look for these proven patterns in the reference:
 
@@ -415,7 +514,7 @@ Look for these proven patterns in the reference:
    - `{'total_count': int, 'data': list, 'summary': dict}`
    - Consistent structure across skills
 
-**Step 3: Adapt for New Requirements**
+**Step 4: Adapt for New Requirements**
 
 Modify only what's necessary:
 - ✅ Change query parameters (therapeutic area, intervention, etc.)
@@ -433,7 +532,7 @@ result = search(intervention="GLP-1", pageSize=1000, pageToken=page_token)
 result = search(intervention="EGFR inhibitor", pageSize=1000, pageToken=page_token)
 ```
 
-**Step 4: Verify Patterns Were Reused**
+**Step 5: Verify Patterns Were Reused**
 
 After generating code, confirm:
 - ✅ Pagination logic matches reference structure
@@ -479,10 +578,10 @@ Your adapted skill should maintain these qualities!
 
 After executing Python code via Bash tool, you MUST run verification checks:
 
-**Step 1: Capture Execution Results**
+**Step 2: Capture Execution Results**
 Save both the Bash output and the Python script output for verification.
 
-**Step 2: Run Verification Checks**
+**Step 3: Run Verification Checks**
 ```bash
 python3 .claude/tools/verification/verify_skill.py \
   --bash-output "$(bash tool output)" \
@@ -492,12 +591,12 @@ python3 .claude/tools/verification/verify_skill.py \
   --json
 ```
 
-**Step 3: Evaluate Results**
+**Step 4: Evaluate Results**
 Parse the JSON output to check `all_passed` field:
-- If `true`: Proceed to Step 4 (return skill code)
+- If `true`: Proceed to Step 5 (return skill code)
 - If `false`: Enter self-correction loop (see below)
 
-**Step 4: Return Verified Result**
+**Step 5: Return Verified Result**
 Only after ALL checks pass, return skill code in folder format to main agent.
 
 ### Verification Criteria
