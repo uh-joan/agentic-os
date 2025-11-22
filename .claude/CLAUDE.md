@@ -483,6 +483,90 @@ data_sources:
 
 ## Metadata-Driven Pattern (Layer 2: Main Agent Orchestration)
 
+### Step 0: Pre-Flight Skill Discovery (MANDATORY for Data Queries)
+
+**Before invoking pharma-search-specialist or collecting data**, run intelligent strategy check to avoid duplicate skill creation.
+
+#### For Direct Data Queries
+
+When user asks for data (not strategic analysis):
+- "Get Abbott segment financials"
+- "Find EGFR inhibitor trials"
+- "Get GLP-1 FDA approved drugs"
+
+**MANDATORY workflow**:
+
+1. **Infer skill name from query**:
+```python
+# Generic patterns (parameterized):
+"Get {company} financials" → skill_name = "company_segment_geographic_financials"
+"Get {drug} trials" → skill_name = "{drug_slug}_trials"
+
+# Specific patterns:
+"Get GLP-1 trials" → skill_name = "glp1_trials"
+```
+
+2. **Run strategy check**:
+```bash
+python3 .claude/tools/skill_discovery/strategy.py \
+  --skill-name '{inferred_skill_name}' \
+  --query '{user_query}' \
+  --servers {comma_separated_servers} \
+  --json
+```
+
+3. **Parse strategy result and act**:
+
+**REUSE Strategy** (skill exists and is healthy):
+```python
+# Execute existing skill directly
+Bash(f"PYTHONPATH=.claude:$PYTHONPATH python3 {strategy['skill']['script']}")
+
+# Parse and return results to user
+# DO NOT invoke pharma-search-specialist
+# Skill already exists - no new code needed!
+```
+
+**ADAPT/CREATE Strategy** (needs new skill):
+```python
+# Invoke pharma-search-specialist WITH strategy context
+Task(
+    subagent_type='pharma-search-specialist',
+    prompt=f"""Strategy decision: {strategy['strategy']}
+
+    {f"Reference skill: {strategy['reference']['script']}" if 'reference' in strategy else ""}
+    {f"Patterns to reuse: {strategy['reference']['patterns_demonstrated']}" if 'reference' in strategy else ""}
+
+    User Query: {user_query}
+
+    {strategy.get('reason', '')}
+    """
+)
+```
+
+**Benefits**:
+- ✅ **Zero duplication**: Existing skills reused automatically
+- ✅ **80% faster**: Skip agent invocation when skill exists
+- ✅ **Consistency**: Parameterized skills handle variations
+- ✅ **Quality**: Reference skills validated by strategy system
+
+**Example Flow**:
+```
+User: "Get Abbott segment and geographic financials"
+↓
+Step 0: Infer skill name = "company_segment_geographic_financials"
+↓
+Run strategy.py: Returns REUSE + existing skill path
+↓
+Execute: python3 .claude/skills/company-segment-geographic-financials/scripts/get_company_segment_geographic_financials.py
+↓
+Return results to user
+↓
+Result: No pharma-search-specialist invoked, no duplicate created!
+```
+
+#### For Strategic Agent Invocations
+
 When user invokes strategic agent (`@agent-competitive-landscape-analyst`):
 
 ### Step 1: Read Agent Metadata
