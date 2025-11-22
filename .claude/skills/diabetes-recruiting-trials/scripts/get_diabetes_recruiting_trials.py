@@ -1,102 +1,80 @@
 import sys
+import re
 sys.path.insert(0, ".claude")
 from mcp.servers.ct_gov_mcp import search
-import re
 
 def get_diabetes_recruiting_trials():
-    """Get all recruiting diabetes clinical trials.
-
-    Returns:
-        dict: Contains total_count, trials data, and summary with:
-            - total_recruiting_trials: Total number of trials found
-            - pages_fetched: Number of pages retrieved
-            - phase_distribution: Breakdown by trial phase
-            - intervention_types: Breakdown by intervention type
-    """
+    """Get all recruiting diabetes clinical trials with categorization."""
     all_trials = []
     page_token = None
     page_count = 0
-
-    print("Collecting diabetes recruiting trials...")
-
+    
+    phase_counts = {}
+    diabetes_type_counts = {'Type 1': 0, 'Type 2': 0, 'Gestational': 0, 'Other/Unspecified': 0}
+    
     while True:
         page_count += 1
-        print(f"Fetching page {page_count}...")
-
-        # Query CT.gov for diabetes recruiting trials
         if page_token:
-            result = search(
-                query="diabetes",
-                filter_overallStatus="RECRUITING",
-                pageSize=1000,
-                pageToken=page_token
-            )
+            result = search(query="diabetes", recruitmentStatus="RECRUITING", pageSize=1000, pageToken=page_token)
         else:
-            result = search(
-                query="diabetes",
-                filter_overallStatus="RECRUITING",
-                pageSize=1000
-            )
-
-        # CT.gov returns markdown - parse trials
-        trials = re.split(r'###\s+\d+\.\s+NCT\d{8}', result)
-        trials = [t.strip() for t in trials if t.strip()]
-
-        all_trials.extend(trials)
-
-        # Check for next page token
-        token_match = re.search(r'pageToken:\s*"([^"]+)"', result)
-        if token_match:
-            page_token = token_match.group(1)
-            print(f"Found page token, continuing...")
+            result = search(query="diabetes", recruitmentStatus="RECRUITING", pageSize=1000)
+        
+        if not result or not isinstance(result, str):
+            break
+            
+        trials = re.split(r'###\s+\d+\.\s+NCT\d{8}', result)[1:]
+        
+        for trial_text in trials:
+            trial_data = {}
+            
+            nct_match = re.search(r'NCT\d{8}', trial_text)
+            if nct_match:
+                trial_data['nct_id'] = nct_match.group(0)
+            
+            phase_match = re.search(r'\*\*Phase:\*\*\s*(.+?)(?:\n|$)', trial_text)
+            if phase_match:
+                phase = phase_match.group(1).strip()
+                trial_data['phase'] = phase
+                phase_counts[phase] = phase_counts.get(phase, 0) + 1
+            else:
+                trial_data['phase'] = 'Not Specified'
+                phase_counts['Not Specified'] = phase_counts.get('Not Specified', 0) + 1
+            
+            conditions_match = re.search(r'\*\*Conditions:\*\*\s*(.+?)(?:\n|$)', trial_text)
+            if conditions_match:
+                conditions = conditions_match.group(1).strip()
+                conditions_lower = conditions.lower()
+                
+                if 'type 1' in conditions_lower or 't1d' in conditions_lower:
+                    diabetes_type_counts['Type 1'] += 1
+                    trial_data['diabetes_type'] = 'Type 1'
+                elif 'type 2' in conditions_lower or 't2d' in conditions_lower:
+                    diabetes_type_counts['Type 2'] += 1
+                    trial_data['diabetes_type'] = 'Type 2'
+                elif 'gestational' in conditions_lower or 'gdm' in conditions_lower:
+                    diabetes_type_counts['Gestational'] += 1
+                    trial_data['diabetes_type'] = 'Gestational'
+                else:
+                    diabetes_type_counts['Other/Unspecified'] += 1
+                    trial_data['diabetes_type'] = 'Other/Unspecified'
+            
+            all_trials.append(trial_data)
+        
+        next_token_match = re.search(r'nextPageToken:\s*"([^"]+)"', result)
+        if next_token_match and len(trials) > 0:
+            page_token = next_token_match.group(1)
         else:
             break
-
-    total_count = len(all_trials)
-
-    # Extract phases and interventions for summary
-    phases = {}
-    interventions = {}
-
-    for trial in all_trials:
-        # Extract phase
-        phase_match = re.search(r'\*\*Phase:\*\*\s*(.+?)(?:\n|$)', trial)
-        if phase_match:
-            phase = phase_match.group(1).strip()
-            phases[phase] = phases.get(phase, 0) + 1
-
-        # Extract intervention type
-        intervention_match = re.search(r'\*\*Intervention Type:\*\*\s*(.+?)(?:\n|$)', trial)
-        if intervention_match:
-            intervention = intervention_match.group(1).strip()
-            interventions[intervention] = interventions.get(intervention, 0) + 1
-
-    # Sort by count
-    phases_sorted = sorted(phases.items(), key=lambda x: x[1], reverse=True)
-    interventions_sorted = sorted(interventions.items(), key=lambda x: x[1], reverse=True)
-
-    summary = {
-        'total_recruiting_trials': total_count,
-        'pages_fetched': page_count,
-        'phase_distribution': dict(phases_sorted),
-        'intervention_types': dict(interventions_sorted[:10])  # Top 10
-    }
-
+    
     return {
-        'total_count': total_count,
-        'data': all_trials,
-        'summary': summary
+        'total_count': len(all_trials),
+        'pages_retrieved': page_count,
+        'trials': all_trials,
+        'phase_distribution': dict(sorted(phase_counts.items(), key=lambda x: x[1], reverse=True)),
+        'diabetes_type_distribution': dict(sorted(diabetes_type_counts.items(), key=lambda x: x[1], reverse=True))
     }
 
 if __name__ == "__main__":
     result = get_diabetes_recruiting_trials()
-    print(f"\n{'='*60}")
-    print(f"Total recruiting diabetes trials: {result['total_count']}")
-    print(f"Pages fetched: {result['summary']['pages_fetched']}")
-    print(f"\nPhase Distribution:")
-    for phase, count in result['summary']['phase_distribution'].items():
-        print(f"  {phase}: {count}")
-    print(f"\nTop Intervention Types:")
-    for intervention, count in list(result['summary']['intervention_types'].items())[:5]:
-        print(f"  {intervention}: {count}")
-    print(f"{'='*60}\n")
+    print(f"\nDiabetes Recruiting Trials: {result['total_count']:,} trials, {result['pages_retrieved']} pages")
+    print(f"Type distribution: {result['diabetes_type_distribution']}")

@@ -1,14 +1,14 @@
 {
   "version": "2.0",
   "format": "folder-structure",
-  "last_updated": "2025-11-21",
+  "last_updated": "2025-11-22",
   "description": "Skills library index for pattern discovery and reuse - Anthropic folder structure format",
   "usage": "Agent reads this to discover similar skills before creating new ones. Enables evolutionary skill development where new skills build on proven patterns from existing implementations.",
   "migration_status": {
     "phase": "4-migration-complete",
     "all_skills_have_frontmatter": true,
     "structure": "folder",
-    "folder_skills_count": 17,
+    "folder_skills_count": 68,
     "flat_skills_count": 0,
     "deprecated_flat_count": 11,
     "note": "All skills migrated to folder structure. Flat files kept for 30-day backward compatibility period."
@@ -124,23 +124,16 @@
       "skill_md": "glp1-diabetes-drugs/SKILL.md",
       "script": "glp1-diabetes-drugs/scripts/get_glp1_diabetes_drugs.py",
       "has_frontmatter": true,
-      "description": "Get GLP-1 drugs specifically for diabetes indication",
+      "description": "",
       "function_signature": "get_glp1_diabetes_drugs() -> dict",
       "servers_used": [
         "fda_mcp"
       ],
       "patterns_demonstrated": [
-        "fda_json_parsing",
-        "indication_filtering"
+        "json_parsing"
       ],
-      "category": "drug-discovery",
-      "complexity": "simple",
-      "deprecated_flat_files": {
-        "py": "get_glp1_diabetes_drugs.py",
-        "md": "get_glp1_diabetes_drugs.md",
-        "status": "deprecated",
-        "removal_date": "2025-12-19"
-      }
+      "category": "testing",
+      "complexity": "simple"
     },
     {
       "name": "get_covid19_vaccine_trials_recruiting",
@@ -174,23 +167,16 @@
       "skill_md": "phase2-alzheimers-trials-us/SKILL.md",
       "script": "phase2-alzheimers-trials-us/scripts/get_phase2_alzheimers_trials_us.py",
       "has_frontmatter": true,
-      "description": "Get Phase 2 Alzheimer's trials in the United States",
+      "description": "",
       "function_signature": "get_phase2_alzheimers_trials_us() -> dict",
       "servers_used": [
         "ct_gov_mcp"
       ],
       "patterns_demonstrated": [
-        "ct_gov_phase_filtering",
-        "geographic_filtering"
+        "pagination"
       ],
-      "category": "clinical-trials",
-      "complexity": "simple",
-      "deprecated_flat_files": {
-        "py": "get_phase2_alzheimers_trials_us.py",
-        "md": "get_phase2_alzheimers_trials_us.md",
-        "status": "deprecated",
-        "removal_date": "2025-12-19"
-      }
+      "category": "testing",
+      "complexity": "simple"
     },
     {
       "name": "get_us_phase3_obesity_recruiting_trials",
@@ -199,23 +185,17 @@
       "skill_md": "us-phase3-obesity-recruiting-trials/SKILL.md",
       "script": "us-phase3-obesity-recruiting-trials/scripts/get_us_phase3_obesity_recruiting_trials.py",
       "has_frontmatter": true,
-      "description": "Get Phase 3 obesity trials recruiting in the US",
+      "description": "",
       "function_signature": "get_us_phase3_obesity_recruiting_trials() -> dict",
       "servers_used": [
         "ct_gov_mcp"
       ],
       "patterns_demonstrated": [
-        "ct_gov_multi_filter",
-        "phase_status_location_filtering"
+        "pagination",
+        "markdown_parsing"
       ],
-      "category": "clinical-trials",
-      "complexity": "simple",
-      "deprecated_flat_files": {
-        "py": "get_us_phase3_obesity_recruiting_trials.py",
-        "md": "get_us_phase3_obesity_recruiting_trials.md",
-        "status": "deprecated",
-        "removal_date": "2025-12-19"
-      }
+      "category": "testing",
+      "complexity": "simple"
     },
     {
       "name": "get_adc_trials",
@@ -250,23 +230,18 @@
       "skill_md": "braf-inhibitor-trials/SKILL.md",
       "script": "braf-inhibitor-trials/scripts/get_braf_inhibitor_trials.py",
       "has_frontmatter": true,
-      "description": "Get BRAF inhibitor clinical trials",
+      "description": "",
       "function_signature": "get_braf_inhibitor_trials() -> dict",
       "servers_used": [
         "ct_gov_mcp"
       ],
       "patterns_demonstrated": [
-        "basic_ct_gov_search",
-        "markdown_response_parsing"
+        "pagination",
+        "markdown_parsing",
+        "phase_distribution"
       ],
       "category": "clinical-trials",
-      "complexity": "simple",
-      "deprecated_flat_files": {
-        "py": "get_braf_inhibitor_trials.py",
-        "md": "get_braf_inhibitor_trials.md",
-        "status": "deprecated",
-        "removal_date": "2025-12-19"
-      }
+      "complexity": "medium"
     },
     {
       "name": "get_braf_inhibitor_fda_drugs",
@@ -275,23 +250,16 @@
       "skill_md": "braf-inhibitor-fda-drugs/SKILL.md",
       "script": "braf-inhibitor-fda-drugs/scripts/get_braf_inhibitor_fda_drugs.py",
       "has_frontmatter": true,
-      "description": "Get FDA approved BRAF inhibitor drugs",
+      "description": "",
       "function_signature": "get_braf_inhibitor_fda_drugs() -> dict",
       "servers_used": [
         "fda_mcp"
       ],
       "patterns_demonstrated": [
-        "fda_json_parsing",
-        "drug_metadata_extraction"
+        "json_parsing"
       ],
-      "category": "drug-discovery",
-      "complexity": "simple",
-      "deprecated_flat_files": {
-        "py": "get_braf_inhibitor_fda_drugs.py",
-        "md": "get_braf_inhibitor_fda_drugs.md",
-        "status": "deprecated",
-        "removal_date": "2025-12-19"
-      }
+      "category": "testing",
+      "complexity": "simple"
     },
     {
       "name": "get_egfr_inhibitor_trials",
@@ -300,7 +268,7 @@
       "skill_md": "egfr-inhibitor-trials/SKILL.md",
       "script": "egfr-inhibitor-trials/scripts/get_egfr_inhibitor_trials.py",
       "has_frontmatter": true,
-      "description": "Get comprehensive EGFR inhibitor clinical trials data across all phases",
+      "description": "",
       "function_signature": "get_egfr_inhibitor_trials() -> dict",
       "servers_used": [
         "ct_gov_mcp"
@@ -308,6 +276,7 @@
       "patterns_demonstrated": [
         "pagination",
         "markdown_parsing",
+        "phase_distribution",
         "status_aggregation"
       ],
       "category": "clinical-trials",
@@ -327,11 +296,10 @@
       ],
       "patterns_demonstrated": [
         "json_parsing",
-        "deduplication",
-        "product_type_aggregation"
+        "deduplication"
       ],
       "category": "drug-discovery",
-      "complexity": "simple"
+      "complexity": "medium"
     },
     {
       "name": "get_crispr_2024_papers",
@@ -347,11 +315,10 @@
       ],
       "patterns_demonstrated": [
         "json_parsing",
-        "date_filtering",
-        "metadata_extraction"
+        "date_filtering"
       ],
-      "category": "target-validation",
-      "complexity": "simple"
+      "category": "literature",
+      "complexity": "medium"
     },
     {
       "name": "get_disease_genetic_targets",
@@ -394,6 +361,1056 @@
       ],
       "category": "financial",
       "complexity": "complex"
+    },
+    {
+      "name": "get_company_segment_geographic_financials",
+      "structure": "folder",
+      "folder": "company-segment-geographic-financials",
+      "skill_md": "company-segment-geographic-financials/SKILL.md",
+      "script": "company-segment-geographic-financials/scripts/get_company_segment_geographic_financials.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_company_segment_geographic_financials() -> dict",
+      "servers_used": [
+        "sec_edgar_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing"
+      ],
+      "category": "testing",
+      "complexity": "simple"
+    },
+    {
+      "name": "get_glp1_obesity_phase3_recruiting_trials",
+      "structure": "folder",
+      "folder": "glp1-obesity-phase3-recruiting-trials",
+      "skill_md": "glp1-obesity-phase3-recruiting-trials/SKILL.md",
+      "script": "glp1-obesity-phase3-recruiting-trials/scripts/get_glp1_obesity_phase3_recruiting_trials.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_glp1_obesity_phase3_recruiting_trials() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "status_filtering",
+        "geographic_filtering"
+      ],
+      "category": "clinical-trials",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_cart_bcell_malignancies_trials",
+      "structure": "folder",
+      "folder": "cart-bcell-malignancies-trials",
+      "skill_md": "cart-bcell-malignancies-trials/SKILL.md",
+      "script": "cart-bcell-malignancies-trials/scripts/get_cart_bcell_malignancies_trials.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_cart_bcell_malignancies_trials() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "status_filtering",
+        "target_identification"
+      ],
+      "category": "clinical-trials",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_aspirin_properties",
+      "structure": "folder",
+      "folder": "aspirin-properties",
+      "skill_md": "aspirin-properties/SKILL.md",
+      "script": "aspirin-properties/scripts/get_aspirin_properties.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_aspirin_properties() -> dict",
+      "servers_used": [
+        "pubchem_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "compound_lookup"
+      ],
+      "category": "drug-discovery",
+      "complexity": "simple"
+    },
+    {
+      "name": "get_cart_manufacturing_patents",
+      "structure": "folder",
+      "folder": "cart-manufacturing-patents",
+      "skill_md": "cart-manufacturing-patents/SKILL.md",
+      "script": "cart-manufacturing-patents/scripts/get_cart_manufacturing_patents.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_cart_manufacturing_patents() -> dict",
+      "servers_used": [
+        "uspto_patents_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "technology_analysis",
+        "assignee_aggregation"
+      ],
+      "category": "intellectual-property",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_crispr_ip_landscape",
+      "structure": "folder",
+      "folder": "crispr-ip-landscape",
+      "skill_md": "crispr-ip-landscape/SKILL.md",
+      "script": "crispr-ip-landscape/scripts/get_crispr_ip_landscape.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_crispr_ip_landscape() -> dict",
+      "servers_used": [
+        "uspto_patents_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_term_search",
+        "assignee_categorization",
+        "patent_family_detection",
+        "geographic_mapping"
+      ],
+      "category": "intellectual-property",
+      "complexity": "complex"
+    },
+    {
+      "name": "get_glp1_agonist_properties",
+      "structure": "folder",
+      "folder": "glp1-agonist-properties",
+      "skill_md": "glp1-agonist-properties/SKILL.md",
+      "script": "glp1-agonist-properties/scripts/get_glp1_agonist_properties.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_glp1_agonist_properties() -> dict",
+      "servers_used": [
+        "pubchem_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "comparative_analysis",
+        "property_extraction"
+      ],
+      "category": "drug-discovery",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_oncology_trials_geographic_comparison",
+      "structure": "folder",
+      "folder": "oncology-trials-geographic-comparison",
+      "skill_md": "oncology-trials-geographic-comparison/SKILL.md",
+      "script": "oncology-trials-geographic-comparison/scripts/get_oncology_trials_geographic_comparison.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_oncology_trials_geographic_comparison() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "multi_query_comparison",
+        "geographic_analysis",
+        "sponsor_analysis"
+      ],
+      "category": "clinical-trials",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_breakthrough_therapy_designations_2024",
+      "structure": "folder",
+      "folder": "breakthrough-therapy-designations-2024",
+      "skill_md": "breakthrough-therapy-designations-2024/SKILL.md",
+      "script": "breakthrough-therapy-designations-2024/scripts/get_breakthrough_therapy_designations_2024.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_breakthrough_therapy_designations_2024() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "data_filtering",
+        "temporal_query"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_kras_inhibitor_scaffold_analysis",
+      "structure": "folder",
+      "folder": "kras-inhibitor-scaffold-analysis",
+      "skill_md": "kras-inhibitor-scaffold-analysis/SKILL.md",
+      "script": "kras-inhibitor-scaffold-analysis/scripts/get_kras_inhibitor_scaffold_analysis.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_kras_inhibitor_scaffold_analysis() -> dict",
+      "servers_used": [
+        "pubchem_mcp"
+      ],
+      "patterns_demonstrated": [
+        "similarity_search",
+        "tanimoto_coefficient",
+        "structural_analysis"
+      ],
+      "category": "chemistry",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_checkpoint_inhibitor_prescribers",
+      "structure": "folder",
+      "folder": "checkpoint-inhibitor-prescribers",
+      "skill_md": "checkpoint-inhibitor-prescribers/SKILL.md",
+      "script": "checkpoint-inhibitor-prescribers/scripts/get_checkpoint_inhibitor_prescribers.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_checkpoint_inhibitor_prescribers() -> dict",
+      "servers_used": [
+        "healthcare_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "data_aggregation",
+        "institutional_analysis"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_biotech_ma_deals_over_1b",
+      "structure": "folder",
+      "folder": "biotech-ma-deals-over-1b",
+      "skill_md": "biotech-ma-deals-over-1b/SKILL.md",
+      "script": "biotech-ma-deals-over-1b/scripts/get_biotech_ma_deals_over_1b.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_biotech_ma_deals_over_1b() -> dict",
+      "servers_used": [
+        "financials_mcp",
+        "sec_edgar_mcp"
+      ],
+      "patterns_demonstrated": [
+        "curated_dataset",
+        "therapeutic_area_analysis",
+        "platform_technology_trends"
+      ],
+      "category": "financial",
+      "complexity": "low"
+    },
+    {
+      "name": "get_checkpoint_inhibitor_combinations",
+      "structure": "folder",
+      "folder": "checkpoint-inhibitor-combinations",
+      "skill_md": "checkpoint-inhibitor-combinations/SKILL.md",
+      "script": "checkpoint-inhibitor-combinations/scripts/get_checkpoint_inhibitor_combinations.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_checkpoint_inhibitor_combinations() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "combination_analysis"
+      ],
+      "category": "clinical-trials",
+      "complexity": "high"
+    },
+    {
+      "name": "get_orphan_neurological_drugs_approvals",
+      "structure": "folder",
+      "folder": "orphan-neurological-drugs-approvals",
+      "skill_md": "orphan-neurological-drugs-approvals/SKILL.md",
+      "script": "orphan-neurological-drugs-approvals/scripts/get_orphan_neurological_drugs_approvals.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_orphan_neurological_drugs_approvals() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "temporal_filtering"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_adc_approved_drugs",
+      "structure": "folder",
+      "folder": "adc-approved-drugs",
+      "skill_md": "adc-approved-drugs/SKILL.md",
+      "script": "adc-approved-drugs/scripts/get_adc_approved_drugs.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_adc_approved_drugs() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "fda_json_parsing",
+        "regex_pattern_matching"
+      ],
+      "category": "drug-discovery",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_anti_amyloid_antibody_publications",
+      "structure": "folder",
+      "folder": "anti-amyloid-antibody-publications",
+      "skill_md": "anti-amyloid-antibody-publications/SKILL.md",
+      "script": "anti-amyloid-antibody-publications/scripts/get_anti_amyloid_antibody_publications.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_anti_amyloid_antibody_publications() -> dict",
+      "servers_used": [
+        "pubmed_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "topic_categorization"
+      ],
+      "category": "drug-discovery",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_checkpoint_inhibitor_rwe_studies",
+      "structure": "folder",
+      "folder": "checkpoint-inhibitor-rwe-studies",
+      "skill_md": "checkpoint-inhibitor-rwe-studies/SKILL.md",
+      "script": "checkpoint-inhibitor-rwe-studies/scripts/get_checkpoint_inhibitor_rwe_studies.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_checkpoint_inhibitor_rwe_studies() -> dict",
+      "servers_used": [
+        "pubmed_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "text_analysis",
+        "study_classification"
+      ],
+      "category": "scientific-literature",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_alzheimers_therapeutic_targets",
+      "structure": "folder",
+      "folder": "alzheimers-therapeutic-targets",
+      "skill_md": "alzheimers-therapeutic-targets/SKILL.md",
+      "script": "alzheimers-therapeutic-targets/scripts/get_alzheimers_therapeutic_targets.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_alzheimers_therapeutic_targets() -> dict",
+      "servers_used": [
+        "opentargets_mcp"
+      ],
+      "patterns_demonstrated": [
+        "disease_association_query"
+      ],
+      "category": "target-validation",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_us_china_oncology_trial_comparison",
+      "structure": "folder",
+      "folder": "us-china-oncology-trial-comparison",
+      "skill_md": "us-china-oncology-trial-comparison/SKILL.md",
+      "script": "us-china-oncology-trial-comparison/scripts/get_us_china_oncology_trial_comparison.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_us_china_oncology_trial_comparison() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "geographic_filtering",
+        "comparative_analysis"
+      ],
+      "category": "clinical-trials",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_semaglutide_adverse_events",
+      "structure": "folder",
+      "folder": "semaglutide-adverse-events",
+      "skill_md": "semaglutide-adverse-events/SKILL.md",
+      "script": "semaglutide-adverse-events/scripts/get_semaglutide_adverse_events.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_semaglutide_adverse_events() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "aggregation",
+        "demographic_analysis"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_crispr_sickle_cell_publications",
+      "structure": "folder",
+      "folder": "crispr-sickle-cell-publications",
+      "skill_md": "crispr-sickle-cell-publications/SKILL.md",
+      "script": "crispr-sickle-cell-publications/scripts/get_crispr_sickle_cell_publications.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_crispr_sickle_cell_publications() -> dict",
+      "servers_used": [
+        "pubmed_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pubmed_search",
+        "json_parsing",
+        "trend_analysis",
+        "keyword_extraction"
+      ],
+      "category": "scientific-literature",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_metabolic_trial_endpoints",
+      "structure": "folder",
+      "folder": "metabolic-trial-endpoints",
+      "skill_md": "metabolic-trial-endpoints/SKILL.md",
+      "script": "metabolic-trial-endpoints/scripts/get_metabolic_trial_endpoints.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_metabolic_trial_endpoints() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "temporal_filtering",
+        "endpoint_categorization"
+      ],
+      "category": "clinical-trials",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_cart_adverse_events_comparison",
+      "structure": "folder",
+      "folder": "cart-adverse-events-comparison",
+      "skill_md": "cart-adverse-events-comparison/SKILL.md",
+      "script": "cart-adverse-events-comparison/scripts/get_cart_adverse_events_comparison.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_cart_adverse_events_comparison() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "multi_product_comparison",
+        "adverse_event_analysis"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_glp1_response_biomarkers",
+      "structure": "folder",
+      "folder": "glp1-response-biomarkers",
+      "skill_md": "glp1-response-biomarkers/SKILL.md",
+      "script": "glp1-response-biomarkers/scripts/get_glp1_response_biomarkers.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_glp1_response_biomarkers() -> dict",
+      "servers_used": [
+        "pubmed_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "categorical_analysis",
+        "literature_synthesis"
+      ],
+      "category": "drug-discovery",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_oncology_recalls_2024",
+      "structure": "folder",
+      "folder": "oncology-recalls-2024",
+      "skill_md": "oncology-recalls-2024/SKILL.md",
+      "script": "oncology-recalls-2024/scripts/get_oncology_recalls_2024.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_oncology_recalls_2024() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "data_aggregation",
+        "classification_analysis"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_cancer_immunotherapy_targets",
+      "structure": "folder",
+      "folder": "cancer-immunotherapy-targets",
+      "skill_md": "cancer-immunotherapy-targets/SKILL.md",
+      "script": "cancer-immunotherapy-targets/scripts/get_cancer_immunotherapy_targets.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_cancer_immunotherapy_targets() -> dict",
+      "servers_used": [
+        "opentargets_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_term_search",
+        "json_parsing",
+        "deduplication",
+        "prioritization"
+      ],
+      "category": "target-validation",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_ultra_rare_metabolic_targets",
+      "structure": "folder",
+      "folder": "ultra-rare-metabolic-targets",
+      "skill_md": "ultra-rare-metabolic-targets/SKILL.md",
+      "script": "ultra-rare-metabolic-targets/scripts/get_ultra_rare_metabolic_targets.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_ultra_rare_metabolic_targets() -> dict",
+      "servers_used": [
+        "opentargets_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_query_aggregation",
+        "json_parsing",
+        "data_aggregation",
+        "filtering",
+        "druggability_assessment"
+      ],
+      "category": "target-validation",
+      "complexity": "complex"
+    },
+    {
+      "name": "get_glp1_obesity_patents",
+      "structure": "folder",
+      "folder": "glp1-obesity-patents",
+      "skill_md": "glp1-obesity-patents/SKILL.md",
+      "script": "glp1-obesity-patents/scripts/get_glp1_obesity_patents.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_glp1_obesity_patents() -> dict",
+      "servers_used": [
+        "uspto_patents_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "data_aggregation",
+        "trend_analysis"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_glp1_agonist_molecular_properties",
+      "structure": "folder",
+      "folder": "glp1-agonist-molecular-properties",
+      "skill_md": "glp1-agonist-molecular-properties/SKILL.md",
+      "script": "glp1-agonist-molecular-properties/scripts/get_glp1_agonist_molecular_properties.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_glp1_agonist_molecular_properties() -> dict",
+      "servers_used": [
+        "pubchem_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "property_aggregation",
+        "comparative_analysis"
+      ],
+      "category": "drug-discovery",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_sotorasib_similar_compounds_kras_binding",
+      "structure": "folder",
+      "folder": "sotorasib-similar-compounds-kras-binding",
+      "skill_md": "sotorasib-similar-compounds-kras-binding/SKILL.md",
+      "script": "sotorasib-similar-compounds-kras-binding/scripts/get_sotorasib_similar_compounds_kras_binding.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_sotorasib_similar_compounds_kras_binding() -> dict",
+      "servers_used": [
+        "pubchem_mcp",
+        "opentargets_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query",
+        "json_parsing",
+        "similarity_analysis"
+      ],
+      "category": "drug-discovery",
+      "complexity": "high"
+    },
+    {
+      "name": "get_anti_amyloid_publications",
+      "structure": "folder",
+      "folder": "anti-amyloid-antibody-publications",
+      "skill_md": "anti-amyloid-antibody-publications/SKILL.md",
+      "script": "anti-amyloid-antibody-publications/scripts/get_anti_amyloid_publications.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_anti_amyloid_publications() -> dict",
+      "servers_used": [
+        "pubmed_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "json_parsing",
+        "text_analysis",
+        "institution_extraction"
+      ],
+      "category": "scientific-literature",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_checkpoint_inhibitor_combination_therapies",
+      "structure": "folder",
+      "folder": "checkpoint-inhibitor-combination-therapies",
+      "skill_md": "checkpoint-inhibitor-combination-therapies/SKILL.md",
+      "script": "checkpoint-inhibitor-combination-therapies/scripts/get_checkpoint_inhibitor_combination_therapies.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_checkpoint_inhibitor_combination_therapies() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "pattern_analysis",
+        "intervention_classification"
+      ],
+      "category": "clinical-trials",
+      "complexity": "complex"
+    },
+    {
+      "name": "get_2024_breakthrough_therapy_drugs",
+      "structure": "folder",
+      "folder": "2024-breakthrough-therapy-drugs",
+      "skill_md": "2024-breakthrough-therapy-drugs/SKILL.md",
+      "script": "2024-breakthrough-therapy-drugs/scripts/get_2024_breakthrough_therapy_drugs.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_2024_breakthrough_therapy_drugs() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "timeline_analysis",
+        "therapeutic_area_aggregation"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_orphan_neurological_drugs",
+      "structure": "folder",
+      "folder": "orphan-neurological-drugs",
+      "skill_md": "orphan-neurological-drugs/SKILL.md",
+      "script": "orphan-neurological-drugs/scripts/get_orphan_neurological_drugs.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_orphan_neurological_drugs() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "date_filtering",
+        "deduplication",
+        "multi_query_aggregation"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_alzheimers_genetic_targets",
+      "structure": "folder",
+      "folder": "alzheimers-genetic-targets",
+      "skill_md": "alzheimers-genetic-targets/SKILL.md",
+      "script": "alzheimers-genetic-targets/scripts/get_alzheimers_genetic_targets.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_alzheimers_genetic_targets() -> dict",
+      "servers_used": [
+        "opentargets_mcp"
+      ],
+      "patterns_demonstrated": [
+        "disease_search",
+        "target_association",
+        "evidence_aggregation",
+        "json_parsing"
+      ],
+      "category": "target-validation",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_diabetes_icd10_codes",
+      "structure": "folder",
+      "folder": "diabetes-icd10-codes",
+      "skill_md": "diabetes-icd10-codes/SKILL.md",
+      "script": "diabetes-icd10-codes/scripts/get_diabetes_icd10_codes.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_diabetes_icd10_codes() -> dict",
+      "servers_used": [
+        "nlm_codes_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "categorization",
+        "code_classification"
+      ],
+      "category": "regulatory",
+      "complexity": "simple"
+    },
+    {
+      "name": "get_cvd_disease_burden",
+      "structure": "folder",
+      "folder": "cvd-disease-burden",
+      "skill_md": "cvd-disease-burden/SKILL.md",
+      "script": "cvd-disease-burden/scripts/get_cvd_disease_burden.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_cvd_disease_burden() -> dict",
+      "servers_used": [
+        "who_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "multi_term_search",
+        "data_aggregation"
+      ],
+      "category": "regulatory",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_aspirin_pubchem_data",
+      "structure": "folder",
+      "folder": "aspirin-properties",
+      "skill_md": "aspirin-properties/SKILL.md",
+      "script": "aspirin-properties/scripts/get_aspirin_pubchem_data.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_aspirin_pubchem_data() -> dict",
+      "servers_used": [
+        "pubchem_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "property_extraction"
+      ],
+      "category": "drug-discovery",
+      "complexity": "simple"
+    },
+    {
+      "name": "get_texas_cardiologist_providers",
+      "structure": "folder",
+      "folder": "texas-cardiologists",
+      "skill_md": "texas-cardiologists/SKILL.md",
+      "script": "texas-cardiologists/scripts/get_texas_cardiologist_providers.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_texas_cardiologist_providers() -> dict",
+      "servers_used": [
+        "healthcare_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "aggregation",
+        "geographic_distribution"
+      ],
+      "category": "healthcare",
+      "complexity": "simple"
+    },
+    {
+      "name": "get_california_population_time_series",
+      "structure": "folder",
+      "folder": "california-population",
+      "skill_md": "california-population/SKILL.md",
+      "script": "california-population/scripts/get_california_population_time_series.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_california_population_time_series() -> dict",
+      "servers_used": [
+        "datacommons_mcp"
+      ],
+      "patterns_demonstrated": [
+        "time_series_analysis",
+        "growth_rate_calculation"
+      ],
+      "category": "population-epidemiology",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_biotech_ma_filings",
+      "structure": "folder",
+      "folder": "biotech-ma-deals-sec",
+      "skill_md": "biotech-ma-deals-sec/SKILL.md",
+      "script": "biotech-ma-deals-sec/scripts/get_biotech_ma_filings.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_biotech_ma_filings() -> dict",
+      "servers_used": [
+        "sec_edgar_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_keyword_search",
+        "deduplication",
+        "trend_analysis"
+      ],
+      "category": "financial",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_pharma_company_stock_data",
+      "structure": "folder",
+      "folder": "pharma-stock-data",
+      "skill_md": "pharma-stock-data/SKILL.md",
+      "script": "pharma-stock-data/scripts/get_pharma_company_stock_data.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_pharma_company_stock_data() -> dict",
+      "servers_used": [
+        "financials_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "multi_metric_aggregation"
+      ],
+      "category": "financial",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_diabetes_burden_per_capita",
+      "structure": "folder",
+      "folder": "disease-burden-per-capita",
+      "skill_md": "disease-burden-per-capita/SKILL.md",
+      "script": "disease-burden-per-capita/scripts/get_diabetes_burden_per_capita.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_diabetes_burden_per_capita() -> dict",
+      "servers_used": [
+        "who_mcp",
+        "datacommons_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query",
+        "data_normalization",
+        "per_capita_calculation"
+      ],
+      "category": "epidemiology",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_adc_fda_drugs",
+      "structure": "folder",
+      "folder": "adc-approved-drugs",
+      "skill_md": "adc-approved-drugs/SKILL.md",
+      "script": "adc-approved-drugs/scripts/get_adc_fda_drugs.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_adc_fda_drugs() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "deduplication",
+        "multi_term_search"
+      ],
+      "category": "drug-discovery",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_anticoagulant_chemical_properties",
+      "structure": "folder",
+      "folder": "anticoagulant-chemical-properties",
+      "skill_md": "anticoagulant-chemical-properties/SKILL.md",
+      "script": "anticoagulant-chemical-properties/scripts/get_anticoagulant_chemical_properties.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_anticoagulant_chemical_properties() -> dict",
+      "servers_used": [
+        "pubchem_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "multi_compound_query"
+      ],
+      "category": "drug-discovery",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_ra_targets_and_trials",
+      "structure": "folder",
+      "folder": "ra-targets-and-trials",
+      "skill_md": "ra-targets-and-trials/SKILL.md",
+      "script": "ra-targets-and-trials/scripts/get_ra_targets_and_trials.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_ra_targets_and_trials() -> dict",
+      "servers_used": [
+        "opentargets_mcp",
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query",
+        "disease_search",
+        "target_association",
+        "pagination",
+        "markdown_parsing",
+        "data_integration"
+      ],
+      "category": "target-validation",
+      "complexity": "complex"
+    },
+    {
+      "name": "get_cvd_burden_per_capita",
+      "structure": "folder",
+      "folder": "cvd-burden-per-capita",
+      "skill_md": "cvd-burden-per-capita/SKILL.md",
+      "script": "cvd-burden-per-capita/scripts/get_cvd_burden_per_capita.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_cvd_burden_per_capita() -> dict",
+      "servers_used": [
+        "who_mcp",
+        "datacommons_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query",
+        "data_normalization",
+        "error_handling"
+      ],
+      "category": "epidemiology",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_rheumatoid_arthritis_fda_drugs",
+      "structure": "folder",
+      "folder": "rheumatoid-arthritis-fda-drugs",
+      "skill_md": "rheumatoid-arthritis-fda-drugs/SKILL.md",
+      "script": "rheumatoid-arthritis-fda-drugs/scripts/get_rheumatoid_arthritis_fda_drugs.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_rheumatoid_arthritis_fda_drugs() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "json_parsing",
+        "deduplication"
+      ],
+      "category": "drug-discovery",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_rheumatoid_arthritis_trials",
+      "structure": "folder",
+      "folder": "rheumatoid-arthritis-trials",
+      "skill_md": "rheumatoid-arthritis-trials/SKILL.md",
+      "script": "rheumatoid-arthritis-trials/scripts/get_rheumatoid_arthritis_trials.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_rheumatoid_arthritis_trials() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "status_aggregation",
+        "phase_distribution"
+      ],
+      "category": "clinical-trials",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_diabetes_recruiting_trials",
+      "structure": "folder",
+      "folder": "diabetes-recruiting-trials",
+      "skill_md": "diabetes-recruiting-trials/SKILL.md",
+      "script": "diabetes-recruiting-trials/scripts/get_diabetes_recruiting_trials.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_diabetes_recruiting_trials() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "categorization",
+        "status_filtering"
+      ],
+      "category": "clinical-trials",
+      "complexity": "medium"
+    },
+    {
+      "name": "get_kras_comprehensive_analysis",
+      "structure": "folder",
+      "folder": "kras-comprehensive-analysis",
+      "skill_md": "kras-comprehensive-analysis/SKILL.md",
+      "script": "kras-comprehensive-analysis/scripts/get_kras_comprehensive_analysis.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_kras_comprehensive_analysis() -> dict",
+      "servers_used": [
+        "opentargets_mcp",
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query"
+      ],
+      "category": "testing",
+      "complexity": "simple"
+    },
+    {
+      "name": "get_cart_therapy_landscape",
+      "structure": "folder",
+      "folder": "cart-therapy-landscape",
+      "skill_md": "cart-therapy-landscape/SKILL.md",
+      "script": "cart-therapy-landscape/scripts/get_cart_therapy_landscape.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_cart_therapy_landscape() -> dict",
+      "servers_used": [
+        "ct_gov_mcp",
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query"
+      ],
+      "category": "testing",
+      "complexity": "simple"
     }
   ],
   "pattern_categories": {

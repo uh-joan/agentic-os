@@ -1,171 +1,90 @@
 import sys
 import re
 sys.path.insert(0, ".claude")
-
-from mcp.servers.opentargets_mcp import search_targets
+from mcp.servers.opentargets_mcp import search_disease, get_associated_targets
 from mcp.servers.ct_gov_mcp import search
 
 def get_ra_targets_and_trials():
-    """Get drug targets for rheumatoid arthritis and their clinical trials.
-
-    This multi-server integration combines:
-    1. Open Targets: Target validation data for rheumatoid arthritis
-    2. ClinicalTrials.gov: Clinical trials for identified targets
-
-    Returns:
-        dict: Contains targets summary, trials summary, and integrated data
-    """
-    print("\n=== Rheumatoid Arthritis Target & Trial Analysis ===\n")
-
-    # Step 1: Get targets from Open Targets
-    print("Step 1: Querying Open Targets for rheumatoid arthritis targets...")
-    targets_result = search_targets(
-        disease="rheumatoid arthritis",
-        min_score=0.5,
-        limit=20
-    )
-
-    # Parse targets from JSON response
-    targets = []
-    if isinstance(targets_result, dict) and 'data' in targets_result:
-        target_data = targets_result['data']
-        if isinstance(target_data, dict) and 'disease' in target_data:
-            disease_data = target_data['disease']
-            if isinstance(disease_data, dict) and 'associatedTargets' in disease_data:
-                associated = disease_data['associatedTargets']
-                if isinstance(associated, dict) and 'rows' in associated:
-                    for row in associated['rows']:
-                        if isinstance(row, dict):
-                            target_info = {
-                                'gene_symbol': row.get('target', {}).get('approvedSymbol', 'Unknown'),
-                                'gene_name': row.get('target', {}).get('approvedName', 'Unknown'),
-                                'score': row.get('score', 0.0),
-                                'id': row.get('target', {}).get('id', 'Unknown')
-                            }
-                            targets.append(target_info)
-
-    print(f"✓ Found {len(targets)} targets with validation score ≥ 0.5\n")
-
-    # Display top targets
-    print("Top 10 Validated Targets:")
-    print("-" * 80)
-    for i, target in enumerate(targets[:10], 1):
-        print(f"{i:2d}. {target['gene_symbol']:10s} | Score: {target['score']:.3f} | {target['gene_name']}")
-    print()
-
-    # Step 2: Get clinical trials for rheumatoid arthritis
-    print("Step 2: Querying ClinicalTrials.gov for rheumatoid arthritis trials...")
-
+    """Get top 10 genetic targets for RA and match with recruiting trials."""
+    
+    # Get RA disease ID from Open Targets
+    disease_result = search_disease(query="rheumatoid arthritis", size=5)
+    disease_id = None
+    disease_name = None
+    
+    if disease_result and 'data' in disease_result:
+        data = disease_result['data']
+        if 'search' in data and 'hits' in data['search']:
+            for hit in data['search']['hits']:
+                if hit.get('entity') == 'disease':
+                    disease_id = hit.get('id')
+                    disease_name = hit.get('name')
+                    break
+    
+    if not disease_id:
+        return {'success': False, 'error': 'Could not find RA disease ID'}
+    
+    # Get associated targets
+    targets_result = get_associated_targets(disease_id=disease_id, size=10)
+    targets_data = []
+    
+    if targets_result and 'data' in targets_result:
+        data = targets_result['data']
+        if 'disease' in data and 'associatedTargets' in data['disease']:
+            rows = data['disease']['associatedTargets'].get('rows', [])
+            for row in rows:
+                target = row.get('target', {})
+                targets_data.append({
+                    'gene_symbol': target.get('approvedSymbol', 'N/A'),
+                    'gene_name': target.get('approvedName', 'N/A'),
+                    'overall_score': row.get('score', 0),
+                    'trial_count': 0
+                })
+    
+    # Get recruiting RA trials
     all_trials = []
     page_token = None
-    page_count = 0
-
+    
     while True:
-        page_count += 1
-        print(f"  Fetching page {page_count}...")
-
-        result = search(
-            query="rheumatoid arthritis",
-            pageSize=1000,
-            pageToken=page_token
-        )
-
-        if not result or not isinstance(result, str):
+        if page_token:
+            ct_result = search(query="rheumatoid arthritis", filter_overallStatus="RECRUITING", 
+                             pageSize=1000, pageToken=page_token)
+        else:
+            ct_result = search(query="rheumatoid arthritis", filter_overallStatus="RECRUITING", 
+                             pageSize=1000)
+        
+        if not ct_result:
             break
-
-        # Extract trials from markdown
-        trial_sections = re.split(r'###\s+\d+\.\s+NCT\d{8}', result)
-
-        for section in trial_sections[1:]:  # Skip first empty section
-            trial = {}
-
-            # Extract NCT ID
-            nct_match = re.search(r'NCT\d{8}', result[result.find(section)-20:result.find(section)])
-            if nct_match:
-                trial['nct_id'] = nct_match.group()
-
-            # Extract fields
-            title_match = re.search(r'\*\*Title:\*\*\s*(.+?)(?=\n\*\*|$)', section, re.DOTALL)
-            if title_match:
-                trial['title'] = title_match.group(1).strip()
-
-            status_match = re.search(r'\*\*Status:\*\*\s*(.+?)(?=\n|$)', section)
-            if status_match:
-                trial['status'] = status_match.group(1).strip()
-
-            phase_match = re.search(r'\*\*Phase:\*\*\s*(.+?)(?=\n|$)', section)
-            if phase_match:
-                trial['phase'] = phase_match.group(1).strip()
-
-            conditions_match = re.search(r'\*\*Conditions:\*\*\s*(.+?)(?=\n\*\*|$)', section, re.DOTALL)
-            if conditions_match:
-                trial['conditions'] = conditions_match.group(1).strip()
-
-            if 'nct_id' in trial:
-                all_trials.append(trial)
-
-        # Check for next page
-        next_token_match = re.search(r'pageToken:\s*"([^"]+)"', result)
-        if next_token_match:
-            page_token = next_token_match.group(1)
+        
+        trial_blocks = re.split(r'###\s+\d+\.\s+NCT\d{8}', ct_result)
+        all_trials.extend([block for block in trial_blocks if block.strip()])
+        
+        token_match = re.search(r'pageToken:\s*"([^"]+)"', ct_result)
+        if token_match:
+            page_token = token_match.group(1)
         else:
             break
-
-    print(f"✓ Total trials retrieved: {len(all_trials)}\n")
-
-    # Step 3: Aggregate trial statistics
-    phase_counts = {}
-    status_counts = {}
-
-    for trial in all_trials:
-        phase = trial.get('phase', 'Not Specified')
-        status = trial.get('status', 'Unknown')
-
-        phase_counts[phase] = phase_counts.get(phase, 0) + 1
-        status_counts[status] = status_counts.get(status, 0) + 1
-
-    # Step 4: Integration analysis
-    print("Step 3: Analyzing target-trial integration...")
-    target_trial_matches = []
-
-    for target in targets[:10]:
-        gene_symbol = target['gene_symbol']
-        matching_trials = [
-            trial for trial in all_trials
-            if gene_symbol.lower() in trial.get('title', '').lower() or
-               gene_symbol.lower() in trial.get('conditions', '').lower()
-        ]
-
-        if matching_trials:
-            target_trial_matches.append({
-                'target': gene_symbol,
-                'score': target['score'],
-                'trial_count': len(matching_trials),
-                'trials': matching_trials[:3]
-            })
-
-    print(f"✓ Found {len(target_trial_matches)} targets with matching clinical trials\n")
-
-    # Generate summary
-    summary = {
-        'targets': {
-            'total_count': len(targets),
-            'top_targets': targets[:10],
-            'score_range': f"{min(t['score'] for t in targets):.3f} - {max(t['score'] for t in targets):.3f}"
-        },
-        'trials': {
-            'total_count': len(all_trials),
-            'by_phase': dict(sorted(phase_counts.items(), key=lambda x: x[1], reverse=True)),
-            'by_status': dict(sorted(status_counts.items(), key=lambda x: x[1], reverse=True))
-        },
-        'integration': {
-            'targets_with_trials': len(target_trial_matches),
-            'matches': target_trial_matches
-        }
+    
+    # Match trials to targets
+    for target in targets_data:
+        gene_symbol = target['gene_symbol'].upper()
+        trial_count = sum(1 for trial in all_trials if gene_symbol in trial.upper())
+        target['trial_count'] = trial_count
+    
+    targets_data.sort(key=lambda x: x['overall_score'], reverse=True)
+    targets_with_trials = sum(1 for t in targets_data if t['trial_count'] > 0)
+    
+    return {
+        'success': True,
+        'disease_name': disease_name,
+        'total_targets': len(targets_data),
+        'total_trials': len(all_trials),
+        'targets_with_trials': targets_with_trials,
+        'targets_data': targets_data
     }
-
-    return summary
 
 if __name__ == "__main__":
     result = get_ra_targets_and_trials()
-    print("\nExecution complete.")
+    if result.get('success'):
+        print(f"RA Targets & Trials: {result['total_targets']} targets, {result['total_trials']} trials")
+        print(f"Targets with trials: {result['targets_with_trials']}")
