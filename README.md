@@ -2,7 +2,7 @@
 
 AI agents that turn research questions into executable Python code, query 12+ specialized data sources, and build a reusable skills library that grows smarter over time.
 
-Built on Anthropic's **code execution with MCP** pattern for 98.7% token efficiency.
+Built on Anthropic's **code execution with MCP** pattern for token efficiency.
 
 **Quick example:** *"What are the top diabetes drugs by market share?"* → Agent generates Python → Queries FDA + financial APIs → Returns analysis + saves reusable skill.
 
@@ -13,7 +13,7 @@ Built on Anthropic's **code execution with MCP** pattern for 98.7% token efficie
 - 🤖 **Generates & executes Python code** (not prompt-based queries)
 - 📊 **12 data sources**: Clinical trials, FDA, PubMed, Patents, SEC filings, WHO, medical codes, financial markets
 - 🔄 **Self-improving skills library**: Each query creates reusable functions
-- ⚡ **98.7% more token-efficient** than direct API calls
+- ⚡ **More token-efficient** than direct API calls
 - 🎯 **End-to-end workflows**: Data collection → Strategic analysis
 - 🧠 **Intelligent skill discovery**: Automatic reuse, adaptation, and pattern learning
 
@@ -93,6 +93,10 @@ Returns summary (500 tokens) + Saves skill → Skill reusable forever
 **Strategic agent** - Competitive intelligence reports
 **Pattern:** Collect data (via skills) → Analyze → Strategic recommendations
 **Output:** Saved to `reports/competitive-landscape/YYYY-MM-DD_topic.md`
+
+**Example reports:**
+- [Eli Lilly's $1 Trillion Path](reports/competitive-landscape/2025-11-23_eli-lilly-1trillion-milestone.md) - *GLP-1 obesity market dynamics and patent landscape analysis*
+- [Obesity Drug Market Intelligence](reports/competitive-landscape/2025-11-23_obesity-drug-market-comprehensive.md) - *Comprehensive competitive analysis across clinical, regulatory, and market dimensions*
 
 **More agents planned**: 80+ across discovery, clinical development, regulatory, medical affairs, market access, financial analysis, public health, and IP research.
 
@@ -183,5 +187,3 @@ Agent creates, validates, and saves the skill automatically.
 ## Links
 
 - **Anthropic Code Execution Pattern**: https://www.anthropic.com/engineering/code-execution-with-mcp
-- **Model Context Protocol**: https://modelcontextprotocol.io
-- **Claude Code**: https://claude.com/claude-code
