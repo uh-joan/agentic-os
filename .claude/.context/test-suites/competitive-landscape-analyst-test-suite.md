@@ -731,7 +731,7 @@
 - Press release extraction
 
 **Expected Skills**:
-- Web scraping capability
+- Web scraping capability (not available)
 - News aggregation
 
 **Expected Output**:
@@ -739,7 +739,7 @@
 - Phase 3 initiations by company
 - Timeline of announcements
 
-**Status**: 🔴
+**Status**: ⚪ OUT OF SCOPE (No web scraping tools - would require BeautifulSoup/Scrapy integration and company website access)
 
 ---
 
@@ -773,15 +773,15 @@
 - Data release anticipation
 
 **Expected Skills**:
-- New skill: `get_asco_2025_pd1_presentations`
-- Conference database integration
+- Conference database integration (not available)
+- Abstract parsing
 
 **Expected Output**:
 - List of presentations
 - Presentation dates/times
 - Company sponsors
 
-**Status**: 🔴
+**Status**: ⚪ OUT OF SCOPE (No conference abstract databases - would require ASCO API, ASH API, etc.)
 
 ---
 
@@ -841,7 +841,7 @@
 - Early warning detection
 
 **Expected Skills**:
-- Social listening capability
+- Social listening capability (not available)
 - Sentiment scoring
 
 **Expected Output**:
@@ -849,7 +849,7 @@
 - Companies affected
 - Sentiment trends
 
-**Status**: 🔴
+**Status**: ⚪ OUT OF SCOPE (No social media MCP servers available - would require Twitter API, Reddit API, etc.)
 
 ---
 
@@ -883,7 +883,7 @@
 - Enrichment workflows
 
 **Expected Skills**:
-- External database API
+- External database API (not available)
 - Data integration
 
 **Expected Output**:
@@ -891,7 +891,7 @@
 - Enriched with Cortellis data
 - Standardized format
 
-**Status**: 🔴
+**Status**: ⚪ OUT OF SCOPE (No commercial database integrations - would require Cortellis, Citeline, GlobalData licenses/APIs)
 
 ---
 
@@ -904,15 +904,15 @@
 - Insight synthesis
 
 **Expected Skills**:
-- Survey design framework
-- Expert network access
+- Survey design framework (conceptual only)
+- Expert network access (not available)
 
 **Expected Output**:
-- Survey questionnaire
-- Target expert list
+- Survey questionnaire design
+- Target expert criteria
 - Analysis framework
 
-**Status**: 🔴
+**Status**: ⚪ OUT OF SCOPE (No expert network integrations - would require GLG, Guidepoint, Alphasights APIs)
 
 ---
 
@@ -1617,6 +1617,8 @@
 
 *"Every deal tells a story"*
 
+**⚪ CATEGORY STATUS: OUT OF SCOPE** - Requires commercial deal databases (BioMedTracker, Evaluate Pharma, Informa Pharma Intelligence, etc.) which are not available in current MCP server configuration.
+
 ### Test 10.1: Licensing Agreement Monitoring
 **Query**: "Track all licensing deals in obesity space in 2024 and analyze deal terms"
 
@@ -2223,18 +2225,20 @@ When running tests, use this format:
 **Total Test Suite**:
 - 12 Categories
 - 97 Individual Tests (added pagination test)
+- **In Scope**: ~80 tests (using available MCP servers)
+- **Out of Scope**: ~17 tests (social media, deal databases, conference APIs, expert networks, web scraping)
 - 68 existing skills can be reused
 - ~29 new skills will be created
 - 6 competitive landscape reports already generated
 
 **Coverage**:
-- ✅ All 11 capability domains from agent definition
-- ✅ All 12 MCP data sources (all operational)
+- ✅ All 12 MCP data sources operational (CT.gov, FDA, PubMed, USPTO/Google Patents, SEC, WHO, NLM Codes, CMS, Data Commons, Open Targets, PubChem, Financial Markets)
 - ✅ All report template sections
 - ✅ Basic to advanced complexity
 - ✅ Single-source to multi-source synthesis
 - ✅ International patent coverage (90M+ patents, 11 countries)
 - ✅ Large-scale data retrieval (pagination support)
+- ⚪ Out of scope: Social media monitoring, deal/partnership databases, conference abstracts, expert networks, web scraping
 
 **Memorability Devices**:
 1. **The Prospector** - Digging for pipeline gold
