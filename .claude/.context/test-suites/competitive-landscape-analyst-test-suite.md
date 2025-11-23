@@ -1,6 +1,6 @@
 # Competitive Landscape Analyst - Comprehensive Test Suite
 
-**Purpose**: Test all 100+ capabilities of the competitive-landscape-analyst agent across 12 capability domains.
+**Purpose**: Test all 100+ capabilities of the competitive-landscape-analyst agent across 11 capability domains.
 
 **Format**: "The [Memorable Name]" - Each test category has a memorable theme to make testing memorable and comprehensive.
 
@@ -16,16 +16,15 @@
 | 2. Clinical Trial Monitoring | "The Hawk" | 8 tests | 🔴 |
 | 3. Financial Analysis | "The Banker" | 8 tests | 🔴 |
 | 4. Strategic Synthesis | "The Chess Master" | 8 tests | 🔴 |
-| 5. Data Collection | "The Librarian" | 8 tests | 🔴 |
+| 5. Data Collection | "The Librarian" | 5 tests | 🔴 |
 | 6. Analytical Frameworks | "The Mathematician" | 8 tests | 🔴 |
 | 7. Reporting & Communication | "The Journalist" | 8 tests | 🔴 |
 | 8. Technology & Automation | "The Engineer" | 8 tests | 🔴 |
 | 9. Therapeutic Area Specialization | "The Specialist" | 8 tests | 🔴 |
-| 10. Partnership & Deal Intelligence | "The Deal Maker" | 8 tests | 🔴 |
-| 11. Risk Assessment | "The Oracle" | 8 tests | 🔴 |
-| 12. Action Planning | "The General" | 8 tests | 🔴 |
+| 10. Risk Assessment | "The Oracle" | 8 tests | 🔴 |
+| 11. Action Planning | "The General" | 8 tests | 🔴 |
 
-**Total Tests**: 96
+**Total Tests**: 85
 
 ---
 
@@ -722,26 +721,6 @@
 
 *"Every source, every signal, every data point"*
 
-### Test 5.1: Multi-Source Web Scraping
-**Query**: "Aggregate all press releases from top 10 pharma companies mentioning 'Phase 3 initiation' in Q4 2024"
-
-**Tests**:
-- Web scraping automation
-- Company website monitoring
-- Press release extraction
-
-**Expected Skills**:
-- Web scraping capability (not available)
-- News aggregation
-
-**Expected Output**:
-- Aggregated press releases
-- Phase 3 initiations by company
-- Timeline of announcements
-
-**Status**: ⚪ OUT OF SCOPE (No web scraping tools - would require BeautifulSoup/Scrapy integration and company website access)
-
----
 
 ### Test 5.2: SEC Filing Review
 **Query**: "Extract all M&A mentions from biotech company 10-K filings in 2024"
@@ -764,24 +743,25 @@
 
 ---
 
-### Test 5.3: Conference Presentation Monitoring
-**Query**: "Track all ASCO 2025 presentations for PD-1/PD-L1 combination therapies"
+### Test 5.3: Conference Abstract Search (PubMed)
+**Query**: "Search PubMed for ASCO 2024-2025 abstracts on PD-1/PD-L1 combination therapies"
 
 **Tests**:
-- Conference abstract monitoring
-- Presentation scheduling
-- Data release anticipation
+- PubMed conference abstract search
+- Abstract filtering by conference name
+- Publication year filtering
 
 **Expected Skills**:
-- Conference database integration (not available)
-- Abstract parsing
+- New skill: `get_asco_pd1_abstracts`
+- Uses: `search_keywords()` from pubmed_mcp
 
 **Expected Output**:
-- List of presentations
-- Presentation dates/times
-- Company sponsors
+- List of conference abstracts
+- Author affiliations
+- Abstract text summaries
+- Publication metadata
 
-**Status**: ⚪ OUT OF SCOPE (No conference abstract databases - would require ASCO API, ASH API, etc.)
+**Status**: 🔴 (PubMed MCP operational - includes conference abstracts from major meetings)
 
 ---
 
@@ -832,26 +812,6 @@
 
 ---
 
-### Test 5.5: Social Media Surveillance
-**Query**: "Monitor Twitter/X mentions of 'clinical hold' across all biotech companies in real-time"
-
-**Tests**:
-- Social media monitoring
-- Sentiment analysis
-- Early warning detection
-
-**Expected Skills**:
-- Social listening capability (not available)
-- Sentiment scoring
-
-**Expected Output**:
-- Clinical hold mentions
-- Companies affected
-- Sentiment trends
-
-**Status**: ⚪ OUT OF SCOPE (No social media MCP servers available - would require Twitter API, Reddit API, etc.)
-
----
 
 ### Test 5.6: KOL Insight Capture
 **Query**: "Identify top 10 key opinion leaders in CAR-T therapy and track their recent publications"
@@ -874,47 +834,7 @@
 
 ---
 
-### Test 5.7: Industry Database Integration
-**Query**: "Integrate Cortellis data for all Phase 2+ inflammatory bowel disease programs"
 
-**Tests**:
-- Third-party database integration
-- Data normalization
-- Enrichment workflows
-
-**Expected Skills**:
-- External database API (not available)
-- Data integration
-
-**Expected Output**:
-- IBD program list
-- Enriched with Cortellis data
-- Standardized format
-
-**Status**: ⚪ OUT OF SCOPE (No commercial database integrations - would require Cortellis, Citeline, GlobalData licenses/APIs)
-
----
-
-### Test 5.8: Primary Research Coordination
-**Query**: "Design survey for oncologists on unmet needs in NSCLC to inform competitive strategy"
-
-**Tests**:
-- Primary research design
-- Expert network coordination
-- Insight synthesis
-
-**Expected Skills**:
-- Survey design framework (conceptual only)
-- Expert network access (not available)
-
-**Expected Output**:
-- Survey questionnaire design
-- Target expert criteria
-- Analysis framework
-
-**Status**: ⚪ OUT OF SCOPE (No expert network integrations - would require GLG, Guidepoint, Alphasights APIs)
-
----
 
 ## Category 6: Analytical Frameworks & Modeling ("The Mathematician")
 
@@ -1613,185 +1533,11 @@
 
 ---
 
-## Category 10: Partnership & Deal Intelligence ("The Deal Maker")
-
-*"Every deal tells a story"*
-
-**⚪ CATEGORY STATUS: OUT OF SCOPE** - Requires commercial deal databases (BioMedTracker, Evaluate Pharma, Informa Pharma Intelligence, etc.) which are not available in current MCP server configuration.
-
-### Test 10.1: Licensing Agreement Monitoring
-**Query**: "Track all licensing deals in obesity space in 2024 and analyze deal terms"
-
-**Tests**:
-- Deal identification
-- Term analysis
-- Valuation assessment
-
-**Expected Skills**:
-- Deal database access
-- Term extraction
-
-**Expected Output**:
-- List of obesity deals
-- Deal structure summary
-- Valuation multiples
-
-**Status**: 🔴
-
----
-
-### Test 10.2: Collaboration Pattern Analysis
-**Query**: "Analyze Genentech's collaboration patterns: academic vs biotech vs pharma partnerships"
-
-**Tests**:
-- Partnership type classification
-- Pattern identification
-- Strategic rationale
-
-**Expected Skills**:
-- New skill: `get_genentech_partnerships`
-- Pattern analysis
-
-**Expected Output**:
-- Partnership timeline
-- Partner type distribution
-- Deal structure patterns
-
-**Status**: 🔴
-
----
-
-### Test 10.3: Academic Innovation Sourcing
-**Query**: "Identify top 10 academic institutions licensing drug candidates to pharma in 2023-2024"
-
-**Tests**:
-- Academic deal tracking
-- Institution ranking
-- Technology areas
-
-**Expected Skills**:
-- Academic licensing data
-- Institution analysis
-
-**Expected Output**:
-- Top 10 institutions
-- Deal counts
-- Technology focus areas
-
-**Status**: 🔴
-
----
-
-### Test 10.4: M&A Activity Prediction
-**Query**: "Predict M&A targets in rare disease space based on portfolio gaps and company valuations"
-
-**Tests**:
-- Gap analysis
-- Target screening
-- Acquisition probability
-
-**Expected Skills**:
-- Portfolio gap analysis
-- Valuation screening
-
-**Expected Output**:
-- Target company list (top 10)
-- Acquisition rationale
-- Probability scores
-
-**Status**: 🔴
-
----
-
-### Test 10.5: Joint Venture Analysis
-**Query**: "Analyze Bayer and Merck's joint venture in China and assess strategic benefits"
-
-**Tests**:
-- JV structure analysis
-- Strategic rationale
-- Risk/benefit assessment
-
-**Expected Skills**:
-- JV database access
-- Strategic analysis
-
-**Expected Output**:
-- JV structure description
-- Strategic benefits
-- Risk factors
-
-**Status**: 🔴
-
----
-
-### Test 10.6: Technology Transfer Deals
-**Query**: "Track all mRNA technology platform licensing deals 2020-2025"
-
-**Tests**:
-- Platform deal identification
-- Technology transfer terms
-- Strategic implications
-
-**Expected Skills**:
-- Platform licensing data
-- Deal term analysis
-
-**Expected Output**:
-- Platform deal list
-- License terms (exclusive/non-exclusive)
-- Strategic impact
-
-**Status**: 🔴
-
----
-
-### Test 10.7: Regional Partnership Agreements
-**Query**: "Analyze regional commercialization partnerships for China market entry"
-
-**Tests**:
-- Regional deal tracking
-- Partner selection patterns
-- Deal structure analysis
-
-**Expected Skills**:
-- China partnership data
-- Regional analysis
-
-**Expected Output**:
-- China partnership list
-- Preferred partners
-- Deal structures
-
-**Status**: 🔴
-
----
-
-### Test 10.8: Deal Value Benchmarking
-**Query**: "Benchmark deal values for Phase 2 oncology assets: upfront, milestones, royalties"
-
-**Tests**:
-- Deal term extraction
-- Value benchmarking
-- Market rate analysis
-
-**Expected Skills**:
-- Deal database access
-- Financial benchmarking
-
-**Expected Output**:
-- Benchmark ranges (P25, P50, P75)
-- Deal structure norms
-- Outlier deals
-
-**Status**: 🔴
-
----
-
-## Category 11: Risk Assessment & Early Warning ("The Oracle")
+## Category 10: Risk Assessment & Early Warning ("The Oracle")
 
 *"See the future, avoid the traps"*
 
-### Test 11.1: Competitive Threat Identification
+### Test 10.1: Competitive Threat Identification
 **Query**: "Identify top 5 competitive threats to Humira biosimilars in immunology"
 
 **Tests**:
@@ -1812,7 +1558,7 @@
 
 ---
 
-### Test 11.2: Pipeline Failure Impact
+### Test 10.2: Pipeline Failure Impact
 **Query**: "Assess impact of Eli Lilly's Alzheimer's program failure on competitive landscape"
 
 **Tests**:
@@ -1833,7 +1579,7 @@
 
 ---
 
-### Test 11.3: Regulatory Setback Monitoring
+### Test 10.3: Regulatory Setback Monitoring
 **Query**: "Monitor all FDA clinical holds in gene therapy and assess category-wide implications"
 
 **Tests**:
@@ -1854,7 +1600,7 @@
 
 ---
 
-### Test 11.4: Safety Signal Detection
+### Test 10.4: Safety Signal Detection
 **Query**: "Detect emerging safety signals across all BTK inhibitors and assess competitive vulnerability"
 
 **Tests**:
@@ -1875,7 +1621,7 @@
 
 ---
 
-### Test 11.5: Patent Challenge Tracking
+### Test 10.5: Patent Challenge Tracking
 **Query**: "Track all ANDA filings challenging Keytruda patents and assess biosimilar entry risk"
 
 **Tests**:
@@ -1896,7 +1642,7 @@
 
 ---
 
-### Test 11.6: Technology Substitution Risk
+### Test 10.6: Technology Substitution Risk
 **Query**: "Assess risk of CRISPR gene editing displacing viral vector gene therapy"
 
 **Tests**:
@@ -1917,7 +1663,7 @@
 
 ---
 
-### Test 11.7: Biosimilar Entry Timeline
+### Test 10.7: Biosimilar Entry Timeline
 **Query**: "Predict biosimilar entry timeline for Stelara and assess revenue erosion"
 
 **Tests**:
@@ -1938,7 +1684,7 @@
 
 ---
 
-### Test 11.8: Reimbursement Barrier Analysis
+### Test 10.8: Reimbursement Barrier Analysis
 **Query**: "Identify reimbursement barriers for cell therapy in EU markets and assess commercial risk"
 
 **Tests**:
@@ -1959,11 +1705,11 @@
 
 ---
 
-## Category 12: Action Planning & Recommendations ("The General")
+## Category 11: Action Planning & Recommendations ("The General")
 
 *"Strategy without execution is hallucination"*
 
-### Test 12.1: Acceleration Opportunity Identification
+### Test 11.1: Acceleration Opportunity Identification
 **Query**: "Identify opportunities to accelerate internal diabetes program based on competitor delays"
 
 **Tests**:
@@ -1984,7 +1730,7 @@
 
 ---
 
-### Test 12.2: Acquisition Target Prioritization
+### Test 11.2: Acquisition Target Prioritization
 **Query**: "Prioritize top 10 acquisition targets in neurology based on strategic fit, valuation, and competitive urgency"
 
 **Tests**:
@@ -2005,7 +1751,7 @@
 
 ---
 
-### Test 12.3: Partnership Strategy Recommendations
+### Test 11.3: Partnership Strategy Recommendations
 **Query**: "Recommend partnership strategy for entering CAR-T market: internal build vs acquire vs license"
 
 **Tests**:
@@ -2026,7 +1772,7 @@
 
 ---
 
-### Test 12.4: Development Strategy Adjustments
+### Test 11.4: Development Strategy Adjustments
 **Query**: "Recommend development strategy adjustments for Phase 2 program based on competitor Phase 3 failures"
 
 **Tests**:
@@ -2047,7 +1793,7 @@
 
 ---
 
-### Test 12.5: Investment Prioritization
+### Test 11.5: Investment Prioritization
 **Query**: "Prioritize R&D investment across 5 therapeutic areas to maintain competitive position"
 
 **Tests**:
@@ -2068,7 +1814,7 @@
 
 ---
 
-### Test 12.6: Market Entry Timing Optimization
+### Test 11.6: Market Entry Timing Optimization
 **Query**: "Optimize market entry timing for biosimilar relative to 3 competitor launches"
 
 **Tests**:
@@ -2089,7 +1835,7 @@
 
 ---
 
-### Test 12.7: Defensive Strategy Development
+### Test 11.7: Defensive Strategy Development
 **Query**: "Develop defensive strategy for patent expiry of blockbuster drug Enbrel"
 
 **Tests**:
@@ -2110,7 +1856,7 @@
 
 ---
 
-### Test 12.8: Portfolio Optimization
+### Test 11.8: Portfolio Optimization
 **Query**: "Optimize portfolio by recommending 3 programs to accelerate, 2 to pause, and 2 to terminate based on competitive landscape"
 
 **Tests**:
@@ -2223,12 +1969,10 @@ When running tests, use this format:
 ## Summary Statistics
 
 **Total Test Suite**:
-- 12 Categories
-- 97 Individual Tests (added pagination test)
-- **In Scope**: ~80 tests (using available MCP servers)
-- **Out of Scope**: ~17 tests (social media, deal databases, conference APIs, expert networks, web scraping)
+- 11 Categories
+- 85 Individual Tests (all in scope using available MCP servers)
 - 68 existing skills can be reused
-- ~29 new skills will be created
+- ~22 new skills will be created
 - 6 competitive landscape reports already generated
 
 **Coverage**:
@@ -2238,7 +1982,9 @@ When running tests, use this format:
 - ✅ Single-source to multi-source synthesis
 - ✅ International patent coverage (90M+ patents, 11 countries)
 - ✅ Large-scale data retrieval (pagination support)
-- ⚪ Out of scope: Social media monitoring, deal/partnership databases, conference abstracts, expert networks, web scraping
+- ✅ Conference abstract search via PubMed
+- ✅ KOL publication tracking
+- ✅ SEC filing M&A analysis
 
 **Memorability Devices**:
 1. **The Prospector** - Digging for pipeline gold
@@ -2250,9 +1996,8 @@ When running tests, use this format:
 7. **The Journalist** - Story of competition
 8. **The Engineer** - Automate everything
 9. **The Specialist** - Deep TA expertise
-10. **The Deal Maker** - Every deal matters
-11. **The Oracle** - See the future
-12. **The General** - Strategy to execution
+10. **The Oracle** - See the future
+11. **The General** - Strategy to execution
 
 ---
 
