@@ -595,7 +595,289 @@ def get_app_attorney(
     return client.call_tool('uspto_patents', params)
 
 
+# ============================================================================
+# Google Patents Functions (International Coverage)
+# ============================================================================
+
+def google_search_patents(
+    query: str,
+    country: str = "US",
+    limit: int = 100,
+    offset: int = 0
+) -> Dict[str, Any]:
+    """
+    Search patents by keywords using Google Patents Public Datasets
+
+    Args:
+        query: Search query string (searches titles and abstracts)
+        country: Country code - US, EP, WO, JP, CN, KR, GB, DE, FR, CA, AU
+        limit: Maximum results (1-500, default: 100)
+        offset: Number of results to skip for pagination (default: 0)
+
+    Returns:
+        dict: Search results with patent metadata
+
+        Key fields:
+        - count: Total results found
+        - results: List of patents
+          - publication_number: Patent number (e.g., "US-12345678-B2")
+          - title_localized: Patent title
+          - publication_date: Publication date
+          - assignee_harmonized: List of assignees/owners
+          - inventor_harmonized: List of inventors
+          - abstract_localized: Patent abstract
+          - cpc: CPC classification codes
+
+    Examples:
+        # Simple search
+        results = google_search_patents(
+            query="GLP-1 agonist",
+            country="US",
+            limit=50
+        )
+
+        print(f"Found {results.get('count', 0)} patents")
+
+        for patent in results.get('results', []):
+            pub_num = patent.get('publication_number')
+            title = patent.get('title_localized', [{}])[0].get('text', 'N/A')
+            print(f"{pub_num}: {title}")
+
+        # Pagination example
+        # Get first 500 results
+        batch1 = google_search_patents(query="tirzepatide", limit=500, offset=0)
+        # Get next 500 results
+        batch2 = google_search_patents(query="tirzepatide", limit=500, offset=500)
+    """
+    client = get_client('patents-mcp-server')
+
+    return client.call_tool('google_search_patents', {
+        'query': query,
+        'country': country,
+        'limit': limit,
+        'offset': offset
+    })
+
+
+def google_search_by_assignee(
+    assignee_name: str,
+    country: str = "US",
+    limit: int = 100,
+    offset: int = 0
+) -> Dict[str, Any]:
+    """
+    Search patents by assignee/company name
+
+    Args:
+        assignee_name: Company or organization name
+        country: Country code - US, EP, WO, JP, CN, KR, GB, DE, FR, CA, AU
+        limit: Maximum results (1-500, default: 100)
+        offset: Number of results to skip for pagination (default: 0)
+
+    Returns:
+        dict: Search results with patent metadata
+
+    Examples:
+        # Find Novo Nordisk patents
+        results = google_search_by_assignee(
+            assignee_name="Novo Nordisk",
+            country="US",
+            limit=100
+        )
+
+        # Analyze by year
+        from collections import defaultdict
+        by_year = defaultdict(int)
+
+        for patent in results.get('results', []):
+            pub_date = patent.get('publication_date', '')
+            year = pub_date[:4] if pub_date else 'Unknown'
+            by_year[year] += 1
+
+        for year in sorted(by_year.keys(), reverse=True):
+            print(f"{year}: {by_year[year]} patents")
+
+        # Get ALL patents with pagination
+        all_patents = []
+        offset = 0
+        while True:
+            batch = google_search_by_assignee("Novo Nordisk", limit=500, offset=offset)
+            all_patents.extend(batch.get('results', []))
+            if len(batch.get('results', [])) < 500:
+                break
+            offset += 500
+    """
+    client = get_client('patents-mcp-server')
+
+    return client.call_tool('google_search_by_assignee', {
+        'assignee_name': assignee_name,
+        'country': country,
+        'limit': limit,
+        'offset': offset
+    })
+
+
+def google_get_patent(
+    publication_number: str
+) -> Dict[str, Any]:
+    """
+    Get full patent details by publication number
+
+    Args:
+        publication_number: Patent number (e.g., "US-12345678-B2")
+
+    Returns:
+        dict: Complete patent details
+
+        Key fields:
+        - success: Boolean indicating if patent was found
+        - patent: Patent details (if found)
+          - title_localized: Title
+          - abstract_localized: Abstract
+          - publication_date: Publication date
+          - grant_date: Grant date (if granted)
+          - assignee_harmonized: Assignees
+          - inventor_harmonized: Inventors
+          - cpc: CPC classifications
+
+    Examples:
+        patent = google_get_patent(publication_number="US-10123456-B2")
+
+        if patent.get('success'):
+            details = patent['patent']
+            print(f"Title: {details.get('title_localized', [{}])[0].get('text')}")
+            print(f"Publication: {details.get('publication_date')}")
+    """
+    client = get_client('patents-mcp-server')
+
+    return client.call_tool('google_get_patent', {
+        'publication_number': publication_number
+    })
+
+
+def google_search_by_inventor(
+    inventor_name: str,
+    country: str = "US",
+    limit: int = 100,
+    offset: int = 0
+) -> Dict[str, Any]:
+    """
+    Search patents by inventor name
+
+    Args:
+        inventor_name: Inventor name to search for
+        country: Country code - US, EP, WO, JP, CN, KR, GB, DE, FR, CA, AU
+        limit: Maximum results (1-500, default: 100)
+        offset: Number of results to skip for pagination (default: 0)
+
+    Returns:
+        dict: Search results with patent metadata
+    """
+    client = get_client('patents-mcp-server')
+
+    return client.call_tool('google_search_by_inventor', {
+        'inventor_name': inventor_name,
+        'country': country,
+        'limit': limit,
+        'offset': offset
+    })
+
+
+def google_search_by_cpc(
+    cpc_code: str,
+    country: str = "US",
+    limit: int = 100,
+    offset: int = 0
+) -> Dict[str, Any]:
+    """
+    Search patents by CPC classification code
+
+    Args:
+        cpc_code: CPC code (e.g., "G06N3/08" for neural networks)
+        country: Country code - US, EP, WO, JP, CN, KR, GB, DE, FR, CA, AU
+        limit: Maximum results (1-500, default: 100)
+        offset: Number of results to skip for pagination (default: 0)
+
+    Returns:
+        dict: Search results with patent metadata
+    """
+    client = get_client('patents-mcp-server')
+
+    return client.call_tool('google_search_by_cpc', {
+        'cpc_code': cpc_code,
+        'country': country,
+        'limit': limit,
+        'offset': offset
+    })
+
+
+def google_get_patent_claims(
+    publication_number: str
+) -> Dict[str, Any]:
+    """
+    Get patent claims by publication number
+
+    Args:
+        publication_number: Patent number (e.g., "US-12345678-B2")
+
+    Returns:
+        dict: Patent claims data
+
+        Key fields:
+        - success: Boolean indicating if claims were found
+        - claims_count: Number of claims
+        - claims: List of claims
+          - claim_num: Claim number
+          - claim_text: Full claim text
+
+    Examples:
+        claims = google_get_patent_claims(publication_number="US-10123456-B2")
+
+        if claims.get('success'):
+            print(f"Total claims: {claims['claims_count']}")
+            for claim in claims['claims'][:3]:
+                print(f"Claim {claim['claim_num']}: {claim['claim_text'][:100]}...")
+    """
+    client = get_client('patents-mcp-server')
+
+    return client.call_tool('google_get_patent_claims', {
+        'publication_number': publication_number
+    })
+
+
+def google_get_patent_description(
+    publication_number: str
+) -> Dict[str, Any]:
+    """
+    Get patent description/specification by publication number
+
+    Args:
+        publication_number: Patent number (e.g., "US-12345678-B2")
+
+    Returns:
+        dict: Patent description data
+
+        Key fields:
+        - success: Boolean indicating if description was found
+        - description: Full patent description text
+
+    Examples:
+        desc = google_get_patent_description(publication_number="US-10123456-B2")
+
+        if desc.get('success'):
+            description = desc['description']
+            print(f"Description length: {len(description)} characters")
+            print(f"Preview: {description[:200]}...")
+    """
+    client = get_client('patents-mcp-server')
+
+    return client.call_tool('google_get_patent_description', {
+        'publication_number': publication_number
+    })
+
+
 __all__ = [
+    # USPTO functions
     'ppubs_search_patents',
     'ppubs_search_applications',
     'ppubs_get_full_document',
@@ -606,5 +888,13 @@ __all__ = [
     'get_app_transactions',
     'get_app_continuity',
     'get_app_foreign_priority',
-    'get_app_attorney'
+    'get_app_attorney',
+    # Google Patents functions
+    'google_search_patents',
+    'google_search_by_assignee',
+    'google_get_patent',
+    'google_get_patent_claims',
+    'google_get_patent_description',
+    'google_search_by_inventor',
+    'google_search_by_cpc'
 ]
