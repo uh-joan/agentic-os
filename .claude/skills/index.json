@@ -1,14 +1,14 @@
 {
   "version": "2.0",
   "format": "folder-structure",
-  "last_updated": "2025-11-22",
+  "last_updated": "2025-11-23",
   "description": "Skills library index for pattern discovery and reuse - Anthropic folder structure format",
   "usage": "Agent reads this to discover similar skills before creating new ones. Enables evolutionary skill development where new skills build on proven patterns from existing implementations.",
   "migration_status": {
     "phase": "4-migration-complete",
     "all_skills_have_frontmatter": true,
     "structure": "folder",
-    "folder_skills_count": 68,
+    "folder_skills_count": 69,
     "flat_skills_count": 0,
     "deprecated_flat_count": 11,
     "note": "All skills migrated to folder structure. Flat files kept for 30-day backward compatibility period."
@@ -1411,6 +1411,27 @@
       ],
       "category": "testing",
       "complexity": "simple"
+    },
+    {
+      "name": "get_bristol_myers_squibb_cardiovascular_trials",
+      "structure": "folder",
+      "folder": "bristol-myers-squibb-cardiovascular-trials",
+      "skill_md": "bristol-myers-squibb-cardiovascular-trials/SKILL.md",
+      "script": "bristol-myers-squibb-cardiovascular-trials/scripts/get_bristol_myers_squibb_cardiovascular_trials.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "get_bristol_myers_squibb_cardiovascular_trials() -> dict",
+      "servers_used": [
+        "ct_gov_mcp"
+      ],
+      "patterns_demonstrated": [
+        "pagination",
+        "markdown_parsing",
+        "status_aggregation",
+        "phase_aggregation"
+      ],
+      "category": "clinical-trials",
+      "complexity": "medium"
     }
   ],
   "pattern_categories": {
