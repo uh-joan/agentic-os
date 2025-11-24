@@ -178,6 +178,21 @@ def determine_skill_strategy(
         health = verify_skill_health(semantic_match.skill)
 
         if health.status == HealthStatus.HEALTHY:
+            # Check if this is a generic skill
+            if semantic_match.skill.get('is_generic'):
+                return StrategyDecision(
+                    strategy=SkillStrategy.REUSE,
+                    skill=semantic_match.skill,
+                    reference=None,
+                    reason=f"Generic skill '{semantic_match.skill['name']}' can handle this query. {semantic_match.reason}",
+                    action_plan=[
+                        f"Execute generic skill: .claude/skills/{semantic_match.skill['script']}",
+                        f"Pass parameters: term='{requirements.therapeutic_area}'",
+                        "No new skill creation needed - generic skill handles this use case"
+                    ]
+                )
+
+            # Non-generic skill - needs adaptation
             return StrategyDecision(
                 strategy=SkillStrategy.ADAPT,
                 skill=semantic_match.skill,
