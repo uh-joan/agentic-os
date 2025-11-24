@@ -41,3 +41,6 @@ __pycache__/
 
 # Claude Desktop packages - for distribution, not version controlled
 claude-desktop-packages/
+
+# Testing documentation - historical records, not needed in repo
+docs/testing/
