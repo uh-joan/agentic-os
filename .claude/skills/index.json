@@ -8,7 +8,7 @@
     "phase": "4-migration-complete",
     "all_skills_have_frontmatter": true,
     "structure": "folder",
-    "folder_skills_count": 61,
+    "folder_skills_count": 62,
     "flat_skills_count": 0,
     "deprecated_flat_count": 11,
     "note": "All skills migrated to folder structure. Flat files kept for 30-day backward compatibility period."
@@ -1228,6 +1228,28 @@
       ],
       "category": "target-validation",
       "complexity": "complex"
+    },
+    {
+      "name": "scrape_company_pipeline",
+      "structure": "folder",
+      "folder": "scrape-company-pipeline",
+      "skill_md": "scrape-company-pipeline/SKILL.md",
+      "script": "scrape-company-pipeline/scripts/scrape_company_pipeline.py",
+      "has_frontmatter": true,
+      "description": "Scrape pharmaceutical company pipeline data from websites using auto-detection and fallback strategies",
+      "function_signature": "scrape_company_pipeline() -> dict",
+      "servers_used": [
+        "web_scraping"
+      ],
+      "patterns_demonstrated": [
+        "web_scraping",
+        "html_parsing",
+        "auto_detection",
+        "fallback_strategies",
+        "rate_limiting"
+      ],
+      "category": "data_collection",
+      "complexity": "high"
     }
   ],
   "pattern_categories": {

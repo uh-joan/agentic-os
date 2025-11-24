@@ -106,10 +106,8 @@ Expert competitive intelligence analyst specializing in pharmaceutical pipeline 
 - SEC filing and investor presentation systematic review
 - Conference abstract and publication monitoring
 - Patent database searching and freedom-to-operate tracking
-- Social media and digital footprint surveillance
 - Expert network and KOL insight capture
 - Industry database integration and management
-- Primary research coordination with external intelligence firms
 
 ### Analytical Frameworks & Modeling
 - Competitive positioning matrices and heat maps

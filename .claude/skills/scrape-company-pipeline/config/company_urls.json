@@ -1,0 +1,239 @@
+{
+  "companies": {
+    "Pfizer": {
+      "pipeline_url": "https://www.pfizer.com/science/drug-product-pipeline",
+      "scraper_type": "react_spa",
+      "selectors": {
+        "table": "div.pipeline-table",
+        "row": "tr[data-pipeline-item]",
+        "fields": {
+          "name": "td:nth-child(1)",
+          "indication": "td:nth-child(2)",
+          "phase": "td:nth-child(3)",
+          "ta": "td:nth-child(4)"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "Uses React, needs JavaScript rendering"
+    },
+    "Merck": {
+      "pipeline_url": "https://www.merck.com/research/pipeline/",
+      "scraper_type": "static_html",
+      "selectors": {
+        "table": "table.pipeline-grid",
+        "row": "tbody tr",
+        "fields": {
+          "name": "td:nth-child(1)",
+          "indication": "td:nth-child(2)",
+          "phase": "td:nth-child(3)",
+          "ta": "td:nth-child(4)"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "Static HTML table structure"
+    },
+    "Roche": {
+      "pipeline_url": "https://www.roche.com/research-and-development/our-pipeline",
+      "scraper_type": "react_spa",
+      "selectors": {
+        "table": "div[data-component='PipelineTable']",
+        "row": "div.pipeline-item",
+        "fields": {
+          "name": "h3.drug-name",
+          "indication": "div.indication",
+          "phase": "span.phase",
+          "ta": "span.therapeutic-area"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "React SPA with custom components"
+    },
+    "Novartis": {
+      "pipeline_url": "https://www.novartis.com/research-development/novartis-pipeline",
+      "scraper_type": "react_spa",
+      "selectors": {
+        "table": "div.pipeline-container",
+        "row": "div.pipeline-row",
+        "fields": {
+          "name": "div.compound-name",
+          "indication": "div.disease",
+          "phase": "div.development-phase",
+          "ta": "div.therapy-area"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "React-based dynamic table"
+    },
+    "GSK": {
+      "pipeline_url": "https://www.gsk.com/en-gb/research-and-development/our-pipeline/",
+      "scraper_type": "static_html",
+      "selectors": {
+        "table": "table.pipeline",
+        "row": "tbody tr",
+        "fields": {
+          "name": "td.compound",
+          "indication": "td.indication",
+          "phase": "td.phase",
+          "ta": "td.area"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "Traditional HTML table"
+    },
+    "AstraZeneca": {
+      "pipeline_url": "https://www.astrazeneca.com/r-d/product-pipeline.html",
+      "scraper_type": "react_spa",
+      "selectors": {
+        "table": "div#pipeline-data",
+        "row": "div.pipeline-card",
+        "fields": {
+          "name": "h4.product-name",
+          "indication": "p.indication",
+          "phase": "span.phase-badge",
+          "ta": "span.ta-badge"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "Card-based layout with filtering"
+    },
+    "Johnson & Johnson": {
+      "pipeline_url": "https://www.jnj.com/clinical-trial-research",
+      "scraper_type": "react_spa",
+      "selectors": {
+        "table": "div.clinical-pipeline",
+        "row": "div.trial-item",
+        "fields": {
+          "name": "span.drug-name",
+          "indication": "span.condition",
+          "phase": "span.trial-phase",
+          "ta": "span.therapeutic-area"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "Integrated with clinical trials database"
+    },
+    "Bristol Myers Squibb": {
+      "pipeline_url": "https://www.bms.com/researchers-and-partners/in-the-pipeline.html",
+      "scraper_type": "static_html",
+      "selectors": {
+        "table": "table#pipeline-table",
+        "row": "tbody tr",
+        "fields": {
+          "name": "td:nth-child(1)",
+          "indication": "td:nth-child(2)",
+          "phase": "td:nth-child(3)",
+          "ta": "td:nth-child(4)"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "Simple HTML table format"
+    },
+    "Eli Lilly": {
+      "pipeline_url": "https://www.lilly.com/discovery/pipeline",
+      "scraper_type": "react_spa",
+      "selectors": {
+        "table": "div.pipeline-grid",
+        "row": "div.pipeline-entry",
+        "fields": {
+          "name": "h3.molecule-name",
+          "indication": "div.indication-text",
+          "phase": "div.phase-indicator",
+          "ta": "div.area-tag"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "Grid layout with interactive filters"
+    },
+    "Amgen": {
+      "pipeline_url": "https://www.amgen.com/science/clinical-trials-and-results/pipeline",
+      "scraper_type": "react_spa",
+      "selectors": {
+        "table": "div.pipeline-content",
+        "row": "article.pipeline-asset",
+        "fields": {
+          "name": "h3.asset-name",
+          "indication": "p.indication",
+          "phase": "span.development-stage",
+          "ta": "span.therapy-area"
+        }
+      },
+      "last_verified": "2025-01-15",
+      "notes": "Article-based semantic markup"
+    },
+    "BeOne Medicines": {
+      "pipeline_url": "https://beonemedicines.com/science/pipeline/",
+      "scraper_type": "auto_detect",
+      "selectors": {
+        "table": null,
+        "row": null,
+        "fields": {}
+      },
+      "last_verified": "2025-01-24",
+      "notes": "Test case - will auto-detect structure"
+    },
+    "Novo Nordisk": {
+      "pipeline_url": "https://www.novonordisk.com/science-and-technology/r-d-pipeline.html",
+      "scraper_type": "auto_detect",
+      "selectors": {
+        "table": null,
+        "row": null,
+        "fields": {}
+      },
+      "last_verified": "2025-01-24",
+      "notes": "Test case - will auto-detect structure"
+    }
+  },
+  "scraper_config": {
+    "rate_limit_seconds": 3,
+    "timeout_seconds": 30,
+    "max_retries": 3,
+    "user_agent": "PharmaResearchBot/1.0 (Research Tool; +https://github.com/pharma-os)",
+    "headless": true
+  },
+  "phase_mappings": {
+    "research": "Discovery",
+    "discovery": "Discovery",
+    "lead optimization": "Discovery",
+    "preclinical": "Preclinical",
+    "pre-clinical": "Preclinical",
+    "phase i": "Phase 1",
+    "phase 1": "Phase 1",
+    "phase 1/2": "Phase 1/2",
+    "phase ii": "Phase 2",
+    "phase 2": "Phase 2",
+    "phase 2/3": "Phase 2/3",
+    "phase iii": "Phase 3",
+    "phase 3": "Phase 3",
+    "nda": "NDA Filed",
+    "bla": "BLA Filed",
+    "regulatory submission": "Regulatory Submission",
+    "submitted": "Regulatory Submission",
+    "approved": "Approved",
+    "marketed": "Approved",
+    "launch": "Approved"
+  },
+  "therapeutic_area_mappings": {
+    "onc": "Oncology",
+    "oncology": "Oncology",
+    "cancer": "Oncology",
+    "cv": "Cardiovascular",
+    "cardio": "Cardiovascular",
+    "cardiovascular": "Cardiovascular",
+    "cns": "CNS",
+    "neuro": "CNS",
+    "neurology": "CNS",
+    "gi": "Gastroenterology",
+    "gastro": "Gastroenterology",
+    "resp": "Respiratory",
+    "respiratory": "Respiratory",
+    "pulmonary": "Respiratory",
+    "id": "Infectious Disease",
+    "infectious": "Infectious Disease",
+    "immuno": "Immunology",
+    "immunology": "Immunology",
+    "metabolic": "Metabolism",
+    "diabetes": "Metabolism",
+    "rare": "Rare Disease",
+    "orphan": "Rare Disease"
+  }
+}
