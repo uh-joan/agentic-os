@@ -9,12 +9,15 @@ def get_indication_drug_pipeline_breakdown(indication: str, sample_size: int = N
     """Analyze drug pipeline for a given indication with phase breakdown and visualization.
 
     Intelligently decides whether to analyze ALL trials or sample based on dataset size:
-    - If <= 500 trials: Analyzes ALL trials for 100% accuracy
-    - If > 500 trials: Samples trials for performance (default: min(500, total/3))
+    - If <= 1,000 trials: Analyzes ALL trials automatically (100% accuracy)
+    - If > 1,000 trials: Prompts user to choose between quick sample or full analysis
+      * Quick sample: ~500 trials, 3-5 min execution, statistically robust (±4% confidence)
+      * Full analysis: ALL trials, 10-15+ min execution, 100% coverage
 
     Args:
         indication (str): Disease/condition (e.g., "obesity", "Alzheimer's disease", "heart failure")
-        sample_size (int, optional): Number of trials to analyze. If None, auto-determines based on total count.
+        sample_size (int, optional): Number of trials to analyze. If None, uses intelligent auto-selection.
+                                     If specified, overrides auto-selection and prompts.
 
     Returns:
         dict: Contains indication, total_trials, total_unique_drugs, approved_drugs,
@@ -64,15 +67,34 @@ def get_indication_drug_pipeline_breakdown(indication: str, sample_size: int = N
 
     # Step 2: Intelligent sampling decision
     if sample_size is None:
-        # Auto-determine: analyze ALL if <= 1000, otherwise sample intelligently
+        # Auto-determine: analyze ALL if <= 1000, otherwise ask user
         # With smart filtering (drug + active), most indications have <1000 trials
         if total_trials <= 1000:
             sample_size = total_trials
             print(f"✓ Analyzing ALL {sample_size} trials (100% coverage)")
         else:
-            # For very large datasets (>1000), sample up to 500 trials
-            sample_size = min(500, total_trials // 2)
-            print(f"✓ Sampling {sample_size} of {total_trials:,} trials (~{100*sample_size//total_trials}% coverage)")
+            # For very large datasets (>1000), ask user for preference
+            default_sample = min(500, total_trials // 2)
+
+            print(f"\n⚠️  Large dataset detected: {total_trials:,} active drug trials")
+            print(f"\nAnalysis options:")
+            print(f"  1. Quick sample ({default_sample} trials, ~{100*default_sample//total_trials}% coverage) - Est. 3-5 minutes")
+            print(f"  2. Full analysis (ALL {total_trials:,} trials, 100% coverage) - Est. {total_trials//150}-{total_trials//120} minutes")
+            print(f"\nNote: {default_sample} trials provides statistically robust insights (±4% confidence)")
+
+            while True:
+                choice = input(f"\nChoose option [1/2] (default: 1): ").strip() or "1"
+                if choice == "1":
+                    sample_size = default_sample
+                    print(f"\n✓ Using quick sample: {sample_size} trials (~{100*sample_size//total_trials}% coverage)")
+                    break
+                elif choice == "2":
+                    sample_size = total_trials
+                    print(f"\n✓ Running full analysis: {sample_size:,} trials (100% coverage)")
+                    print(f"  This will take approximately {total_trials//150}-{total_trials//120} minutes...")
+                    break
+                else:
+                    print("Invalid choice. Please enter 1 or 2.")
     else:
         print(f"✓ Analyzing {min(sample_size, len(all_nct_ids))} trials (user-specified)")
 

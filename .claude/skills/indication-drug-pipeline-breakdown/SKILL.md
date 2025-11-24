@@ -124,11 +124,14 @@ Phase 4: Biktarvy, Efsubaglutide Alfa, Liraglutide, Naltrexone/Bupropion
    - **studyType="interventional"**: Controlled trials, not observational
    - Result: Focuses on drugs currently in active clinical development
 
-2. **Intelligent Sampling**: Analyzes sample of trials for efficiency
-   - Default: 200 trials (configurable via parameter)
-   - Random sampling from first 1000 results
+2. **Intelligent Sampling with User Choice**:
+   - **≤ 1,000 trials**: Analyzes ALL trials automatically (100% coverage)
+   - **> 1,000 trials**: Interactive prompt offers two options:
+     * Quick sample (~500 trials, 3-5 min, ±4% confidence) - Default
+     * Full analysis (ALL trials, 10-15+ min, 100% coverage)
+   - Random sampling ensures representative distribution
    - Fetches detailed trial info via CT.gov `get` method
-   - Balances accuracy with performance
+   - User maintains control over accuracy vs performance trade-off
 
 3. **Intervention Extraction**: Parses markdown from detailed trial data
    - Regex pattern: `r'###\s+Drug:\s*(.+?)(?:\n|$)'`
