@@ -49,7 +49,7 @@
 - Company names and trial NCT IDs
 - Enrollment timelines
 
-**Status**: 🔴
+**Status**: 🟢 (Skill created: get_kras_g12d_phase2_trials - 100 trials retrieved)
 
 ---
 
@@ -62,7 +62,7 @@
 - Competitor portfolio visualization
 
 **Expected Skills**:
-- New skill: `get_pd1_checkpoint_trials`
+- New skill: `get_pd1_checkpoint_trials` ✓ CREATED
 - Multi-indication aggregation
 
 **Expected Output**:
@@ -70,7 +70,7 @@
 - Trial count by indication
 - Development stage distribution
 
-**Status**: 🔴
+**Status**: 🟢 (5651 trials, 16 indications, company×indication matrix generated)
 
 ---
 
@@ -92,7 +92,7 @@
 - Confidence intervals
 - Key milestone dates
 
-**Status**: 🔴
+**Status**: 🟢 (glp1-trials: 1808 trials)
 
 ---
 
@@ -113,7 +113,7 @@
 - Disease targets (prevalence <200k)
 - Market exclusivity windows
 
-**Status**: 🔴
+**Status**: ⚠️ (orphan-neuro: import error)
 
 ---
 
@@ -134,7 +134,7 @@
 - Selection criteria comparison
 - CDx development programs
 
-**Status**: 🔴
+**Status**: 🟢 (egfr-trials: 1435 trials)
 
 ---
 
@@ -155,7 +155,7 @@
 - Comparison to monotherapy
 - Toxicity patterns
 
-**Status**: 🔴
+**Status**: 🟢 (braf-trials: 321 trials)
 
 ---
 
@@ -176,7 +176,7 @@
 - Common failure reasons
 - Surviving programs
 
-**Status**: 🔴
+**Status**: ⚠️ (alzheimers-all-trials: pagination error)
 
 ---
 
@@ -197,7 +197,7 @@
 - Target diseases
 - Development stage
 
-**Status**: 🔴
+**Status**: ❌ (mRNA vaccine skill needed)
 
 ---
 
@@ -222,7 +222,7 @@
 - Sponsor companies
 - Geographic locations
 
-**Status**: 🔴
+**Status**: ⚠️ (Skill created: get_covid_antiviral_trials_recent - 2000 trials retrieved but field parsing needs fixing)
 
 ---
 
@@ -243,7 +243,7 @@
 - Unique endpoint strategies
 - Standard vs novel endpoints
 
-**Status**: 🔴
+**Status**: ⚠️ (Skill created: get_heart_failure_phase3_trials - 2000 trials but field parsing needs fixing)
 
 ---
 
@@ -264,7 +264,7 @@
 - Target enrollment
 - Estimated completion dates
 
-**Status**: 🔴
+**Status**: ❌ (Skill exists: cart-bcell-malignancies-trials but returns 0 results - needs investigation)
 
 ---
 
@@ -285,7 +285,7 @@
 - Amendment reasons (efficacy/safety/enrollment)
 - Competitive implications
 
-**Status**: 🔴
+**Status**: ❌ (No DMD trials skill - needs creation)
 
 ---
 
@@ -306,7 +306,7 @@
 - State/country breakdown
 - Strategic site concentration
 
-**Status**: 🔴
+**Status**: ⚠️ (US obesity skill exists, needs EU comparison skill)
 
 ---
 
@@ -327,7 +327,7 @@
 - Planned readout dates
 - Conference presentation schedules
 
-**Status**: 🔴
+**Status**: ⚠️ (PD-1 checkpoint skills exist, need 2026 date filtering)
 
 ---
 
@@ -348,7 +348,7 @@
 - High-confidence programs
 - Risk factors identified
 
-**Status**: 🔴
+**Status**: ❌ (No Phase 2 oncology PoS skill - complex modeling needed)
 
 ---
 
@@ -369,7 +369,7 @@
 - Design flexibility types
 - Regulatory acceptance patterns
 
-**Status**: 🔴
+**Status**: ❌ (No adaptive design rare disease skill - needs creation)
 
 ---
 
@@ -394,7 +394,7 @@
 - YoY growth rates
 - Priority area identification
 
-**Status**: 🔴
+**Status**: ❌ (SEC R&D analysis - requires complex financial data extraction)
 
 ---
 
@@ -415,7 +415,7 @@
 - Portfolio shift timeline
 - Strategic implications
 
-**Status**: 🔴
+**Status**: ❌ (Multi-year SEC trend analysis - complex financial modeling)
 
 ---
 
@@ -436,7 +436,7 @@
 - Funding amounts
 - Lead investors
 
-**Status**: 🔴
+**Status**: ❌ (Venture funding tracking - requires external financial databases)
 
 ---
 
@@ -457,7 +457,7 @@
 - Percentage change
 - Analyst reactions
 
-**Status**: 🔴
+**Status**: ❌ (Market cap event analysis - requires stock market data integration)
 
 ---
 
@@ -478,7 +478,7 @@
 - Total estimated cost (range)
 - Success-adjusted NPV
 
-**Status**: 🔴
+**Status**: ❌ (Development cost modeling - requires cost benchmarking framework)
 
 ---
 
@@ -499,7 +499,7 @@
 - Quarterly burn rates
 - Months of runway remaining
 
-**Status**: 🔴
+**Status**: ❌ (Burn rate analysis - requires cash flow statement parsing)
 
 ---
 
@@ -520,7 +520,7 @@
 - Total portfolio value
 - Key value drivers
 
-**Status**: 🔴
+**Status**: ❌ (rNPV portfolio valuation - complex financial modeling)
 
 ---
 
@@ -541,7 +541,7 @@
 - High/low estimates
 - Earnings estimate ranges
 
-**Status**: 🔴
+**Status**: ❌ (Analyst consensus tracking - requires financial data provider integration)
 
 ---
 
@@ -566,7 +566,7 @@
 - Competitive differentiation
 - Strategic advantages
 
-**Status**: 🔴
+**Status**: ❌ (Strategic capability mapping - requires competitive-landscape-analyst agent)
 
 ---
 
@@ -587,7 +587,7 @@
 - Time-to-market estimates
 - First-mover advantage analysis
 
-**Status**: 🔴
+**Status**: ⚠️ (KRAS trials skill exists, needs timeline prediction modeling)
 
 ---
 
@@ -608,7 +608,7 @@
 - White space opportunities
 - Acquisition target profiles
 
-**Status**: 🔴
+**Status**: ⚠️ (BMS cardio trials skill exists, needs gap analysis framework)
 
 ---
 
@@ -629,7 +629,7 @@
 - Deal structure patterns
 - Predicted next targets
 
-**Status**: 🔴
+**Status**: ❌ (Partnership pattern analysis - requires M&A database integration)
 
 ---
 
@@ -650,7 +650,7 @@
 - Success rate by strategy
 - Best practices identified
 
-**Status**: 🔴
+**Status**: ❌ (Regulatory strategy comparison - complex multi-source analysis)
 
 ---
 
@@ -671,7 +671,7 @@
 - Priority markets (US, EU, China)
 - Revenue impact by sequence
 
-**Status**: 🔴
+**Status**: ⚠️ (GLP-1 skills exist, needs geographic expansion tracking)
 
 ---
 
@@ -692,7 +692,7 @@
 - Probability-weighted outcomes
 - Recommended countermeasures
 
-**Status**: 🔴
+**Status**: ❌ (Scenario modeling - requires strategic framework, not just data)
 
 ---
 
@@ -713,7 +713,7 @@
 - Indication applicability
 - Competitive advantages
 
-**Status**: 🔴
+**Status**: ❌ (mRNA platform comparison - complex technology assessment)
 
 ---
 
@@ -739,7 +739,7 @@
 - Specific language used
 - Strategic signals
 
-**Status**: 🔴
+**Status**: ❌ (SEC M&A text mining - complex NLP analysis needed)
 
 ---
 
@@ -761,7 +761,7 @@
 - Abstract text summaries
 - Publication metadata
 
-**Status**: 🔴 (PubMed MCP operational - includes conference abstracts from major meetings)
+**Status**: ❌ (PubMed ASCO abstracts - needs creation)
 
 ---
 
@@ -830,7 +830,7 @@
 - Recent publications (2024-2025)
 - Influence metrics
 
-**Status**: 🔴
+**Status**: ❌ (CAR-T KOL tracking - needs PubMed skill + influence scoring)
 
 ---
 
@@ -857,7 +857,7 @@
 - Competitor positioning
 - Strategic quadrants
 
-**Status**: 🔴
+**Status**: ❌ (Positioning matrix - requires visualization framework)
 
 ---
 
@@ -878,7 +878,7 @@
 - Direct competitor pairs
 - White space opportunities
 
-**Status**: 🔴
+**Status**: ❌ (Pipeline overlap - requires multi-company comparison framework)
 
 ---
 
@@ -899,7 +899,7 @@
 - Confidence intervals
 - Risk-adjusted timelines
 
-**Status**: 🔴
+**Status**: ❌ (Monte Carlo modeling - complex probabilistic simulation)
 
 ---
 
@@ -920,7 +920,7 @@
 - Revenue impact by competitor
 - Strategic implications
 
-**Status**: 🔴
+**Status**: ❌ (Market share modeling - complex market dynamics simulation)
 
 ---
 
@@ -942,7 +942,7 @@
 - Opportunities (4-6 points)
 - Threats (4-6 points)
 
-**Status**: 🔴
+**Status**: ❌ (Automated SWOT - requires strategic framework synthesis)
 
 ---
 
@@ -963,7 +963,7 @@
 - Overall attractiveness rating
 - Strategic implications
 
-**Status**: 🔴
+**Status**: ❌ (Porters Five Forces - requires market structure analysis framework)
 
 ---
 
@@ -984,7 +984,7 @@
 - Equilibrium strategies
 - Recommended actions
 
-**Status**: 🔴
+**Status**: ❌ (Game theory modeling - complex Nash equilibrium calculation)
 
 ---
 
@@ -1005,7 +1005,7 @@
 - Pattern clusters
 - Predictive accuracy metrics
 
-**Status**: 🔴
+**Status**: ❌ (ML pattern recognition - requires ML model training infrastructure)
 
 ---
 
@@ -1030,7 +1030,7 @@
 - KPI definitions
 - Update frequency
 
-**Status**: 🔴
+**Status**: ❌ (Dashboard creation - requires visualization infrastructure)
 
 ---
 
@@ -1051,7 +1051,7 @@
 - Notification channels
 - Escalation procedures
 
-**Status**: 🔴
+**Status**: ❌ (Alert system - requires automation infrastructure)
 
 ---
 
@@ -1072,7 +1072,7 @@
 - Top 5 developments
 - Strategic implications
 
-**Status**: 🔴
+**Status**: ❌ (Newsletter generation - requires content curation framework)
 
 ---
 
@@ -1122,7 +1122,7 @@
 - Milestone markers
 - Critical path identification
 
-**Status**: 🔴
+**Status**: ❌ (Timeline visualization - requires Gantt chart infrastructure)
 
 ---
 
@@ -1143,7 +1143,7 @@
 - Top 3 opportunities (with attractiveness)
 - Strategic recommendations
 
-**Status**: 🔴
+**Status**: ❌ (Threat/opportunity - requires strategic scoring framework)
 
 ---
 
@@ -1164,7 +1164,7 @@
 - Score breakdown
 - Action timeline
 
-**Status**: 🔴
+**Status**: ❌ (Recommendation prioritization - requires multi-criteria framework)
 
 ---
 
@@ -1185,7 +1185,7 @@
 - Key messages
 - Visual specifications
 
-**Status**: 🔴
+**Status**: ❌ (Board presentation - requires executive communication framework)
 
 ---
 
@@ -1210,7 +1210,7 @@
 - Trial classification
 - Confidence scores
 
-**Status**: 🔴
+**Status**: ❌ (NLP MoA extraction - requires advanced NLP capabilities)
 
 ---
 
@@ -1252,7 +1252,7 @@
 - Notification channels
 - Escalation logic
 
-**Status**: 🔴
+**Status**: ❌ (Automated alerts - requires event monitoring infrastructure)
 
 ---
 
@@ -1273,7 +1273,7 @@
 - Feature importance
 - Accuracy metrics (AUC, precision, recall)
 
-**Status**: 🔴
+**Status**: ❌ (ML success prediction - requires ML training infrastructure)
 
 ---
 
@@ -1294,7 +1294,7 @@
 - Feature specifications
 - Data schema
 
-**Status**: 🔴
+**Status**: ❌ (Viz platform - requires interactive visualization infrastructure)
 
 ---
 
@@ -1315,7 +1315,7 @@
 - Channel structure
 - Sharing protocols
 
-**Status**: 🔴
+**Status**: ❌ (Collaboration tools - requires Slack/Teams integration)
 
 ---
 
@@ -1336,7 +1336,7 @@
 - Data schema
 - Search specifications
 
-**Status**: 🔴
+**Status**: ❌ (KMS - requires knowledge management system architecture)
 
 ---
 
@@ -1357,7 +1357,7 @@
 - Accuracy metrics
 - Confidence intervals
 
-**Status**: 🔴
+**Status**: ❌ (Predictive analytics - requires forecasting model infrastructure)
 
 ---
 
@@ -1382,7 +1382,7 @@
 - Safety/efficacy trade-offs
 - Viable regimens
 
-**Status**: 🔴
+**Status**: ❌ (NSCLC triple combos - needs creation)
 
 ---
 
@@ -1403,7 +1403,7 @@
 - Market share estimates
 - Switching patterns
 
-**Status**: 🔴
+**Status**: ❌ (SMA rare disease - needs market dynamics framework)
 
 ---
 
@@ -1424,7 +1424,7 @@
 - Target antigen distribution
 - Liquid vs solid tumor split
 
-**Status**: 🔴
+**Status**: ❌ (CAR-T all programs - needs comprehensive tracking)
 
 ---
 
@@ -1445,7 +1445,7 @@
 - Key challenges identified
 - Success probability
 
-**Status**: 🔴
+**Status**: ❌ (Parkinsons DMT - needs long-term modeling)
 
 ---
 
@@ -1466,7 +1466,7 @@
 - Market share evolution
 - Key inflection points
 
-**Status**: 🔴
+**Status**: ❌ (IL-17 market evolution - needs historical analysis)
 
 ---
 
@@ -1487,7 +1487,7 @@
 - Primary endpoints
 - Results timeline
 
-**Status**: 🔴
+**Status**: ❌ (Diabetes CVOTs - needs outcomes trial tracking)
 
 ---
 
@@ -1508,7 +1508,7 @@
 - Regulatory status
 - Reimbursement landscape
 
-**Status**: 🔴
+**Status**: ❌ (Digital therapeutics - needs FDA DTx tracking)
 
 ---
 
@@ -1529,7 +1529,7 @@
 - Indication pipeline
 - Competitive advantages
 
-**Status**: 🔴
+**Status**: ❌ (CRISPR platform - needs technology comparison framework)
 
 ---
 
@@ -1554,7 +1554,7 @@
 - Severity scores (1-10)
 - Mitigation strategies
 
-**Status**: 🔴
+**Status**: ❌ (Threat identification - requires risk scoring framework)
 
 ---
 
@@ -1575,7 +1575,7 @@
 - Competitor responses
 - Strategic implications
 
-**Status**: 🔴
+**Status**: ❌ (Failure impact - requires market dynamics modeling)
 
 ---
 
@@ -1596,7 +1596,7 @@
 - Common safety signals
 - Regulatory guidance changes
 
-**Status**: 🔴
+**Status**: ❌ (Clinical holds - requires FDA monitoring)
 
 ---
 
@@ -1617,7 +1617,7 @@
 - Affected drugs
 - Competitive implications
 
-**Status**: 🔴
+**Status**: ❌ (Safety signals - requires FAERS analysis)
 
 ---
 
@@ -1638,7 +1638,7 @@
 - Patent challenge status
 - Biosimilar entry dates
 
-**Status**: 🔴
+**Status**: ❌ (Patent challenges - requires litigation tracking)
 
 ---
 
@@ -1659,7 +1659,7 @@
 - Timeline estimate
 - Affected products
 
-**Status**: 🔴
+**Status**: ❌ (Technology substitution - requires disruption modeling)
 
 ---
 
@@ -1680,7 +1680,7 @@
 - Revenue impact (year 1-5)
 - Market share erosion
 
-**Status**: 🔴
+**Status**: ❌ (Biosimilar entry - requires erosion modeling)
 
 ---
 
@@ -1701,7 +1701,7 @@
 - Country-specific challenges
 - Revenue impact
 
-**Status**: 🔴
+**Status**: ❌ (Reimbursement barriers - requires payer policy analysis)
 
 ---
 
@@ -1726,7 +1726,7 @@
 - Timeline impact
 - Resource requirements
 
-**Status**: 🔴
+**Status**: ❌ (Acceleration opportunities - requires strategic planning framework)
 
 ---
 
@@ -1747,7 +1747,7 @@
 - Score breakdown
 - Deal rationale
 
-**Status**: 🔴
+**Status**: ❌ (M&A prioritization - requires valuation framework)
 
 ---
 
@@ -1768,7 +1768,7 @@
 - Recommended strategy
 - Implementation plan
 
-**Status**: 🔴
+**Status**: ❌ (Partnership strategy - requires build-buy-partner framework)
 
 ---
 
@@ -1789,7 +1789,7 @@
 - Risk mitigation strategies
 - Success probability impact
 
-**Status**: 🔴
+**Status**: ❌ (Development adjustments - requires strategy framework)
 
 ---
 
@@ -1810,7 +1810,7 @@
 - ROI projections
 - Competitive impact
 
-**Status**: 🔴
+**Status**: ❌ (Investment prioritization - requires portfolio optimization)
 
 ---
 
@@ -1831,7 +1831,7 @@
 - Revenue scenarios
 - Competitive responses
 
-**Status**: 🔴
+**Status**: ❌ (Market entry timing - requires launch modeling)
 
 ---
 
@@ -1852,7 +1852,7 @@
 - Timeline
 - Revenue protection estimates
 
-**Status**: 🔴
+**Status**: ❌ (Defensive strategy - requires lifecycle management framework)
 
 ---
 
@@ -1873,7 +1873,7 @@
 - Rationale for each
 - Resource reallocation plan
 
-**Status**: 🔴
+**Status**: ❌ (Portfolio optimization - requires go/no-go decision framework)
 
 ---
 

@@ -50,7 +50,7 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
     company_name = cik_result.get('name', ticker)
     print(f"✓ Found: {company_name} (CIK: {cik})")
 
-    # Step 2: Get recent 10-Q and 10-K filings
+    # Step 2: Get recent 10-Q, 10-K, and 20-F filings
     print(f"\nStep 2: Fetching recent filings for {company_name}...")
     submissions = get_company_submissions(cik_or_ticker=cik)
 
@@ -62,14 +62,14 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
             'cik': cik
         }
 
-    # Get recent filings (10-Q and 10-K)
+    # Get recent filings (10-Q, 10-K, and 20-F for international companies)
     recent_filings = submissions.get('recentFilings', [])
 
-    # Filter for quarterly and annual reports
+    # Filter for quarterly and annual reports (including foreign company annual reports)
     target_filings = []
     for filing in recent_filings:
         form = filing.get('form')
-        if form in ['10-Q', '10-K'] and len(target_filings) < quarters:
+        if form in ['10-Q', '10-K', '20-F'] and len(target_filings) < quarters:
             target_filings.append({
                 'form': form,
                 'accession': filing.get('accessionNumber', '').replace('-', ''),
@@ -79,7 +79,7 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
 
     if not target_filings:
         return {
-            'error': 'No 10-Q or 10-K filings found',
+            'error': 'No 10-Q, 10-K, or 20-F filings found',
             'company': company_name,
             'ticker': ticker,
             'cik': cik
@@ -141,6 +141,11 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
             filing_facts = extract_dimensional_revenue(
                 xml_root, contexts, revenue_concepts, filing['form']
             )
+
+            # Defensive: ensure filing_facts is a list
+            if filing_facts is None:
+                print(f"    Warning: extract_dimensional_revenue returned None for {filing['form']}")
+                filing_facts = []
 
             dimensional_facts_count += len(filing_facts)
 
@@ -635,94 +640,114 @@ def extract_dimensional_revenue(xml_root, contexts, revenue_concepts, form):
         xml_root: XML root element
         contexts: Parsed context dictionary
         revenue_concepts: List of revenue concept names to search for
-        form: Filing form type (10-Q or 10-K)
+        form: Filing form type (10-Q, 10-K, or 20-F)
 
     Returns:
         list: Revenue facts with dimensions
     """
     facts = []
 
-    # Discover us-gaap namespace
+    # Discover us-gaap and ifrs-full namespaces (support both US and international companies)
     namespaces_found = {}
+    elem_count = 0
     for elem in xml_root.iter():
         tag = elem.tag
         if '}' in tag:
             ns = tag.split('}')[0].strip('{')
             if 'us-gaap' in ns:
                 namespaces_found['us-gaap'] = ns
-                break
+            elif 'ifrs-full' in ns.lower():
+                namespaces_found['ifrs-full'] = ns
 
-    if 'us-gaap' not in namespaces_found:
+        elem_count += 1
+        # Stop if we found both namespaces, or checked enough elements (20K should be enough)
+        if len(namespaces_found) >= 2 or elem_count > 20000:
+            break
+
+    # Must have at least one accounting standard namespace
+    if 'us-gaap' not in namespaces_found and 'ifrs-full' not in namespaces_found:
         return facts
 
-    # Search for revenue concepts
+    # Search for revenue concepts in both US GAAP and IFRS namespaces
     for concept_name in revenue_concepts:
-        xpath = f".//{{{namespaces_found['us-gaap']}}}{concept_name}"
+        # Try US GAAP namespace
+        if 'us-gaap' in namespaces_found:
+            xpath = f".//{{{namespaces_found['us-gaap']}}}{concept_name}"
+            for elem in xml_root.findall(xpath):
+                _process_revenue_element(elem, facts, contexts, concept_name, form)
 
-        for elem in xml_root.findall(xpath):
-            context_ref = elem.get('contextRef')
-
-            if context_ref and elem.text and context_ref in contexts:
-                try:
-                    value = float(elem.text)
-                    context_info = contexts[context_ref]
-
-                    # Only include facts with valid end dates
-                    if not context_info['end_date']:
-                        continue
-
-                    # Extract segments and geographies from all axes
-                    segments_by_axis = context_info.get('segments_by_axis', {})
-                    geographies_by_axis = context_info.get('geographies_by_axis', {})
-
-                    # If this context has segment dimensions, create one fact per segment axis
-                    if segments_by_axis:
-                        for axis, seg_info in segments_by_axis.items():
-                            facts.append({
-                                'concept': concept_name,
-                                'value': value,
-                                'end_date': context_info['end_date'],
-                                'start_date': context_info['start_date'],
-                                'segment': seg_info['segment'],
-                                'geography': None,  # Will be set if geography in same context
-                                'segment_axis': axis,
-                                'geography_axis': None,
-                                'form': form
-                            })
-
-                    # If this context has geography dimensions (and no segments), create facts
-                    if geographies_by_axis and not segments_by_axis:
-                        for axis, geo_name in geographies_by_axis.items():
-                            facts.append({
-                                'concept': concept_name,
-                                'value': value,
-                                'end_date': context_info['end_date'],
-                                'start_date': context_info['start_date'],
-                                'segment': None,
-                                'geography': geo_name,
-                                'segment_axis': None,
-                                'geography_axis': axis,
-                                'form': form
-                            })
-
-                    # If no dimensions, this is consolidated revenue
-                    if not segments_by_axis and not geographies_by_axis:
-                        facts.append({
-                            'concept': concept_name,
-                            'value': value,
-                            'end_date': context_info['end_date'],
-                            'start_date': context_info['start_date'],
-                            'segment': None,
-                            'geography': None,
-                            'segment_axis': None,
-                            'geography_axis': None,
-                            'form': form
-                        })
-
-                except (ValueError, TypeError):
-                    continue
+        # Try IFRS namespace
+        if 'ifrs-full' in namespaces_found:
+            xpath = f".//{{{namespaces_found['ifrs-full']}}}{concept_name}"
+            for elem in xml_root.findall(xpath):
+                _process_revenue_element(elem, facts, contexts, concept_name, form)
 
     return facts
+
+
+def _process_revenue_element(elem, facts, contexts, concept_name, form):
+    """Helper function to process a single revenue element."""
+    context_ref = elem.get('contextRef')
+
+    if context_ref and elem.text and context_ref in contexts:
+        try:
+            value = float(elem.text)
+            context_info = contexts[context_ref]
+
+            # Only include facts with valid end dates
+            if not context_info['end_date']:
+                return
+
+            # Extract segments and geographies from all axes
+            segments_by_axis = context_info.get('segments_by_axis', {})
+            geographies_by_axis = context_info.get('geographies_by_axis', {})
+
+            # If this context has segment dimensions, create one fact per segment axis
+            if segments_by_axis:
+                for axis, seg_info in segments_by_axis.items():
+                    facts.append({
+                        'concept': concept_name,
+                        'value': value,
+                        'end_date': context_info['end_date'],
+                        'start_date': context_info['start_date'],
+                        'segment': seg_info['segment'],
+                        'geography': None,
+                        'segment_axis': axis,
+                        'geography_axis': None,
+                        'form': form
+                    })
+
+            # If this context has geography dimensions (and no segments), create facts
+            if geographies_by_axis and not segments_by_axis:
+                for axis, geo_name in geographies_by_axis.items():
+                    facts.append({
+                        'concept': concept_name,
+                        'value': value,
+                        'end_date': context_info['end_date'],
+                        'start_date': context_info['start_date'],
+                        'segment': None,
+                        'geography': geo_name,
+                        'segment_axis': None,
+                        'geography_axis': axis,
+                        'form': form
+                    })
+
+            # If no dimensions, this is consolidated revenue
+            if not segments_by_axis and not geographies_by_axis:
+                facts.append({
+                    'concept': concept_name,
+                    'value': value,
+                    'end_date': context_info['end_date'],
+                    'start_date': context_info['start_date'],
+                    'segment': None,
+                    'geography': None,
+                    'segment_axis': None,
+                    'geography_axis': None,
+                    'form': form
+                })
+
+        except (ValueError, TypeError):
+            pass  # Skip invalid values
 
 
 if __name__ == "__main__":

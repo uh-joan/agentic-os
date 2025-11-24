@@ -104,7 +104,7 @@ Returns summary (500 tokens) + Saves skill → Skill reusable forever
 
 ## Skills Library
 
-**Current:** 68 reusable data collection functions across:
+**Current:** reusable data collection functions across:
 - Clinical trials, FDA drugs, adverse events
 - Medical coding (ICD-10/11, HCPCS, NPI)
 - Literature search, target validation, compound properties
@@ -134,7 +134,7 @@ Returns summary (500 tokens) + Saves skill → Skill reusable forever
 ├── .context/
 │   ├── mcp-tool-guides/          # API docs (12 servers)
 │   └── code-examples/            # Code patterns (7 patterns)
-├── skills/                       # Skills library (68 skills)
+├── skills/                       # Skills library
 │   └── index.json                # Discovery index
 ├── tools/
 │   └── skill_discovery/          # 4-level discovery system

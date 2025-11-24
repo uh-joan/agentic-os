@@ -38,3 +38,6 @@ __pycache__/
 
 # Commands - not used yet
 .claude/commands/
+
+# Claude Desktop packages - for distribution, not version controlled
+claude-desktop-packages/
