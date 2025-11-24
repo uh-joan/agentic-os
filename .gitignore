@@ -33,8 +33,9 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Skills library - deprecated files (to be removed 2025-12-19)
+# Skills library - deprecated and archived files
 .claude/skills/deprecated/
+.claude/skills/archive/
 
 # Commands - not used yet
 .claude/commands/
