@@ -65,11 +65,16 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
     # Get recent filings (10-Q, 10-K, and 20-F for international companies)
     recent_filings = submissions.get('recentFilings', [])
 
+    # Fetch extra quarters for YoY calculation (need 4 quarters back for same quarter last year)
+    # User requests N quarters, we fetch N+5 to enable complete YoY coverage for ALL displayed quarters
+    # (The +5th quarter gives us YoY for the oldest displayed quarter too)
+    quarters_to_fetch = quarters + 5
+
     # Filter for quarterly and annual reports (including foreign company annual reports)
     target_filings = []
     for filing in recent_filings:
         form = filing.get('form')
-        if form in ['10-Q', '10-K', '20-F'] and len(target_filings) < quarters:
+        if form in ['10-Q', '10-K', '20-F'] and len(target_filings) < quarters_to_fetch:
             target_filings.append({
                 'form': form,
                 'accession': filing.get('accessionNumber', '').replace('-', ''),
@@ -102,7 +107,14 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
         'RevenueFromContractWithCustomerIncludingAssessedTax'
     ]
 
+    operating_income_concepts = [
+        'OperatingIncomeLoss',
+        'OperatingIncome',
+        'IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments'
+    ]
+
     dimensional_facts_count = 0
+    all_operating_income_data = defaultdict(lambda: defaultdict(float))
 
     for filing in target_filings:
         # Construct XBRL instance document URL
@@ -149,7 +161,17 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
 
             dimensional_facts_count += len(filing_facts)
 
-            # Organize by segment and geography
+            # Extract operating income facts with dimensions
+            filing_oi_facts = extract_dimensional_revenue(
+                xml_root, contexts, operating_income_concepts, filing['form']
+            )
+
+            if filing_oi_facts is None:
+                filing_oi_facts = []
+
+            dimensional_facts_count += len(filing_oi_facts)
+
+            # Organize revenue by segment and geography
             for fact in filing_facts:
                 segment = fact['segment']
                 geography = fact['geography']
@@ -177,6 +199,29 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
                         all_geography_data[geography_key][period], value
                     )
 
+            # Organize operating income by segment and geography
+            for fact in filing_oi_facts:
+                segment = fact['segment']
+                geography = fact['geography']
+                period = fact['end_date']
+                value = fact['value']
+                dimension_axis = fact.get('segment_axis', '')
+
+                # Track segment operating income
+                if segment:
+                    segment_key = f"{segment}|{dimension_axis}|OI"
+                    all_operating_income_data[segment_key][period] = max(
+                        all_operating_income_data[segment_key][period], value
+                    )
+
+                # Track geography operating income
+                if geography:
+                    geography_axis = fact.get('geography_axis', '')
+                    geography_key = f"{geography}|{geography_axis}|OI"
+                    all_operating_income_data[geography_key][period] = max(
+                        all_operating_income_data[geography_key][period], value
+                    )
+
         except Exception as e:
             print(f"    Warning: Could not parse {filing['form']}: {e}")
             continue
@@ -196,14 +241,18 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
 
     latest_period = max(all_periods) if all_periods else None
 
-    # Get consolidated revenue for latest period
-    consolidated_total = 0
-    if consolidated_revenue_data and latest_period:
-        # Sort by date and get most recent
+    # Build consolidated revenue by period (for % of Total calculation)
+    consolidated_revenue_by_period = {}
+    if consolidated_revenue_data:
         consolidated_revenue_data.sort(key=lambda x: x['end_date'], reverse=True)
         for item in consolidated_revenue_data:
-            if item['end_date'] == latest_period:
-                consolidated_total = max(consolidated_total, item['value'])
+            period = item['end_date']
+            consolidated_revenue_by_period[period] = max(
+                consolidated_revenue_by_period.get(period, 0), item['value']
+            )
+
+    # Get consolidated revenue for latest period
+    consolidated_total = consolidated_revenue_by_period.get(latest_period, 0) if latest_period else 0
 
     # Group segments by their dimension axis
     segments_by_axis = defaultdict(dict)
@@ -397,36 +446,197 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
             reconciliation['variance'] = variance
             reconciliation['variance_pct'] = variance_pct
 
-    # Step 5: Format results
+    # Step 5: Format results with time series tables
     print(f"\nStep 4: Formatting results...")
     print("-"*80)
 
-    # Get unique periods analyzed
-    periods_analyzed = sorted(all_periods, reverse=True) if all_periods else []
+    # Get ALL periods for YoY calculation (includes extra quarters fetched)
+    # IMPORTANT: Deduplicate periods by quarter (same quarter can have multiple end dates)
+    # Group by quarter label and keep only the LATEST date for each quarter
+    periods_by_quarter = defaultdict(list)
+    for period in all_periods:
+        quarter_label = get_quarter_label(period)
+        periods_by_quarter[quarter_label].append(period)
+
+    # For each quarter, keep only the latest (maximum) date
+    unique_periods = []
+    for quarter_label, dates in periods_by_quarter.items():
+        latest_date = max(dates)
+        unique_periods.append(latest_date)
+
+    # Sort by date (newest first)
+    all_periods_sorted = sorted(unique_periods, reverse=True)
+
+    # Display only the requested number of quarters (user's original request)
+    periods_to_display = all_periods_sorted[:quarters]
+
+    # Use all fetched periods for YoY calculation (includes +5 extra)
+    periods_for_yoy = all_periods_sorted
+
+    # Convert consolidated revenue to quarterly (not cumulative)
+    consolidated_revenue_quarterly = convert_cumulative_to_quarterly(consolidated_revenue_by_period)
 
     # Format segment revenue
     segment_revenue_summary = {}
     if filtered_segments:
-        print("\nSegment Revenue Summary:")
+        print("\n" + "="*120)
+        print("QUARTERLY TIME SERIES - BUSINESS SEGMENTS")
+        print("="*120)
+
         for segment in sorted(filtered_segments.keys()):
+            # Get revenue and operating income time series (cumulative)
+            revenue_series_cumulative = {}
+            oi_series_cumulative = {}
+
+            # Find the segment key in all_segment_data (with axis)
+            segment_key_with_axis = None
+            for key in all_segment_data.keys():
+                if key.startswith(f"{segment}|") and not key.endswith("|OI"):
+                    segment_key_with_axis = key
+                    break
+
+            if segment_key_with_axis:
+                revenue_series_cumulative = all_segment_data[segment_key_with_axis]
+
+                # Find corresponding operating income
+                axis_part = segment_key_with_axis.split('|')[1] if '|' in segment_key_with_axis else ''
+                oi_key = f"{segment}|{axis_part}|OI"
+                if oi_key in all_operating_income_data:
+                    oi_series_cumulative = all_operating_income_data[oi_key]
+
+            # Convert cumulative to quarterly
+            revenue_series = convert_cumulative_to_quarterly(revenue_series_cumulative)
+            oi_series = convert_cumulative_to_quarterly(oi_series_cumulative)
+
+            # Build table for this segment
+            print(f"\n{segment} Trends:")
+            print(f"| {'Quarter':<10} | {'Revenue':>12} | {'YoY %':>8} | {'Operating Income':>18} | {'Margin':>8} | {'% of Total':>11} |")
+            print(f"|{'-'*12}|{'-'*14}|{'-'*10}|{'-'*20}|{'-'*10}|{'-'*13}|")
+
+            # Use all fetched periods for YoY calculation (includes extra quarters)
+            periods_list_full = list(periods_for_yoy)
+
+            for i, period in enumerate(periods_to_display):
+                revenue = revenue_series.get(period, 0)
+                oi = oi_series.get(period, 0)
+                margin = (oi / revenue * 100) if revenue > 0 and oi != 0 else 0
+
+                if revenue > 0:
+                    quarter_label = get_quarter_label(period)
+                    revenue_str = f"${revenue/1_000_000_000:.2f}B"
+                    oi_str = f"${oi/1_000_000_000:.2f}B" if oi != 0 else "-"
+                    margin_str = f"{margin:.1f}%" if oi != 0 else "-"
+
+                    # Calculate YoY growth (compare to same quarter last year = 4 quarters back)
+                    # Look in full periods list (includes extra fetched quarters)
+                    yoy_growth_str = "-"
+                    try:
+                        period_idx_in_full = periods_list_full.index(period)
+                        if period_idx_in_full + 4 < len(periods_list_full):
+                            prior_year_period = periods_list_full[period_idx_in_full + 4]
+                            prior_year_revenue = revenue_series.get(prior_year_period, 0)
+                            if prior_year_revenue > 0:
+                                yoy_growth = ((revenue - prior_year_revenue) / prior_year_revenue) * 100
+                                yoy_growth_str = f"{yoy_growth:+.1f}%"
+                    except ValueError:
+                        pass  # Period not in full list
+
+                    # Calculate % of Total
+                    consolidated_rev = consolidated_revenue_quarterly.get(period, 0)
+                    pct_of_total_str = "-"
+                    if consolidated_rev > 0:
+                        pct_of_total = (revenue / consolidated_rev) * 100
+                        pct_of_total_str = f"{pct_of_total:.1f}%"
+
+                    print(f"| {quarter_label:<10} | {revenue_str:>12} | {yoy_growth_str:>8} | {oi_str:>18} | {margin_str:>8} | {pct_of_total_str:>11} |")
+
+            # Store summary
             latest_value = filtered_segments[segment]
             segment_revenue_summary[segment] = {
                 'latest_period': latest_period,
                 'latest_revenue': latest_value
             }
-            print(f"  {segment}: ${latest_value:,.0f}")
 
     # Format geographic revenue
     geographic_revenue_summary = {}
     if filtered_geographies:
-        print("\nGeographic Revenue Summary:")
+        print("\n" + "="*120)
+        print("QUARTERLY TIME SERIES - GEOGRAPHIC REGIONS")
+        print("="*120)
+
         for geography in sorted(filtered_geographies.keys()):
+            # Get revenue and operating income time series (cumulative)
+            revenue_series_cumulative = {}
+            oi_series_cumulative = {}
+
+            # Find the geography key in all_geography_data (with axis)
+            geography_key_with_axis = None
+            for key in all_geography_data.keys():
+                if key.startswith(f"{geography}|") and not key.endswith("|OI"):
+                    geography_key_with_axis = key
+                    break
+
+            if geography_key_with_axis:
+                revenue_series_cumulative = all_geography_data[geography_key_with_axis]
+
+                # Find corresponding operating income
+                axis_part = geography_key_with_axis.split('|')[1] if '|' in geography_key_with_axis else ''
+                oi_key = f"{geography}|{axis_part}|OI"
+                if oi_key in all_operating_income_data:
+                    oi_series_cumulative = all_operating_income_data[oi_key]
+
+            # Convert cumulative to quarterly
+            revenue_series = convert_cumulative_to_quarterly(revenue_series_cumulative)
+            oi_series = convert_cumulative_to_quarterly(oi_series_cumulative)
+
+            # Build table for this geography
+            print(f"\n{geography} Trends:")
+            print(f"| {'Quarter':<10} | {'Revenue':>12} | {'YoY %':>8} | {'Operating Income':>18} | {'Margin':>8} | {'% of Total':>11} |")
+            print(f"|{'-'*12}|{'-'*14}|{'-'*10}|{'-'*20}|{'-'*10}|{'-'*13}|")
+
+            # Use all fetched periods for YoY calculation (includes extra quarters)
+            periods_list_full = list(periods_for_yoy)
+
+            for i, period in enumerate(periods_to_display):
+                revenue = revenue_series.get(period, 0)
+                oi = oi_series.get(period, 0)
+                margin = (oi / revenue * 100) if revenue > 0 and oi != 0 else 0
+
+                if revenue > 0:
+                    quarter_label = get_quarter_label(period)
+                    revenue_str = f"${revenue/1_000_000_000:.2f}B"
+                    oi_str = f"${oi/1_000_000_000:.2f}B" if oi != 0 else "-"
+                    margin_str = f"{margin:.1f}%" if oi != 0 else "-"
+
+                    # Calculate YoY growth (compare to same quarter last year = 4 quarters back)
+                    # Look in full periods list (includes extra fetched quarters)
+                    yoy_growth_str = "-"
+                    try:
+                        period_idx_in_full = periods_list_full.index(period)
+                        if period_idx_in_full + 4 < len(periods_list_full):
+                            prior_year_period = periods_list_full[period_idx_in_full + 4]
+                            prior_year_revenue = revenue_series.get(prior_year_period, 0)
+                            if prior_year_revenue > 0:
+                                yoy_growth = ((revenue - prior_year_revenue) / prior_year_revenue) * 100
+                                yoy_growth_str = f"{yoy_growth:+.1f}%"
+                    except ValueError:
+                        pass  # Period not in full list
+
+                    # Calculate % of Total
+                    consolidated_rev = consolidated_revenue_quarterly.get(period, 0)
+                    pct_of_total_str = "-"
+                    if consolidated_rev > 0:
+                        pct_of_total = (revenue / consolidated_rev) * 100
+                        pct_of_total_str = f"{pct_of_total:.1f}%"
+
+                    print(f"| {quarter_label:<10} | {revenue_str:>12} | {yoy_growth_str:>8} | {oi_str:>18} | {margin_str:>8} | {pct_of_total_str:>11} |")
+
+            # Store summary
             latest_value = filtered_geographies[geography]
             geographic_revenue_summary[geography] = {
                 'latest_period': latest_period,
                 'latest_revenue': latest_value
             }
-            print(f"  {geography}: ${latest_value:,.0f}")
 
     print("\n" + "="*80)
     print("SUMMARY")
@@ -436,7 +646,8 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
     print(f"Latest Period: {latest_period}")
     print(f"\nSegments analyzed: {len(filtered_segments)}")
     print(f"Geographies analyzed: {len(filtered_geographies)}")
-    print(f"Quarters analyzed: {len(periods_analyzed)}")
+    print(f"Quarters displayed: {len(periods_to_display)}")
+    print(f"Quarters fetched (for YoY): {len(all_periods_sorted)}")
     print(f"XBRL dimensional facts: {dimensional_facts_count}")
 
     return {
@@ -445,7 +656,8 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
         'cik': cik,
         'latest_period': latest_period,
         'quarters_requested': quarters,
-        'quarters_analyzed': len(periods_analyzed),
+        'quarters_displayed': len(periods_to_display),
+        'quarters_fetched': len(all_periods_sorted),
         'segment_revenue': segment_revenue_summary,
         'geographic_revenue': geographic_revenue_summary,
         'reconciliation': reconciliation,
@@ -631,6 +843,81 @@ def normalize_geography_name(raw_geography):
     geography = ' '.join(geography.split())
 
     return geography if geography else None
+
+
+def convert_cumulative_to_quarterly(time_series_data):
+    """Convert cumulative YTD data to actual quarterly figures.
+
+    Args:
+        time_series_data: Dict of {period: cumulative_value}
+
+    Returns:
+        Dict of {period: quarterly_value}
+    """
+    if not time_series_data:
+        return {}
+
+    # Sort periods chronologically (oldest first)
+    sorted_periods = sorted(time_series_data.keys())
+
+    quarterly_data = {}
+    prev_cumulative = 0
+
+    for i, period in enumerate(sorted_periods):
+        cumulative_value = time_series_data[period]
+
+        # Detect if this is a Q1 period (first quarter of fiscal year)
+        # Q1 periods are already quarterly (not cumulative)
+        # We detect Q1 by checking if the previous period was a full year (Q4)
+        is_q1 = False
+        if i > 0:
+            prev_period = sorted_periods[i - 1]
+            # If previous period ends in Dec and current in Mar/Apr, likely new fiscal year (Q1)
+            prev_month = int(prev_period.split('-')[1])
+            curr_month = int(period.split('-')[1])
+            if prev_month == 12 and curr_month <= 4:
+                is_q1 = True
+        elif i == 0:
+            # First period in dataset - assume it's cumulative, not Q1
+            is_q1 = False
+
+        if is_q1:
+            # Q1 is actual quarterly (not cumulative)
+            quarterly_value = cumulative_value
+            prev_cumulative = cumulative_value
+        else:
+            # Q2, Q3, Q4 are cumulative - calculate delta
+            quarterly_value = cumulative_value - prev_cumulative
+            prev_cumulative = cumulative_value
+
+        quarterly_data[period] = quarterly_value
+
+    return quarterly_data
+
+
+def get_quarter_label(date_str):
+    """Convert date string to quarter label (e.g., '2025-09-28' -> 'Q3 2025').
+
+    Args:
+        date_str: Date string in format YYYY-MM-DD
+
+    Returns:
+        Quarter label like 'Q1 2025', 'Q2 2025', etc.
+    """
+    year = date_str[:4]
+    month = int(date_str.split('-')[1])
+
+    # Determine quarter from month
+    if month <= 3:
+        quarter = 'Q1'
+    elif month <= 6:
+        quarter = 'Q2'
+    elif month <= 9:
+        quarter = 'Q3'
+    else:
+        quarter = 'Q4'
+
+    return f"{quarter} {year}"
 
 
 def extract_dimensional_revenue(xml_root, contexts, revenue_concepts, form):

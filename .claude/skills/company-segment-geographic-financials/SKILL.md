@@ -1,19 +1,6 @@
 ---
-name: Company Segment & Geographic Financials
-description: Extract detailed business segment and geographic revenue breakdowns from SEC EDGAR 10-Q/10-K/20-F filings using advanced XBRL parsing. Supports 47+ companies with 85% success rate.
-metadata:
-  category: financial_analysis
-  mcp_servers:
-    - sec_edgar_mcp
-  patterns:
-    - xbrl_parsing
-    - dimensional_analysis
-    - reconciliation
-  complexity: complex
-  execution_time: 5-10s per company
-  validation: comprehensive_testing_47_companies
-  created: 2025-11-22
-  updated: 2025-11-24
+name: company-segment-and-geographic-financials
+description: Extract business segment and geographic revenue from SEC EDGAR filings using XBRL parsing
 ---
 
 # Company Segment & Geographic Financials Extractor
@@ -26,18 +13,22 @@ Extracts detailed business segment and geographic revenue breakdowns from SEC ED
 
 **Extracts:**
 - Business segment revenue (e.g., Pharma, MedTech, Diagnostics)
+- Segment-level operating income (when disclosed)
+- Segment margins (Operating Income / Revenue)
 - Product-level revenue (for companies reporting at product level)
 - Geographic revenue distribution (by country/region)
-- Quarterly or annual trends
+- Quarterly time series trends (up to 8 quarters)
 - Revenue reconciliation vs consolidated totals
 
 **Features:**
 - ✅ Automatic XBRL XML parsing from SEC filings
+- ✅ Quarterly time series with revenue, operating income, and margins
 - ✅ Hierarchical rollup detection (prevents double-counting)
 - ✅ Multi-axis dimensional analysis
 - ✅ Priority-based segment selection
 - ✅ Revenue reconciliation validation
 - ✅ Handles both business segment and product-level reporting
+- ✅ Graceful handling of missing operating income data (shows "-" when not disclosed)
 
 ## Usage
 
@@ -68,25 +59,58 @@ print(f"Variance: {result['reconciliation_variance']}%")
 
 ## Example Output
 
-### Johnson & Johnson (Business Segments)
+### Johnson & Johnson (Quarterly Time Series)
 
 ```
+QUARTERLY TIME SERIES - BUSINESS SEGMENTS
+
+Innovative Medicine Trends:
+Quarter                 Revenue   Operating Income     Margin
+------------------------------------------------------------
+2025-09-28              $44.64B                  -          -
+2025-06-29              $29.07B                  -          -
+2025-03-30              $13.87B                  -          -
+2024-12-29              $56.96B                  -          -
+2024-09-29              $42.63B            $14.91B      35.0%
+2024-06-30              $28.05B            $10.43B      37.2%
+2024-03-31              $13.56B             $4.97B      36.6%
+2023-12-31              $54.76B                  -          -
+
+Med Tech Trends:
+Quarter                 Revenue   Operating Income     Margin
+------------------------------------------------------------
+2025-09-28              $24.99B                  -          -
+2025-06-29              $16.56B                  -          -
+2025-03-30               $8.02B                  -          -
+2024-12-29              $31.86B                  -          -
+2024-09-29              $23.67B             $3.67B      15.5%
+2024-06-30              $15.78B             $2.61B      16.5%
+2024-03-31               $7.82B             $1.52B      19.4%
+2023-12-31              $30.40B                  -          -
+
+QUARTERLY TIME SERIES - GEOGRAPHIC REGIONS
+
+US Trends:
+Quarter                 Revenue   Operating Income     Margin
+------------------------------------------------------------
+2025-09-28              $39.56B                  -          -
+2025-06-29              $25.85B                  -          -
+2025-03-30              $12.30B                  -          -
+2024-12-29              $50.30B                  -          -
+2024-09-29              $37.10B                  -          -
+2024-06-30              $24.19B                  -          -
+2024-03-31              $11.62B                  -          -
+2023-12-31              $46.44B                  -          -
+
+[Additional geographies...]
+
+SUMMARY
 Company: JNJ (Johnson & Johnson)
 Latest Period: 2025-09-28
 Segments analyzed: 2
 Geographies analyzed: 5
+Quarters analyzed: 8
 Variance: 0.00% (Perfect reconciliation)
-
-Segments by Revenue:
-1. Innovative Medicine: $44,638M (64.1%)
-2. Med Tech: $24,991M (35.9%)
-
-Geographies by Revenue:
-1. US: $39,557M (39.7%)
-2. Non Us: $30,072M (30.2%)
-3. Europe: $15,937M (16.0%)
-4. Asia Pacific Africa: $10,531M (10.6%)
-5. Western Hemisphere Excluding US: $3,604M (3.6%)
 ```
 
 ### AbbVie (Product-Level)
@@ -324,6 +348,11 @@ Good (1-2%):              2 companies  (5%)
 - `SalesRevenueNet`
 - `SalesRevenueGoodsNet`
 
+**Operating Income Concepts Parsed:**
+- `OperatingIncomeLoss`
+- `OperatingIncome`
+- `IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments`
+
 ## Performance
 
 **Typical Execution:**
@@ -350,10 +379,10 @@ The skill handles:
 
 **Potential additions:**
 - [ ] Segment growth rates (QoQ, YoY)
-- [ ] Margin analysis by segment (requires cost data)
-- [ ] Historical trend visualization
+- [ ] Cost of goods sold by segment
+- [ ] Historical trend visualization (charts)
 - [ ] Multi-company segment comparison
-- [ ] Operating income by segment
+- [ ] Export to CSV/Excel format
 
 **International ADR Enhancements (based on GSK investigation):**
 - [ ] Support for custom segment axes (e.g., `gsk:SegmentConsolidationItemAxis`)
@@ -375,6 +404,18 @@ The skill handles:
 - Anthropic MCP Pattern: Code Execution with MCP
 
 ## Change Log
+
+### 2025-11-24 (Operating Income & Quarterly Time Series)
+- ✅ Added operating income extraction by segment
+- ✅ Added margin calculation (Operating Income / Revenue)
+- ✅ Implemented quarterly time series output format
+- ✅ Added tabular display for each segment and geography
+- ✅ Graceful handling of missing operating income data (displays "-")
+- 📊 **Key Insight**: Operating income disclosure varies by company and period
+  - Business segments: More commonly disclosed than geographic regions
+  - Quarterly (10-Q): Variable disclosure patterns
+  - Annual (10-K): May omit segment-level operating income
+- ✅ Tested with JNJ: Shows 35-37% margins for Innovative Medicine, 15-19% for Med Tech (where data available)
 
 ### 2025-11-24 (20-F Investigation & Detailed Analysis)
 - ✅ Deep investigation of 4 international ADRs (NVO, GSK, AZN, NVS)
@@ -399,7 +440,10 @@ The skill handles:
 - ✅ Tested Novo Nordisk: Perfect extraction (2 segments, 6 geographies, 0.00% variance)
 - ✅ Validated backward compatibility: US companies still work perfectly
 
-### 2025-11-24 (Initial Release)
+### 2025-11-24 (Enhanced Release)
+- ✅ Added quarter-based period deduplication (fixes YoY calculation for Q1 periods)
+- ✅ Fixed Q1 2024 YoY showing "-" → now correctly shows growth percentage
+- ✅ Smart quarter grouping: keeps latest date when same quarter appears in multiple filings
 - ✅ Added rollup segment detection (prevents double-counting)
 - ✅ Implemented axis priority system
 - ✅ Fixed Bristol-Myers Squibb (-383% → 0.70%)

@@ -59,6 +59,7 @@ Returns summary (500 tokens) + Saves skill → Skill reusable forever
 "Abbott segment revenue from SEC filings"
 "Biotech M&A deals over $1B since 2020"
 "Eli Lilly stock vs clinical trial outcomes"
+"Quarterly segment & geographic financials with YoY growth"
 ```
 
 ### Public Health
