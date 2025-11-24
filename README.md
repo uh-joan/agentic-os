@@ -29,18 +29,18 @@ Built on Anthropic's **code execution with MCP** pattern for token efficiency.
 | **Patents** | USPTO + Google Patents (90M+ patents, 11 countries) |
 | **Public Health** | WHO Global Health Observatory, Data Commons (demographics), CMS Medicare |
 
-Each source has detailed API guides in `.claude/.context/mcp-tool-guides/`
+Each source has detailed MCP guides in `.claude/.context/mcp-tool-guides/`
 
 ---
 
 ## How It Works
 
 ```
-User Query → Agent reads API docs → Generates Python code → Executes →
-Returns summary (500 tokens) + Saves skill → Skill reusable forever
+User Query → Agent reads MCP docs → Generates Python code → Executes →
+Returns summary + Saves skill → Skill reusable forever
 ```
 
-**Token efficiency:** Raw API response stays in execution environment (never enters context).
+**Token efficiency:** Raw MCP response stays in execution environment (never enters context).
 **Result:** 150K tokens → 2K tokens (98.7% reduction, measured by Anthropic).
 
 ---
@@ -133,18 +133,15 @@ Returns summary (500 tokens) + Saves skill → Skill reusable forever
 ├── CLAUDE.md                     # Architecture documentation
 ├── agents/                       # Agent definitions (2 active, 80+ planned)
 ├── .context/
-│   ├── mcp-tool-guides/          # API docs (12 servers)
-│   └── code-examples/            # Code patterns (7 patterns)
+│   ├── mcp-tool-guides/          # MCP docs (12 servers)
 ├── skills/                       # Skills library
 │   └── index.json                # Discovery index
 ├── tools/
 │   └── skill_discovery/          # 4-level discovery system
 └── mcp/
-    ├── client.py                 # MCP client (JSON-RPC)
-    └── servers/                  # Python wrappers (12 servers)
-
+│   ├── client.py                 # MCP client (JSON-RPC)
+│   └── servers/                  # Python wrappers (12 servers)
 reports/                          # Strategic analysis (version controlled)
-└── competitive-landscape/
 ```
 
 ---
@@ -168,7 +165,7 @@ Agent creates, validates, and saves the skill automatically.
 ### Add New MCP Servers
 1. Add to `.mcp.json`
 2. Create Python wrapper in `.claude/mcp/servers/`
-3. Write API guide in `.claude/.context/mcp-tool-guides/`
+3. Write MCP guide in `.claude/.context/mcp-tool-guides/`
 
 ### Add New Agents
 1. Create definition in `.claude/agents/[name].md`
