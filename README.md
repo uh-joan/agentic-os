@@ -56,6 +56,10 @@ Returns summary + Saves skill → Skill reusable forever
 "Who's developing KRAS inhibitors?"
 "Failed trials analysis for BTK inhibitors"
 "Medtronic clinical trials portfolio by therapeutic area"
+"What indications is Novo Nordisk actively developing for?"
+"Which diabetes drugs were stopped due to safety issues?"
+"What approved drugs for Obesity are also in early development (Phase 1/2)?"
+"Subcutaneous drug approvals expected in 2026-2027"
 ```
 
 ### Financial
@@ -78,6 +82,7 @@ Returns summary + Saves skill → Skill reusable forever
 "CRISPR patents filed in 2024"
 "PubMed: checkpoint inhibitor combinations"
 "Antibody-drug conjugate patent landscape"
+"Recent Novo Nordisk patents (innovation tracking)"
 ```
 
 ### Multi-Domain

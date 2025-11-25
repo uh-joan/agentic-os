@@ -8,7 +8,7 @@
     "phase": "4-migration-complete",
     "all_skills_have_frontmatter": true,
     "structure": "folder",
-    "folder_skills_count": 75,
+    "folder_skills_count": 74,
     "flat_skills_count": 0,
     "deprecated_flat_count": 11,
     "note": "All skills migrated to folder structure. Flat files kept for 30-day backward compatibility period."
@@ -1473,33 +1473,6 @@
       ],
       "category": "clinical-trials",
       "complexity": "medium"
-    },
-    {
-      "name": "get_novo_nordisk_pipeline_indications",
-      "structure": "folder",
-      "folder": "novo-nordisk-pipeline-indications",
-      "skill_md": "novo-nordisk-pipeline-indications/SKILL.md",
-      "script": "novo-nordisk-pipeline-indications/scripts/get_novo_nordisk_pipeline_indications.py",
-      "has_frontmatter": true,
-      "description": "",
-      "function_signature": "get_novo_nordisk_pipeline_indications() -> dict",
-      "servers_used": [
-        "ct_gov_mcp"
-      ],
-      "patterns_demonstrated": [
-        "pagination",
-        "markdown_parsing",
-        "status_filtering",
-        "condition_aggregation",
-        "phase_analysis"
-      ],
-      "category": "clinical-trials",
-      "complexity": "medium",
-      "deprecated": true,
-      "deprecated_reason": "Replaced by generic get_company_pipeline_indications(company=\"Novo Nordisk\")",
-      "replacement_skill": "get_company_pipeline_indications",
-      "deprecation_date": "2025-11-25",
-      "removal_date": "2025-12-25"
     },
     {
       "name": "get_company_pipeline_indications",
