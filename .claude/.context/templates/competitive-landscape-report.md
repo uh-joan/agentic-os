@@ -235,17 +235,27 @@ Before finalizing report, ensure:
 
 ## Word Count Guidelines
 
-| Section | Target Length |
-|---------|---------------|
-| Executive Summary | 300-500 words |
-| Data Summary | 200-400 words |
-| Market Analysis | 800-1200 words |
-| Pipeline Dynamics | 800-1200 words |
-| Strategic Implications | 1000-1500 words |
-| Recommendations | 600-1000 words |
-| **Total Report** | **4000-6000 words** |
+**Philosophy**: Complete but concise. Avoid verbose explanations and bloated content.
 
-Longer reports (6000-10000 words) acceptable for comprehensive analyses with multiple subsections.
+| Section | Target Length | Focus |
+|---------|---------------|-------|
+| Executive Summary | 150-300 words | Key insights only |
+| Data Summary | 100-200 words | Tables preferred over text |
+| Market Analysis | 400-600 words | Bullet points, not paragraphs |
+| Pipeline Dynamics | 400-600 words | Highlight key patterns |
+| Strategic Implications | 500-800 words | Actionable insights |
+| Recommendations | 300-500 words | Prioritized list format |
+| **Total Report** | **1500-2500 words** | **Complete, not comprehensive** |
+
+**Maximum**: 3000 words for complex multi-therapeutic analyses
+
+**Style Requirements**:
+- Use bullet points over paragraphs
+- Tables over text where possible
+- One sentence per insight (no elaboration unless critical)
+- No redundant context or background filler
+- Assume reader has domain expertise
+- Lead with conclusions, not explanations
 
 ---
 

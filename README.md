@@ -1,4 +1,4 @@
-# Agentic Research Platform
+# Agentic OS Platform
 
 AI agents that turn research questions into executable Python code, query 12+ specialized data sources, and build a reusable skills library that grows smarter over time.
 
@@ -11,7 +11,7 @@ Built on Anthropic's **code execution with MCP** pattern for token efficiency.
 ## Key Features
 
 - 🤖 **Generates & executes Python code** (not prompt-based queries)
-- 📊 **12 data sources**: Clinical trials, FDA, PubMed, Patents, SEC filings, WHO, medical codes, financial markets
+- 📊 **12 data sources**: Clinical trials, FDA, OpenTargets, PubMed, PubChem, Patents, SEC filings, Data Commons, WHO, medical codes, financial markets
 - 🔄 **Self-improving skills library**: Each query creates reusable functions
 - ⚡ **More token-efficient** than direct API calls
 - 🎯 **End-to-end workflows**: Data collection → Strategic analysis

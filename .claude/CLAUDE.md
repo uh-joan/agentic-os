@@ -418,7 +418,7 @@ When strategic agents produce substantial analyses:
 - Includes YAML frontmatter with metadata
 
 **Available templates**:
-- `competitive-landscape-report.md` - Competitive intelligence (4000-6000 words)
+- `competitive-landscape-report.md` - Competitive intelligence (1500-2500 words, concise format)
 - See `.claude/.context/templates/report-template-guide.md` for standards
 
 **Report structure**:
