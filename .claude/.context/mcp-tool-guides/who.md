@@ -13,7 +13,7 @@
 ```python
 # ✅ CORRECT: Search for indicators first
 results = search_indicators(keywords="life expectancy")
-indicator_code = results['indicators'][0]['IndicatorCode']  # "WHOSIS_000001"
+indicator_code = results['indicators'][0]['code']  # "WHOSIS_000001"
 
 # Then query data with exact code
 data = get_health_data(indicator_code="WHOSIS_000001")
@@ -337,14 +337,20 @@ print(f"\nQuery male data: Dim1 eq '{list(sex_mapping.keys())[0]}'")
 {
   "indicators": [
     {
-      "IndicatorCode": "WHOSIS_000001",
-      "IndicatorName": "Life expectancy at birth (years)",
-      "Language": "en"
+      "code": "WHOSIS_000001",
+      "name": "Life expectancy at birth (years)",
+      "category": "",
+      "definition": "",
+      "method": "",
+      "interpretation": ""
     },
     {
-      "IndicatorCode": "WHOSIS_000015",
-      "IndicatorName": "Healthy life expectancy (HALE) at birth (years)",
-      "Language": "en"
+      "code": "WHOSIS_000015",
+      "name": "Healthy life expectancy (HALE) at birth (years)",
+      "category": "",
+      "definition": "",
+      "method": "",
+      "interpretation": ""
     }
   ]
 }
@@ -366,8 +372,8 @@ print("\nLife Expectancy Indicators:")
 print("-" * 80)
 
 for indicator in results.get('indicators', []):
-    code = indicator.get('IndicatorCode')
-    name = indicator.get('IndicatorName')
+    code = indicator.get('code')
+    name = indicator.get('name')
     print(f"{code:20s} {name}")
 
 # Output:
@@ -391,8 +397,8 @@ results = search_indicators(keywords="maternal mortality")
 
 print("Maternal Health Indicators:")
 for indicator in results.get('indicators', []):
-    code = indicator.get('IndicatorCode')
-    name = indicator.get('IndicatorName')
+    code = indicator.get('code')
+    name = indicator.get('name')
 
     if 'ratio' in name.lower():
         print(f"✓ {code}: {name}")
@@ -416,8 +422,8 @@ results = search_indicators(keywords="health expenditure")
 # Step 2: Filter for per capita indicators
 per_capita_codes = []
 for indicator in results.get('indicators', []):
-    code = indicator.get('IndicatorCode')
-    name = indicator.get('IndicatorName')
+    code = indicator.get('code')
+    name = indicator.get('name')
 
     if 'capita' in name.lower():
         per_capita_codes.append(code)
@@ -501,7 +507,7 @@ filter="Dim1 eq 'MLE'"  # Male only
 {
   "value": [
     {
-      "IndicatorCode": "WHOSIS_000001",
+      "code": "WHOSIS_000001",
       "SpatialDim": "USA",
       "TimeDim": 2020,
       "Dim1": "BTSX",
@@ -711,7 +717,7 @@ for rank, (country, value) in enumerate(countries[:10], 1):
 {
   "value": [
     {
-      "IndicatorCode": "WHOSIS_000001",
+      "code": "WHOSIS_000001",
       "SpatialDim": "USA",
       "TimeDim": 2020,
       "NumericValue": 78.93
@@ -1213,8 +1219,8 @@ def assess_regional_disease_burden(region_code, disease_keyword, year):
         print(f"No indicators found for: {disease_keyword}")
         return
 
-    indicator_code = indicators['indicators'][0]['IndicatorCode']
-    indicator_name = indicators['indicators'][0]['IndicatorName']
+    indicator_code = indicators['indicators'][0]['code']
+    indicator_name = indicators['indicators'][0]['name']
 
     print(f"\nRegional Disease Burden Assessment")
     print("=" * 80)
@@ -1396,7 +1402,7 @@ create_country_health_profile("USA", 2020)
    ```python
    # Search for indicators first
    results = search_indicators(keywords="maternal mortality")
-   code = results['indicators'][0]['IndicatorCode']
+   code = results['indicators'][0]['code']
 
    # Then query with exact code
    data = get_health_data(indicator_code=code)
@@ -1460,7 +1466,7 @@ create_country_health_profile("USA", 2020)
 
    # ✅ Correct - search first
    results = search_indicators(keywords="life expectancy")
-   code = results['indicators'][0]['IndicatorCode']
+   code = results['indicators'][0]['code']
    ```
 
 2. **Don't Use Non-Standard Filter Syntax**
@@ -1529,8 +1535,8 @@ Use `search_indicators` with keywords:
 results = search_indicators(keywords="maternal mortality")
 
 for indicator in results.get('indicators', []):
-    code = indicator.get('IndicatorCode')
-    name = indicator.get('IndicatorName')
+    code = indicator.get('code')
+    name = indicator.get('name')
     print(f"{code}: {name}")
 
 # Pick the appropriate code for your analysis
@@ -1729,7 +1735,7 @@ if len(time_series) >= 2:
 from mcp.servers.who_mcp import search_indicators, get_country_data
 
 results = search_indicators(keywords="diabetes prevalence")
-diabetes_code = results['indicators'][0]['IndicatorCode']
+diabetes_code = results['indicators'][0]['code']
 
 diabetes_data = get_country_data(
     indicator_code=diabetes_code,

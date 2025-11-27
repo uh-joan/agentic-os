@@ -75,6 +75,18 @@ def find_best_reference(requirements: SkillRequirements) -> dict:
         pattern_cat = pattern_categories.get('ct_gov_queries', {})
     elif requirements.data_type == 'fda_drugs':
         pattern_cat = pattern_categories.get('fda_queries', {})
+    elif requirements.data_type == 'strategic_analysis':
+        pattern_cat = pattern_categories.get('strategic_analysis', {})
+    elif requirements.data_type == 'financial_analysis':
+        pattern_cat = pattern_categories.get('financial_analysis', {})
+    elif requirements.data_type == 'competitive_intelligence':
+        pattern_cat = pattern_categories.get('competitive_intelligence', {})
+    elif requirements.data_type == 'target_validation':
+        pattern_cat = pattern_categories.get('target_validation', {})
+    elif requirements.data_type == 'patents':
+        pattern_cat = pattern_categories.get('patent_queries', {})
+    elif requirements.data_type == 'publications':
+        pattern_cat = pattern_categories.get('pubmed_queries', {})
     else:
         # Default to most comprehensive
         pattern_cat = pattern_categories.get('pagination', {})
@@ -235,7 +247,9 @@ def main():
     parser = argparse.ArgumentParser(description='Determine skill strategy')
     parser.add_argument('--skill', required=True, help='Skill name needed')
     parser.add_argument('--therapeutic-area', required=True, help='Therapeutic area')
-    parser.add_argument('--data-type', required=True, choices=['trials', 'fda_drugs', 'patents', 'publications'])
+    parser.add_argument('--data-type', required=True,
+                        choices=['trials', 'fda_drugs', 'patents', 'publications',
+                                'strategic_analysis', 'financial_analysis', 'competitive_intelligence', 'target_validation'])
     parser.add_argument('--filters', help='JSON dict of filters')
     parser.add_argument('--servers', help='Comma-separated list of servers')
     parser.add_argument('--json', action='store_true', help='Output JSON')

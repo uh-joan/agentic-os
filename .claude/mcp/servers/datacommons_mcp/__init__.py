@@ -20,6 +20,51 @@ from mcp.client import get_client
 from typing import Dict, Any, Optional, List, Union
 
 
+def _call_with_retry(tool_name: str, params: dict, max_retries: int = 2) -> Dict[str, Any]:
+    """Call Data Commons MCP with retry logic for subprocess issues.
+
+    Args:
+        tool_name: MCP tool name
+        params: Tool parameters
+        max_retries: Maximum retry attempts (default: 2)
+
+    Returns:
+        Tool result dict
+    """
+    import time
+    from mcp import client as mcp_client
+
+    last_error = None
+    for attempt in range(max_retries + 1):
+        try:
+            client = mcp_client.get_client('datacommons-mcp')
+            result = client.call_tool(tool_name, params)
+            return result
+        except BrokenPipeError as e:
+            last_error = e
+            if attempt < max_retries:
+                # Close broken client and clear from registry
+                if 'datacommons-mcp' in mcp_client._clients:
+                    try:
+                        mcp_client._clients['datacommons-mcp'].close()
+                    except:
+                        pass
+                    del mcp_client._clients['datacommons-mcp']
+
+                # Wait before retry (exponential backoff)
+                wait_time = 2 ** attempt
+                print(f"    [DC RETRY] BrokenPipeError on attempt {attempt + 1}, retrying in {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                print(f"    [DC RETRY] Max retries ({max_retries}) exceeded")
+                raise last_error
+        except Exception as e:
+            # Other exceptions are not retryable
+            raise
+
+    raise last_error
+
+
 def search_indicators(
     query: str,
     places: Optional[List[str]] = None,
@@ -194,8 +239,6 @@ def search_indicators(
             include_topics=False
         )
     """
-    client = get_client('datacommons-mcp')
-
     params = {
         'query': query,
         'per_search_limit': per_search_limit,
@@ -208,7 +251,7 @@ def search_indicators(
     if parent_place:
         params['parent_place'] = parent_place
 
-    return client.call_tool('search_indicators', params)
+    return _call_with_retry('search_indicators', params)
 
 
 def get_observations(
@@ -377,8 +420,6 @@ def get_observations(
             date="latest"
         )
     """
-    client = get_client('datacommons-mcp')
-
     params = {
         'variable_dcid': variable_dcid,
         'place_dcid': place_dcid,
@@ -394,7 +435,7 @@ def get_observations(
     if date_range_end:
         params['date_range_end'] = date_range_end
 
-    return client.call_tool('get_observations', params)
+    return _call_with_retry('get_observations', params)
 
 
 __all__ = ['search_indicators', 'get_observations']

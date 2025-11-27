@@ -175,13 +175,13 @@ def search_indicators(
         {
             "indicators": [
                 {
-                    "IndicatorCode": "WHOSIS_000001",
-                    "IndicatorName": "Life expectancy at birth (years)",
+                    "code": "WHOSIS_000001",
+                    "name": "Life expectancy at birth (years)",
                     "Language": "en"
                 },
                 {
-                    "IndicatorCode": "MDG_0000000001",
-                    "IndicatorName": "Maternal mortality ratio",
+                    "code": "MDG_0000000001",
+                    "name": "Maternal mortality ratio",
                     "Language": "en"
                 },
                 ...
@@ -193,23 +193,23 @@ def search_indicators(
         results = search_indicators(keywords="life expectancy")
 
         for indicator in results.get('indicators', []):
-            code = indicator.get('IndicatorCode')
-            name = indicator.get('IndicatorName')
+            code = indicator.get('code')
+            name = indicator.get('name')
             print(f"{code}: {name}")
 
         # Example 2: Search for maternal health
         results = search_indicators(keywords="maternal mortality")
 
         # Extract codes for further queries
-        indicator_codes = [i.get('IndicatorCode') for i in results.get('indicators', [])]
+        indicator_codes = [i.get('code') for i in results.get('indicators', [])]
         print(f"Found {len(indicator_codes)} maternal health indicators")
 
         # Example 3: Search for health expenditure
         results = search_indicators(keywords="health expenditure")
 
         for indicator in results.get('indicators', []):
-            code = indicator.get('IndicatorCode')
-            name = indicator.get('IndicatorName')
+            code = indicator.get('code')
+            name = indicator.get('name')
             if 'capita' in name.lower():
                 print(f"Per capita indicator: {code} - {name}")
 
@@ -220,9 +220,9 @@ def search_indicators(
         results = search_indicators(keywords="vaccination coverage")
 
         for indicator in results.get('indicators', []):
-            name = indicator.get('IndicatorName')
+            name = indicator.get('name')
             if 'BCG' in name or 'DTP' in name or 'measles' in name.lower():
-                code = indicator.get('IndicatorCode')
+                code = indicator.get('code')
                 print(f"{code}: {name}")
     """
     client = get_client('who-mcp-server')
@@ -289,7 +289,7 @@ def get_health_data(
         {
             "value": [
                 {
-                    "IndicatorCode": "WHOSIS_000001",
+                    "code": "WHOSIS_000001",
                     "SpatialDim": "USA",
                     "TimeDim": 2020,
                     "Dim1": "BTSX",

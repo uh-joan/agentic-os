@@ -91,8 +91,23 @@ class MCPClient:
 
         # Send request
         request_json = json.dumps(request) + '\n'
-        self.process.stdin.write(request_json)
-        self.process.stdin.flush()
+        try:
+            self.process.stdin.write(request_json)
+            self.process.stdin.flush()
+        except BrokenPipeError as e:
+            # Capture stderr for debugging
+            stderr_output = ""
+            if self.process.stderr:
+                try:
+                    # Non-blocking read of available stderr
+                    import select
+                    if select.select([self.process.stderr], [], [], 0)[0]:
+                        stderr_output = self.process.stderr.read()
+                except:
+                    pass
+
+            print(f"[MCP CLIENT ERROR] Subprocess stderr: {stderr_output}")
+            raise
 
         # Read response (skip non-JSON lines like debug output)
         max_attempts = 10
