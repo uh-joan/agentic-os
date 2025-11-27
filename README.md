@@ -60,6 +60,8 @@ Returns summary + Saves skill → Skill reusable forever
 "Which diabetes drugs were stopped due to safety issues?"
 "What approved drugs for Obesity are also in early development (Phase 1/2)?"
 "Subcutaneous drug approvals expected in 2026-2027"
+"FDA approval timeline for COPD drugs (2010-2025)"
+"Large TAM clinical programs for biotech M&A targets"
 ```
 
 ### Financial
@@ -68,6 +70,7 @@ Returns summary + Saves skill → Skill reusable forever
 "Biotech M&A deals over $1B since 2020"
 "Eli Lilly stock vs clinical trial outcomes"
 "JNJ last 4 quarter segment & geographic financials with YoY growth"
+"Pfizer 2030 revenue replacement needs and M&A budget"
 ```
 
 ### Public Health
@@ -90,6 +93,8 @@ Returns summary + Saves skill → Skill reusable forever
 "Alzheimer's intelligence: burden + trials + drugs + genetics + market"
 "Company X due diligence: financials + pipeline + patents + publications"
 "Boston Scientific cardiovascular product launch timeline (FDA approvals + trials)"
+"SWOT analysis for Ozempic in diabetes (trials + FDA + PubMed + patents + market)"
+"Strategic assessment of Moderna (pipeline + financials + patents + stock)"
 ```
 
 ---
