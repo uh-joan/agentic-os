@@ -1,14 +1,14 @@
 {
   "version": "2.0",
   "format": "folder-structure",
-  "last_updated": "2025-11-26",
+  "last_updated": "2025-11-27",
   "description": "Skills library index for pattern discovery and reuse - Anthropic folder structure format",
   "usage": "Agent reads this to discover similar skills before creating new ones. Enables evolutionary skill development where new skills build on proven patterns from existing implementations.",
   "migration_status": {
     "phase": "4-migration-complete",
     "all_skills_have_frontmatter": true,
     "structure": "folder",
-    "folder_skills_count": 75,
+    "folder_skills_count": 79,
     "flat_skills_count": 0,
     "deprecated_flat_count": 11,
     "note": "All skills migrated to folder structure. Flat files kept for 30-day backward compatibility period."
@@ -437,12 +437,16 @@
       "skill_md": "california-population/SKILL.md",
       "script": "california-population/scripts/get_california_population.py",
       "has_frontmatter": true,
-      "function_signature": "get_california_population() -> dict",
       "description": "",
-      "servers_used": [],
-      "patterns_demonstrated": [],
-      "category": "unknown",
-      "complexity": "unknown"
+      "function_signature": "get_california_population() -> dict",
+      "servers_used": [
+        "datacommons_mcp"
+      ],
+      "patterns_demonstrated": [
+        "datacommons_two_step_workflow"
+      ],
+      "category": "population-epidemiology",
+      "complexity": "simple"
     },
     {
       "name": "get_california_population_time_series",
@@ -457,6 +461,7 @@
         "datacommons_mcp"
       ],
       "patterns_demonstrated": [
+        "datacommons_two_step_workflow",
         "time_series_analysis",
         "growth_rate_calculation"
       ],
@@ -722,6 +727,7 @@
       ],
       "patterns_demonstrated": [
         "multi_server_query",
+        "datacommons_two_step_workflow",
         "data_normalization",
         "error_handling"
       ],
@@ -746,27 +752,6 @@
         "data_aggregation"
       ],
       "category": "regulatory",
-      "complexity": "medium"
-    },
-    {
-      "name": "get_diabetes_burden_per_capita",
-      "structure": "folder",
-      "folder": "disease-burden-per-capita",
-      "skill_md": "disease-burden-per-capita/SKILL.md",
-      "script": "disease-burden-per-capita/scripts/get_diabetes_burden_per_capita.py",
-      "has_frontmatter": true,
-      "description": "",
-      "function_signature": "get_diabetes_burden_per_capita() -> dict",
-      "servers_used": [
-        "who_mcp",
-        "datacommons_mcp"
-      ],
-      "patterns_demonstrated": [
-        "multi_server_query",
-        "data_normalization",
-        "per_capita_calculation"
-      ],
-      "category": "epidemiology",
       "complexity": "medium"
     },
     {
@@ -817,12 +802,31 @@
       "skill_md": "disease-burden-per-capita/SKILL.md",
       "script": "disease-burden-per-capita/scripts/get_disease_burden_per_capita.py",
       "has_frontmatter": true,
-      "function_signature": "get_disease_burden_per_capita() -> dict",
-      "description": "",
-      "servers_used": [],
-      "patterns_demonstrated": [],
-      "category": "unknown",
-      "complexity": "unknown"
+      "function_signature": "get_disease_burden_per_capita(country_code: str, disease_indicator: str) -> dict",
+      "description": "Calculate true disease burden per capita by combining WHO health indicators with Data Commons population data. Demonstrates multi-server integration with intelligent per-capita rate calculation. Supports 32 countries.",
+      "servers_used": [
+        "who_mcp",
+        "datacommons_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query",
+        "datacommons_two_step_workflow",
+        "who_two_step_workflow",
+        "data_normalization",
+        "per_capita_calculation",
+        "generic_parameterization",
+        "cli_arguments"
+      ],
+      "category": "epidemiology",
+      "complexity": "medium",
+      "cli_enabled": true,
+      "is_generic": true,
+      "cli_format": "positional",
+      "cli_signature": "<country_code> <disease_indicator>",
+      "cli_example": "USA diabetes",
+      "cli_help": "Calculate disease burden per capita for any disease indicator",
+      "version": "2.0",
+      "last_updated": "2025-11-27"
     },
     {
       "name": "get_disease_genetic_targets",
@@ -832,17 +836,23 @@
       "script": "disease-genetic-targets/scripts/get_disease_genetic_targets.py",
       "has_frontmatter": true,
       "description": "",
-      "function_signature": "get_disease_genetic_targets() -> dict",
+      "function_signature": "get_disease_genetic_targets(disease_name: str, top_n: int = 10, max_fetch: int = 500) -> dict",
       "servers_used": [
         "opentargets_mcp"
       ],
       "patterns_demonstrated": [
         "json_parsing",
         "api_aggregation",
-        "score_filtering"
+        "score_filtering",
+        "cli_arguments"
       ],
       "category": "target-validation",
-      "complexity": "medium"
+      "complexity": "medium",
+      "cli_enabled": true,
+      "cli_format": "argparse",
+      "cli_signature": "<disease_name> [--top-n N] [--max-fetch N]",
+      "cli_example": "\"Alzheimer's disease\" --top-n 10",
+      "cli_help": "Get genetic targets for any disease from Open Targets"
     },
     {
       "name": "get_glp1_agonist_properties",
@@ -1099,16 +1109,23 @@
       "script": "pharma-stock-data/scripts/get_pharma_company_stock_data.py",
       "has_frontmatter": true,
       "description": "",
-      "function_signature": "get_pharma_company_stock_data() -> dict",
+      "function_signature": "get_pharma_company_stock_data(companies: list = None) -> dict",
       "servers_used": [
         "financials_mcp"
       ],
       "patterns_demonstrated": [
         "json_parsing",
-        "multi_metric_aggregation"
+        "multi_metric_aggregation",
+        "cli_arguments",
+        "markdown_parsing"
       ],
       "category": "financial",
-      "complexity": "medium"
+      "complexity": "medium",
+      "cli_enabled": true,
+      "cli_format": "argparse",
+      "cli_signature": "[--companies COMPANY1,COMPANY2,...]",
+      "cli_example": "--companies \"Pfizer,Moderna,BioNTech\"",
+      "cli_help": "Get stock data for pharmaceutical companies"
     },
     {
       "name": "get_ra_targets_and_trials",
@@ -1215,7 +1232,7 @@
       "script": "ultra-rare-metabolic-targets/scripts/get_ultra_rare_metabolic_targets.py",
       "has_frontmatter": true,
       "description": "",
-      "function_signature": "get_ultra_rare_metabolic_targets() -> dict",
+      "function_signature": "get_ultra_rare_metabolic_targets(max_population: int = 500) -> dict",
       "servers_used": [
         "opentargets_mcp"
       ],
@@ -1224,10 +1241,16 @@
         "json_parsing",
         "data_aggregation",
         "filtering",
-        "druggability_assessment"
+        "druggability_assessment",
+        "cli_arguments"
       ],
       "category": "target-validation",
-      "complexity": "complex"
+      "complexity": "complex",
+      "cli_enabled": true,
+      "cli_format": "argparse",
+      "cli_signature": "[--max-population N]",
+      "cli_example": "--max-population 500",
+      "cli_help": "Find therapeutic targets for ultra-rare metabolic diseases"
     },
     {
       "name": "get_indication_drug_pipeline_breakdown",
@@ -1352,7 +1375,7 @@
       "script": "company-clinical-trials-portfolio/scripts/get_company_clinical_trials_portfolio.py",
       "has_frontmatter": true,
       "description": "",
-      "function_signature": "get_company_clinical_trials_portfolio() -> dict",
+      "function_signature": "get_company_clinical_trials_portfolio(sponsor_name: str, status: str = None, condition: str = None, phase: str = None, start_year: int = 2020) -> dict",
       "servers_used": [
         "ct_gov_mcp"
       ],
@@ -1361,10 +1384,16 @@
         "markdown_parsing",
         "parameter_based",
         "status_aggregation",
-        "phase_aggregation"
+        "phase_aggregation",
+        "cli_arguments"
       ],
       "category": "clinical-trials",
-      "complexity": "medium"
+      "complexity": "medium",
+      "cli_enabled": true,
+      "cli_format": "argparse",
+      "cli_signature": "<sponsor_name> [--status STATUS] [--condition CONDITION] [--phase PHASE] [--start-year YEAR]",
+      "cli_example": "Pfizer --status RECRUITING --phase PHASE3",
+      "cli_help": "Get clinical trials portfolio for any pharmaceutical company"
     },
     {
       "name": "analyze_company_product_launch_timeline",
@@ -1374,7 +1403,7 @@
       "script": "company-product-launch-timeline/scripts/analyze_company_product_launch_timeline.py",
       "has_frontmatter": true,
       "description": "",
-      "function_signature": "analyze_company_product_launch_timeline() -> dict",
+      "function_signature": "analyze_company_product_launch_timeline(company_name: str, focus_area: str = None, start_year: int = 2020, end_year: int = None) -> dict",
       "servers_used": [
         "fda_mcp",
         "ct_gov_mcp"
@@ -1383,31 +1412,16 @@
         "multi_skill_composition",
         "data_correlation",
         "fuzzy_matching",
-        "temporal_analysis"
+        "temporal_analysis",
+        "cli_arguments"
       ],
       "category": "regulatory",
-      "complexity": "complex"
-    },
-    {
-      "name": "get_orphan_drugs_upcoming_approvals",
-      "structure": "folder",
-      "folder": "orphan-drugs-upcoming-approvals",
-      "skill_md": "orphan-drugs-upcoming-approvals/SKILL.md",
-      "script": "orphan-drugs-upcoming-approvals/scripts/get_orphan_drugs_upcoming_approvals.py",
-      "has_frontmatter": true,
-      "description": "",
-      "function_signature": "get_orphan_drugs_upcoming_approvals() -> dict",
-      "servers_used": [
-        "ct_gov_mcp"
-      ],
-      "patterns_demonstrated": [
-        "smart_pagination",
-        "set_based_deduplication",
-        "approval_likelihood_scoring",
-        "markdown_parsing"
-      ],
-      "category": "drug-discovery",
-      "complexity": "medium"
+      "complexity": "complex",
+      "cli_enabled": true,
+      "cli_format": "argparse",
+      "cli_signature": "<company_name> [--focus-area AREA] [--start-year YEAR] [--end-year YEAR]",
+      "cli_example": "Pfizer --focus-area diabetes --start-year 2020",
+      "cli_help": "Analyze product launch timeline for pharmaceutical company"
     },
     {
       "name": "get_subcutaneous_drugs_pipeline_2026_2027",
@@ -1460,7 +1474,7 @@
       "script": "forecast-drug-pipeline/scripts/forecast_drug_pipeline.py",
       "has_frontmatter": true,
       "description": "",
-      "function_signature": "forecast_drug_pipeline() -> dict",
+      "function_signature": "forecast_drug_pipeline(search_criteria: dict, completion_years: list = None, phase: str = 'PHASE3', approval_offset_years: int = 2) -> dict",
       "servers_used": [
         "ct_gov_mcp"
       ],
@@ -1469,10 +1483,16 @@
         "markdown_parsing",
         "temporal_filtering",
         "therapeutic_area_analysis",
-        "parameterized_search"
+        "parameterized_search",
+        "cli_arguments"
       ],
       "category": "clinical-trials",
-      "complexity": "medium"
+      "complexity": "medium",
+      "cli_enabled": true,
+      "cli_format": "argparse",
+      "cli_signature": "[--route ROUTE] [--therapeutic-area AREA] [--sponsor SPONSOR] [--completion-years YEAR1,YEAR2]",
+      "cli_example": "--route subcutaneous --completion-years 2026,2027",
+      "cli_help": "Forecast drug pipeline completions by route, therapeutic area, or sponsor"
     },
     {
       "name": "get_company_pipeline_indications",
@@ -1542,7 +1562,7 @@
       "structure": "folder",
       "folder": "novo-nordisk-novel-patents",
       "skill_md": "novo-nordisk-novel-patents/SKILL.md",
-      "script": "novo-nordisk-novel-patents/scripts/novo-nordisk-novel-patents.py",
+      "script": "novo-nordisk-novel-patents/scripts/get_novo_nordisk_novel_patents.py",
       "has_frontmatter": true,
       "description": "",
       "function_signature": "novo-nordisk-novel-patents() -> dict",
@@ -1565,25 +1585,189 @@
       "skill_md": "rare-disease-acquisition-targets/SKILL.md",
       "script": "rare-disease-acquisition-targets/scripts/get_rare_disease_acquisition_targets.py",
       "has_frontmatter": true,
-      "description": "Enhanced with SEC EDGAR financial intelligence - v2.0",
+      "description": "Yahoo Finance complete financial intelligence for M&A targeting - v3.0. Cash runway calculation from operating cash flow, 6 distress signals, debt/liquidity analysis. 30% enrichment coverage, 60% faster execution vs v2.2.",
       "function_signature": "get_rare_disease_acquisition_targets() -> dict",
       "servers_used": [
         "ct_gov_mcp",
-        "sec_edgar_mcp"
+        "financials_mcp"
       ],
       "patterns_demonstrated": [
         "pagination",
         "markdown_parsing",
         "sponsor_aggregation",
         "phase_distribution",
-        "fuzzy_matching",
-        "financial_enrichment",
+        "web_ticker_lookup",
+        "company_name_preprocessing",
+        "yahoo_stock_financials_integration",
+        "cash_runway_calculation",
+        "distress_signal_detection",
+        "debt_liquidity_analysis",
         "pattern_based_filtering",
         "adaptive_phase_strategy",
         "acquisition_scoring"
       ],
       "category": "strategic-analysis",
+      "complexity": "complex",
+      "version": "3.0",
+      "last_updated": "2025-01-27",
+      "v3_enhancements": {
+        "sec_edgar_eliminated": true,
+        "distress_signals": 6,
+        "cash_runway_coverage": "global",
+        "execution_speed_improvement": "60%",
+        "enrichment_coverage": "30%"
+      }
+    },
+    {
+      "name": "generate_drug_swot_analysis",
+      "structure": "folder",
+      "folder": "drug-swot-analysis",
+      "skill_md": "drug-swot-analysis/SKILL.md",
+      "script": "drug-swot-analysis/scripts/generate_drug_swot_analysis.py",
+      "has_frontmatter": true,
+      "description": "",
+      "function_signature": "generate_drug_swot_analysis(drug_name: str, indication: str) -> dict",
+      "servers_used": [
+        "ct_gov_mcp",
+        "datacommons_mcp",
+        "fda_mcp",
+        "financials_mcp",
+        "healthcare_mcp",
+        "opentargets_mcp",
+        "pubmed_mcp",
+        "sec_mcp",
+        "uspto_patents_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query",
+        "markdown_parsing",
+        "json_parsing",
+        "data_aggregation",
+        "strategic_analysis",
+        "cli_arguments"
+      ],
+      "category": "strategic-analysis",
+      "complexity": "complex",
+      "health": {
+        "status": "healthy",
+        "last_checked": "2025-11-27T00:25:23.201717",
+        "issues": []
+      },
+      "cli_enabled": true,
+      "cli_format": "positional",
+      "cli_signature": "<drug_name> <indication>",
+      "cli_example": "semaglutide diabetes",
+      "cli_help": "Generate SWOT analysis for pharmaceutical product"
+    },
+    {
+      "name": "get_pharma_revenue_replacement_needs",
+      "structure": "folder",
+      "folder": "pharma-revenue-replacement-needs",
+      "skill_md": "pharma-revenue-replacement-needs/SKILL.md",
+      "script": "pharma-revenue-replacement-needs/scripts/get_pharma_revenue_replacement_needs.py",
+      "has_frontmatter": true,
+      "description": "Quantifies pharmaceutical company 2030-2035 revenue replacement needs by analyzing patent expiries, revenue at risk, and franchise-specific deficits using SEC EDGAR XBRL revenue data, FDA drug portfolio counts, and industry-standard patent cliff models",
+      "function_signature": "get_pharma_revenue_replacement_needs() -> dict",
+      "servers_used": [
+        "sec_edgar_mcp",
+        "financials_mcp",
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_integration",
+        "financial_modeling",
+        "sec_xbrl_parsing",
+        "fda_count_first",
+        "franchise_analysis",
+        "estimation_models"
+      ],
+      "category": "financial",
+      "complexity": "high"
+    },
+    {
+      "name": "generate_company_swot_analysis",
+      "structure": "folder",
+      "folder": "company-swot-analysis",
+      "skill_md": "company-swot-analysis/SKILL.md",
+      "script": "company-swot-analysis/scripts/generate_company_swot_analysis.py",
+      "has_frontmatter": true,
+      "description": "Generate comprehensive strategic SWOT analysis for pharmaceutical companies with active clinical pipeline filtering",
+      "function_signature": "generate_company_swot_analysis(company_name: str) -> dict",
+      "servers_used": [
+        "ct_gov_mcp",
+        "sec_edgar_mcp",
+        "fda_mcp",
+        "uspto_patents_mcp",
+        "financials_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query",
+        "markdown_parsing",
+        "json_parsing",
+        "data_aggregation",
+        "strategic_analysis",
+        "cli_arguments",
+        "sec_xbrl_parsing",
+        "status_filtering",
+        "pagination"
+      ],
+      "category": "strategic-analysis",
       "complexity": "complex"
+    },
+    {
+      "name": "get_large_tam_clinical_programs",
+      "structure": "folder",
+      "folder": "large-tam-clinical-programs",
+      "skill_md": "large-tam-clinical-programs/SKILL.md",
+      "script": "large-tam-clinical-programs/scripts/get_large_tam_clinical_programs.py",
+      "has_frontmatter": true,
+      "status": "in_development",
+      "development_notes": "Data quality issues identified: (1) Search terms too broad (e.g., 'liver fibrosis' captures non-NASH trials), (2) TAM estimates use 5% fallback when WHO fails, (3) Regional TAM based only on population not pricing, (4) Acquisition probability scoring unvalidated. Needs Tier 1-5 improvements before production use.",
+      "description": "",
+      "function_signature": "get_large_tam_clinical_programs() -> dict",
+      "servers_used": [
+        "ct_gov_mcp",
+        "who_mcp",
+        "datacommons_mcp",
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "multi_server_query",
+        "markdown_parsing",
+        "json_parsing",
+        "pagination",
+        "data_aggregation",
+        "deduplication",
+        "who_prevalence_query",
+        "tam_estimation",
+        "competitive_analysis",
+        "dynamic_discovery",
+        "validation_filtering"
+      ],
+      "category": "strategic-analysis",
+      "complexity": "high"
+    },
+    {
+      "name": "fda-approvals-timeline-by-indication",
+      "structure": "folder",
+      "folder": "fda-approvals-timeline-by-indication",
+      "skill_md": "fda-approvals-timeline-by-indication/SKILL.md",
+      "script": "fda-approvals-timeline-by-indication/scripts/get_fda_approvals_timeline_by_indication.py",
+      "has_frontmatter": true,
+      "description": "Fully generic FDA drug approval timeline analyzer - accepts any therapeutic area and drug list with visual timeline and trend analysis",
+      "function_signature": "fda-approvals-timeline-by-indication() -> dict",
+      "servers_used": [
+        "fda_mcp"
+      ],
+      "patterns_demonstrated": [
+        "count_first_mandatory",
+        "submissions_parsing",
+        "timeline_aggregation",
+        "trend_analysis"
+      ],
+      "category": "regulatory",
+      "complexity": "intermediate",
+      "version": "2.0.0"
     }
   ],
   "pattern_categories": {
@@ -1624,6 +1808,42 @@
         "get_phase2_alzheimers_trials_us",
         "get_us_phase3_obesity_recruiting_trials",
         "get_covid19_vaccine_trials_recruiting"
+      ]
+    },
+    "strategic_analysis": {
+      "description": "Multi-server composite skills for strategic decision-making and competitive analysis",
+      "best_reference": "generate_drug_swot_analysis",
+      "skills": [
+        "generate_drug_swot_analysis",
+        "get_rare_disease_acquisition_targets",
+        "analyze_company_product_launch_timeline"
+      ]
+    },
+    "financial_analysis": {
+      "description": "SEC EDGAR and financial data analysis patterns",
+      "best_reference": "get_pharma_revenue_replacement_needs",
+      "skills": [
+        "get_pharma_revenue_replacement_needs",
+        "get_company_segment_geographic_financials",
+        "get_company_rd_spending"
+      ]
+    },
+    "competitive_intelligence": {
+      "description": "Competitive landscape and market analysis patterns",
+      "best_reference": "get_indication_drug_pipeline_breakdown",
+      "skills": [
+        "get_indication_drug_pipeline_breakdown",
+        "get_companies_by_moa",
+        "get_indication_pipeline_attrition"
+      ]
+    },
+    "target_validation": {
+      "description": "Target discovery and validation using Open Targets and clinical data",
+      "best_reference": "get_ra_targets_and_trials",
+      "skills": [
+        "get_ra_targets_and_trials",
+        "get_disease_genetic_targets",
+        "get_cancer_immunotherapy_targets"
       ]
     }
   },
