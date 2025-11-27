@@ -6,6 +6,7 @@ health checks, and semantic matching. Provides actionable execution plan.
 """
 
 import json
+import re
 import sys
 from dataclasses import dataclass
 from enum import Enum
@@ -24,6 +25,141 @@ except ImportError:
     from semantic_matcher import find_matching_skill, SkillRequirements
 
 
+def normalize_skill_name(name: str) -> str:
+    """Normalize skill name for fuzzy matching.
+
+    Removes common prefixes, converts to lowercase, replaces separators.
+
+    Examples:
+        'get_copd_fda_timeline' -> 'copd fda timeline'
+        'fda-approvals-timeline-by-indication' -> 'fda approvals timeline indication'
+        'generate_drug_swot_analysis' -> 'drug swot analysis'
+    """
+    # Remove common prefixes
+    prefixes = ['get_', 'generate_', 'analyze_', 'create_', 'fetch_']
+    name_lower = name.lower()
+    for prefix in prefixes:
+        if name_lower.startswith(prefix):
+            name_lower = name_lower[len(prefix):]
+            break
+
+    # Replace separators with spaces
+    normalized = re.sub(r'[-_]', ' ', name_lower)
+
+    # Remove extra whitespace
+    normalized = ' '.join(normalized.split())
+
+    return normalized
+
+
+def fuzzy_match_skill_name(query_name: str, index_path: Path = Path('.claude/skills/index.json')) -> Optional[dict]:
+    """Find skill using fuzzy name matching.
+
+    Args:
+        query_name: Skill name to search for
+        index_path: Path to index.json
+
+    Returns:
+        Best matching skill or None
+    """
+    if not index_path.exists():
+        return None
+
+    index = json.loads(index_path.read_text())
+    skills = index.get('skills', [])
+
+    normalized_query = normalize_skill_name(query_name)
+    query_tokens = set(normalized_query.split())
+
+    best_match = None
+    best_score = 0
+
+    for skill in skills:
+        skill_name = skill.get('name', '')
+        normalized_skill = normalize_skill_name(skill_name)
+        skill_tokens = set(normalized_skill.split())
+
+        # Calculate token overlap
+        common = query_tokens & skill_tokens
+        total = query_tokens | skill_tokens
+
+        if total:
+            score = len(common) / len(total)
+
+            # Bonus for exact substring match
+            if normalized_query in normalized_skill or normalized_skill in normalized_query:
+                score += 0.3
+
+            if score > best_score:
+                best_score = score
+                best_match = skill
+
+    # Return if good enough match (>= 60% similarity)
+    if best_score >= 0.6:
+        return best_match
+
+    return None
+
+
+def extract_params_from_query(query: str) -> dict:
+    """Extract parameters from natural language query.
+
+    Simple pattern matching - not LLM-based.
+
+    Args:
+        query: Natural language query
+
+    Returns:
+        Dict with extracted params: skill_name, therapeutic_area, data_type, etc.
+    """
+    query_lower = query.lower()
+
+    # Extract data type
+    data_type = None
+    if any(word in query_lower for word in ['trial', 'trials', 'study', 'studies']):
+        data_type = 'trials'
+    elif any(word in query_lower for word in ['fda', 'drug', 'approved', 'approval']):
+        data_type = 'fda_drugs'
+    elif any(word in query_lower for word in ['patent', 'ip', 'intellectual property']):
+        data_type = 'patents'
+    elif any(word in query_lower for word in ['publication', 'pubmed', 'paper', 'literature']):
+        data_type = 'publications'
+    elif any(word in query_lower for word in ['swot', 'competitive', 'landscape']):
+        data_type = 'strategic_analysis'
+    elif any(word in query_lower for word in ['revenue', 'financial', 'stock', 'market cap']):
+        data_type = 'financial_analysis'
+
+    # Extract therapeutic area (capitalized words that aren't common words)
+    stop_words = {'get', 'the', 'for', 'and', 'or', 'of', 'in', 'with', 'by', 'from',
+                  'what', 'how', 'many', 'which', 'are', 'is'}
+
+    words = query.split()
+    therapeutic_area = None
+    for word in words:
+        clean_word = re.sub(r'[^\w\s]', '', word)
+        if clean_word and clean_word.lower() not in stop_words:
+            # Check if it's an acronym (all caps) or proper noun
+            if clean_word.isupper() or (len(clean_word) > 2 and clean_word[0].isupper()):
+                therapeutic_area = clean_word
+                break
+
+    # Generate skill name from query (keep important keywords like timeline, trial, fda)
+    skill_tokens = []
+    for word in query.lower().split():
+        clean = re.sub(r'[^\w]', '', word)
+        if clean and clean not in stop_words and len(clean) > 2:
+            skill_tokens.append(clean)
+
+    skill_name = '_'.join(skill_tokens[:5]) if skill_tokens else 'unknown_skill'
+
+    return {
+        'skill_name': skill_name,
+        'therapeutic_area': therapeutic_area or 'unspecified',
+        'data_type': data_type or 'trials',
+        'query': query
+    }
+
+
 class SkillStrategy(Enum):
     """Strategy for obtaining required skill."""
     REUSE = "reuse"      # Use existing skill as-is
@@ -39,16 +175,20 @@ class StrategyDecision:
     reference: Optional[dict]      # For create (pattern reference)
     reason: str
     action_plan: list[str]
+    debug: Optional[dict] = None   # Debug information
 
     def to_dict(self) -> dict:
         """Convert to dict for JSON serialization."""
-        return {
+        result = {
             'strategy': self.strategy.value,
             'skill': self.skill,
             'reference': self.reference,
             'reason': self.reason,
             'action_plan': self.action_plan
         }
+        if self.debug:
+            result['debug'] = self.debug
+        return result
 
 
 def find_best_reference(requirements: SkillRequirements) -> dict:
@@ -124,10 +264,11 @@ def determine_skill_strategy(
 
     Decision tree:
         1. Exact match exists and healthy? → REUSE
-        2. Exact match exists but degraded? → ADAPT (migrate structure)
-        3. Exact match exists but broken? → CREATE (from scratch)
-        4. Semantic match exists and healthy? → ADAPT (fork and modify)
-        5. No match? → CREATE (using best reference pattern)
+        2. Fuzzy match exists and healthy? → REUSE (with note)
+        3. Exact/fuzzy match exists but degraded? → ADAPT (migrate structure)
+        4. Exact/fuzzy match exists but broken? → CREATE (from scratch)
+        5. Semantic match exists and healthy? → ADAPT (fork and modify)
+        6. No match? → CREATE (using best reference pattern)
 
     Args:
         skill_name: Name of skill needed
@@ -137,8 +278,18 @@ def determine_skill_strategy(
         StrategyDecision with action plan
     """
 
+    debug_info = {
+        'skill_name_query': skill_name,
+        'exact_match_found': False,
+        'fuzzy_match_found': False,
+        'semantic_match_found': False
+    }
+
     # Step 1: Check for exact match
     exact_match = find_skill_in_index(skill_name)
+    if exact_match:
+        debug_info['exact_match_found'] = True
+        debug_info['exact_match_name'] = exact_match.get('name')
 
     if exact_match:
         health = verify_skill_health(exact_match)
@@ -152,7 +303,8 @@ def determine_skill_strategy(
                 action_plan=[
                     f"Execute: .claude/skills/{exact_match['script']}",
                     "No modifications needed"
-                ]
+                ],
+                debug=debug_info
             )
 
         elif health.status == HealthStatus.DEGRADED:
@@ -165,7 +317,8 @@ def determine_skill_strategy(
                     *health.recommendations,
                     "Test execution after fixes",
                     "Update index with new health status"
-                ]
+                ],
+                debug=debug_info
             )
 
         else:  # BROKEN
@@ -180,11 +333,37 @@ def determine_skill_strategy(
                     f"Task(pharma-search-specialist) with reference: {reference.get('name', 'unknown')}",
                     "Agent reads reference pattern and regenerates skill",
                     "Save new skill and update index"
-                ]
+                ],
+                debug=debug_info
+            )
+
+    # Step 1.5: Try fuzzy match if exact match failed
+    fuzzy_match = fuzzy_match_skill_name(skill_name)
+    if fuzzy_match:
+        debug_info['fuzzy_match_found'] = True
+        debug_info['fuzzy_match_name'] = fuzzy_match.get('name')
+
+        health = verify_skill_health(fuzzy_match)
+
+        if health.status == HealthStatus.HEALTHY:
+            return StrategyDecision(
+                strategy=SkillStrategy.REUSE,
+                skill=fuzzy_match,
+                reference=None,
+                reason=f"Fuzzy matched skill '{fuzzy_match['name']}' (queried as '{skill_name}') - healthy and ready to use",
+                action_plan=[
+                    f"Execute: .claude/skills/{fuzzy_match['script']}",
+                    f"Note: Matched via fuzzy name matching (normalized names match)"
+                ],
+                debug=debug_info
             )
 
     # Step 2: Check for semantic match
     semantic_match = find_matching_skill(requirements)
+    if semantic_match:
+        debug_info['semantic_match_found'] = True
+        debug_info['semantic_match_name'] = semantic_match.skill.get('name')
+        debug_info['semantic_match_score'] = semantic_match.score
 
     if semantic_match and semantic_match.score >= 8:
         health = verify_skill_health(semantic_match.skill)
@@ -201,7 +380,8 @@ def determine_skill_strategy(
                         f"Execute generic skill: .claude/skills/{semantic_match.skill['script']}",
                         f"Pass parameters: term='{requirements.therapeutic_area}'",
                         "No new skill creation needed - generic skill handles this use case"
-                    ]
+                    ],
+                    debug=debug_info
                 )
 
             # Non-generic skill - needs adaptation
@@ -216,7 +396,8 @@ def determine_skill_strategy(
                     "Modify query parameters for new therapeutic area",
                     "Test execution with new parameters",
                     "Save as new skill and update index"
-                ]
+                ],
+                debug=debug_info
             )
 
     # Step 3: No match - create from best reference
@@ -236,7 +417,8 @@ def determine_skill_strategy(
             "Agent executes and verifies (closed loop)",
             "Main agent saves skill files",
             "Update index with new skill entry"
-        ]
+        ],
+        debug=debug_info
     )
 
 
@@ -245,28 +427,45 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description='Determine skill strategy')
-    parser.add_argument('--skill', required=True, help='Skill name needed')
-    parser.add_argument('--therapeutic-area', required=True, help='Therapeutic area')
-    parser.add_argument('--data-type', required=True,
+
+    # Either use --query (natural language) OR structured params (--skill, --therapeutic-area, --data-type)
+    parser.add_argument('--query', help='Natural language query (alternative to structured params)')
+    parser.add_argument('--skill', help='Skill name needed (required if not using --query)')
+    parser.add_argument('--therapeutic-area', help='Therapeutic area (required if not using --query)')
+    parser.add_argument('--data-type',
                         choices=['trials', 'fda_drugs', 'patents', 'publications',
-                                'strategic_analysis', 'financial_analysis', 'competitive_intelligence', 'target_validation'])
+                                'strategic_analysis', 'financial_analysis', 'competitive_intelligence', 'target_validation'],
+                        help='Data type (required if not using --query)')
     parser.add_argument('--filters', help='JSON dict of filters')
     parser.add_argument('--servers', help='Comma-separated list of servers')
     parser.add_argument('--json', action='store_true', help='Output JSON')
 
     args = parser.parse_args()
 
+    # Extract parameters from query or use structured params
+    if args.query:
+        extracted = extract_params_from_query(args.query)
+        skill_name = extracted['skill_name']
+        therapeutic_area = extracted['therapeutic_area']
+        data_type = extracted['data_type']
+    else:
+        if not args.skill or not args.therapeutic_area or not args.data_type:
+            parser.error('--skill, --therapeutic-area, and --data-type are required when not using --query')
+        skill_name = args.skill
+        therapeutic_area = args.therapeutic_area
+        data_type = args.data_type
+
     filters = json.loads(args.filters) if args.filters else None
     servers = args.servers.split(',') if args.servers else None
 
     requirements = SkillRequirements(
-        therapeutic_area=args.therapeutic_area,
-        data_type=args.data_type,
+        therapeutic_area=therapeutic_area,
+        data_type=data_type,
         filters=filters,
         servers=servers
     )
 
-    decision = determine_skill_strategy(args.skill, requirements)
+    decision = determine_skill_strategy(skill_name, requirements)
 
     if args.json:
         print(json.dumps(decision.to_dict(), indent=2))

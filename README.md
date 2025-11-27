@@ -61,7 +61,6 @@ Returns summary + Saves skill → Skill reusable forever
 "What approved drugs for Obesity are also in early development (Phase 1/2)?"
 "Subcutaneous drug approvals expected in 2026-2027"
 "FDA approval timeline for COPD drugs (2010-2025)"
-"Large TAM clinical programs for biotech M&A targets"
 ```
 
 ### Financial
