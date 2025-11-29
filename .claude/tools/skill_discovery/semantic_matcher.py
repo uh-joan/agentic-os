@@ -98,10 +98,26 @@ def find_matching_skill(requirements: SkillRequirements) -> Optional[SkillMatch]
             score += 10
             reasons.append(f"Therapeutic area match: {requirements.therapeutic_area}")
 
-        # Same data type
+        # Same data type (check both name and server)
+        data_type_match = False
         if requirements.data_type in candidate['name']:
             score += 8
             reasons.append(f"Data type match: {requirements.data_type}")
+            data_type_match = True
+        elif not data_type_match:
+            # Check if skill uses the right server (for generic skills)
+            if requirements.data_type == 'trials' and 'ct_gov_mcp' in candidate.get('servers_used', []):
+                score += 8
+                reasons.append(f"Data type match (server): trials via ct_gov_mcp")
+            elif requirements.data_type == 'fda_drugs' and 'fda_mcp' in candidate.get('servers_used', []):
+                score += 8
+                reasons.append(f"Data type match (server): fda_drugs via fda_mcp")
+            elif requirements.data_type == 'patents' and 'uspto_patents_mcp' in candidate.get('servers_used', []):
+                score += 8
+                reasons.append(f"Data type match (server): patents via uspto_patents_mcp")
+            elif requirements.data_type == 'publications' and 'pubmed_mcp' in candidate.get('servers_used', []):
+                score += 8
+                reasons.append(f"Data type match (server): publications via pubmed_mcp")
 
         # Has required patterns
         if requirements.filters:

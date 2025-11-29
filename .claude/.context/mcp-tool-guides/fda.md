@@ -837,11 +837,64 @@ for drug in drugs:
 Returns top 20 adverse event types - perfect for safety signal detection.
 
 ### Q: Can I search by indication/condition?
-**A:** Indirectly:
-- FDA doesn't have a clean "indication" search field
-- Try searching the condition term (searches across all fields)
-- More reliable: Search specific drug names known to treat the condition
-- Alternative: Use OpenTargets MCP for disease-drug associations
+**A:** YES! Use the adverse events database `patient.drug.drugindication` field:
+
+**✅ BREAKTHROUGH METHOD (Adverse Events Discovery)**:
+```json
+{
+  "search_term": "patient.drug.drugindication:obesity",
+  "search_type": "adverse_events",
+  "count": "patient.drug.openfda.brand_name.exact",
+  "limit": 100
+}
+```
+
+**How It Works**:
+- The `patient.drug.drugindication` field captures the condition for which a drug was prescribed when an adverse event was reported
+- This provides real-world drug-indication relationships from actual prescriptions
+- Returns drugs ranked by adverse event volume (proxy for prescribing frequency)
+
+**Example Use Cases**:
+- Find all obesity drugs: `patient.drug.drugindication:obesity`
+- Find diabetes drugs: `patient.drug.drugindication:diabetes`
+- Find cancer drugs: `patient.drug.drugindication:cancer`
+- Find hypertension drugs: `patient.drug.drugindication:hypertension`
+
+**Why This Works When Label Search Fails**:
+- ❌ Label search: `indications_and_usage` field → 67k tokens → Exceeds MCP limit → FAILS
+- ❌ Field selection: `fields_for_general` parameter → BROKEN → FAILS
+- ✅ Adverse events: `drugindication` + count → 200 tokens → WORKS!
+
+**Multi-Term Strategy** (Recommended):
+```python
+indication_terms = ["obesity", "weight control", "overweight"]
+all_drugs = {}
+
+for term in indication_terms:
+    result = lookup_drug(
+        search_term=f"patient.drug.drugindication:{term}",
+        search_type="adverse_events",
+        count="patient.drug.openfda.brand_name.exact",
+        limit=100
+    )
+    # Aggregate results across all terms
+```
+
+**Filtering Tip**:
+Results may include noise (drugs mentioned incidentally). Filter to drugs with:
+- **Primary indication**: >=400 adverse events for the specific condition, OR
+- **High ratio**: Condition-specific events >= 25% of total events
+
+**Limitations**:
+- Captures drugs prescribed for the indication (includes off-label use)
+- Does NOT distinguish FDA-approved vs off-label (shows real-world usage)
+- Only includes drugs with reported adverse events
+- No direct link to approval status
+
+**Alternative (Less Reliable)**:
+- Try searching the condition term in general search (searches across all fields)
+- Use specific drug names if you know them
+- Use OpenTargets MCP for target-disease associations
 
 ---
 
