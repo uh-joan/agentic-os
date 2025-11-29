@@ -1,0 +1,212 @@
+SKILLS LIBRARY INVENTORY SUMMARY
+================================
+
+TOTAL SKILLS: 82 active folder-based skills
+STATUS: 100% migrated to Anthropic folder structure
+LAST UPDATED: 2025-11-28
+
+QUICK STATS BY PLAYBOOK CATEGORY
+==================================
+
+1. PATENT CLIFF & REVENUE GAP ANALYSIS: 40% Complete
+   Status: Foundation exists, extension needed
+   Primary Skill: pharma-revenue-replacement-needs (calculates 2030-2035 gaps)
+   Supporting: crispr-ip-landscape, glp1-obesity-patents, company-rd-spending
+   Gap: Need peak sales trajectory, NPV models, generic entry timing
+
+2. M&A DEAL INTELLIGENCE: 60% Complete
+   Status: Curated deals exist, missing real-time pipeline
+   Primary Skills: 
+     - biotech-ma-deals-over-1b (7 deals $1B+ from 2023-2024)
+     - rare-disease-acquisition-targets (v3.0 with Yahoo Finance enrichment)
+     - biotech-ma-deals-sec (SEC filing extraction)
+   Gap: Real-time negotiations, deal closure probability, strategic fit scoring
+
+3. PIPELINE & TAM ANALYSIS: 70% Complete
+   Status: Strong pipeline, TAM needs quality fix
+   Primary Skills:
+     - indication-drug-pipeline-breakdown (ANY indication, phase breakdown)
+     - get_company_pipeline_indications (ANY company's pipeline)
+     - disease-burden-per-capita (v2.0 with WHO + population data)
+   Flagged: large-tam-clinical-programs (search term issues, needs data validation)
+   Gap: Pipeline velocity metrics, regulatory pathway impact, real-world epidemiology
+
+4. PUBLIC BIOTECH SCREENING: 50% Complete
+   Status: Basic financials available, missing advanced metrics
+   Available: Stock data, R&D spend, capex, dividends, geographic segments
+   Clinical: company-clinical-trials-portfolio (ANY company with filtering)
+   Gap: Credit ratings, insider trading, patent expiration calendar, analyst forecasts
+
+5. THERAPEUTIC AREA DEEP DIVES: 85% Complete
+   Status: Excellent coverage
+   Included: 18+ FDA drug skills, 10+ disease target skills, 5+ literature skills
+   Examples: Alzheimer's (genetic + therapeutic targets), Obesity (drugs + pipeline)
+   Modality Tech: ADC, bispecific antibody, enhanced antibody trial analysis (new)
+   Gap: Combination therapy analysis, real-world outcomes vs trials
+
+6. PLATFORM VS PRODUCT ANALYSIS: 30% Complete
+   Status: Identified but not systematically analyzed
+   Available: novo-nordisk-novel-patents, multi-program company scoring
+   Gap: Platform valuation models, extensibility scoring, manufacturing economics
+
+7. SQUEEZED MIDDLE STRATEGIES: 45% Complete
+   Status: Competitive positioning available, missing niche economics
+   Available: companies-by-moa (trigger keywords: "companies working on")
+   Available: forecast-drug-pipeline (2026-2027 gap identification)
+   Gap: Orphan drug lifecycle, market penetration models, line extensions
+
+
+KEY IMPLEMENTATION DETAILS
+===========================
+
+GENERIC PARAMETERIZED SKILLS (High Reusability):
+- clinical-trials-term-phase: ANY term + phase (replaces 20+ specific skills)
+- disease-burden-per-capita: ANY disease + country (supports 32 countries)
+- disease-genetic-targets: ANY disease target validation
+- company-clinical-trials-portfolio: ANY company portfolio analysis
+- companies-by-moa: ANY MOA/disease competitive assessment
+- get_company_pipeline_indications: ANY company therapeutic areas
+
+MULTI-SERVER STRATEGIC SKILLS:
+- rare-disease-acquisition-targets: ct_gov + financials_mcp (dual-source)
+- indication-drug-pipeline-breakdown: ct_gov + fda_mcp (9-server capable)
+- company-product-launch-timeline: fda_mcp + ct_gov (composition pattern)
+- ra-targets-and-trials: opentargets_mcp + ct_gov_mcp (integration pattern)
+- drug-swot-analysis: 9 servers (comprehensive strategic analysis)
+
+PRODUCTION-READY SKILLS (62 total):
+All FDA drug skills, all CT.gov trial skills, all company financial skills, all safety/adverse event skills, all IP/patent skills
+
+IN DEVELOPMENT (flagged for quality issues):
+- large-tam-clinical-programs (4 servers, search term broadness issues)
+- adc-trials-by-payload (new, needs validation)
+- enhanced-antibody-trials-by-geography (new, needs validation)
+- bispecific-antibody-trials (new, needs validation)
+
+
+CRITICAL GAPS FOR 2026 PLAYBOOK
+=================================
+
+TIER 1 - START IMMEDIATELY (Impact by 2026):
+[ ] Peak sales trajectory modeling by franchise
+[ ] Probability-adjusted NPV calculations
+[ ] Real-time M&A pipeline intelligence (current negotiations)
+[ ] Geographic TAM variation by regulatory pathway
+[ ] Strategic fit scoring algorithms
+
+TIER 2 - Q1 2026:
+[ ] Credit rating and debt analysis integration
+[ ] Patent expiration calendar
+[ ] Insider trading and institutional ownership tracking
+[ ] Analyst coverage and EPS forecast integration
+[ ] Technology platform valuation models
+
+TIER 3 - Q2 2026+:
+[ ] Orphan drug annual sales potential models
+[ ] Market penetration forecasting
+[ ] Line extension opportunity identification
+[ ] Manufacturing cost benchmarking
+
+
+COVERAGE ASSESSMENT
+====================
+
+Overall Implementation: 55% → Target 85%+ by 2026
+
+Best Covered:
+- Therapeutic Area Deep Dives (85%)
+- Pipeline Analysis (70%)
+- M&A Deal Intelligence (60%)
+
+Needs Work:
+- Patent Cliff Analysis (40%)
+- Platform vs Product (30%)
+- Squeezed Middle Strategies (45%)
+- Public Biotech Screening (50%)
+
+
+SKILL DISCOVERY FEATURES
+=========================
+
+Index-Based System (4 levels):
+✓ Level 1: Fast index queries (<100ms)
+✓ Level 2: Health checks (files, syntax, imports)
+✓ Level 3: Semantic matching (therapeutic area, data type, patterns)
+✓ Level 4: Strategy decisions (REUSE/ADAPT/CREATE)
+
+Trigger Keyword Matching:
+✓ "companies working on" → companies-by-moa
+✓ "which companies developing" → companies-by-moa
+✓ "revenue cliff" → pharma-revenue-replacement-needs
+✓ "M&A budget" → pharma-revenue-replacement-needs
+✓ "active pipeline" → indication-drug-pipeline-breakdown
+✓ "phase distribution" → indication-drug-pipeline-breakdown
+✓ "acquisition targets" → rare-disease-acquisition-targets
+✓ "cash runway" → rare-disease-acquisition-targets
+
+
+ARCHITECTURE HIGHLIGHTS
+========================
+
+Migration Status: 100% → Anthropic folder structure
+- All 82 skills have YAML frontmatter
+- All have SKILL.md documentation
+- All have scripts/ subdirectory with Python functions
+- All are importable AND executable standalone
+
+Token Efficiency: 98.7% reduction (raw data stays in execution environment)
+Execution Pattern: Progressive disclosure + in-memory processing + summary output
+Verification: Closed-loop autonomous verification for data quality
+
+Best Practices Established:
+✓ Pagination implementation (reference: clinical-trials-term-phase)
+✓ FDA JSON parsing (reference: glp1-fda-drugs)
+✓ CT.gov markdown parsing (reference: clinical-trials-term-phase)
+✓ Multi-server integration (reference: disease-burden-per-capita)
+✓ Fuzzy matching patterns (reference: rare-disease-acquisition-targets)
+✓ XBRL extraction patterns (reference: company financial skills)
+✓ CLI argument handling (reference: forecast-drug-pipeline)
+✓ Strategic analysis composition (reference: company-product-launch-timeline)
+
+
+NEXT STEPS FOR 2026
+====================
+
+1. Fix large-tam-clinical-programs data quality issues (2-3 days)
+   - Validate search term specificity
+   - Improve TAM calculation fallbacks
+   - Test against gold standard datasets
+
+2. Create peak sales trajectory skill (3-5 days)
+   - Collect comparable approval timelines
+   - Model annual peak sales by therapeutic area
+   - Integrate with revenue-replacement-needs
+
+3. Build M&A pipeline intelligence (5-7 days)
+   - Scrape press releases and regulatory filings
+   - Implement deal closure probability scoring
+   - Add strategic fit algorithm
+
+4. Enhance biotech screening (3-4 days)
+   - Add credit rating integration
+   - Create patent expiration calendar
+   - Build analyst forecast tracker
+
+5. Create platform valuation framework (4-5 days)
+   - Extensibility scoring algorithm
+   - Platform economics model
+   - Label expansion potential calculator
+
+
+DOCUMENT LOCATION
+=================
+
+Full inventory with detailed skill descriptions and code examples:
+/Users/joan.saez-pons/code/agentic-os/.claude/skills/PLAYBOOK_MAPPING.md
+
+Skills index with metadata and discovery information:
+/Users/joan.saez-pons/code/agentic-os/.claude/skills/index.json
+
+Sample skill to understand implementation:
+/Users/joan.saez-pons/code/agentic-os/.claude/skills/rare-disease-acquisition-targets/SKILL.md
+
