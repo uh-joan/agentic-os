@@ -21,8 +21,17 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~4 seconds
 ---
-
 # get_semaglutide_adverse_events
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What semaglutide adverse events drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved semaglutide adverse events medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for semaglutide adverse events`
+
 
 Provides comprehensive adverse event analysis for semaglutide from FDA's Adverse Event Reporting System (FAERS), enabling post-market safety surveillance, risk management planning, and label update strategy.
 

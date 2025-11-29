@@ -23,7 +23,16 @@ complexity: medium
 execution_time: ~5-8 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_cvd_disease_burden
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What's the disease burden for cardiovascular disease?`
+2. `@agent-pharma-search-specialist Show me prevalence data for cardiovascular disease`
+3. `@agent-pharma-search-specialist Get epidemiology statistics for cardiovascular disease`
+
 
 Retrieves comprehensive cardiovascular disease burden data from WHO health statistics.

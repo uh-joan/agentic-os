@@ -62,8 +62,17 @@ complexity: complex
 execution_time: ~10 seconds (clinical only) | ~30-60 seconds (with financials)
 token_efficiency: ~99% reduction vs raw trial data
 ---
-
 # get_rare_disease_acquisition_targets
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for rare disease acquisition targets?`
+2. `@agent-pharma-search-specialist Find active rare disease acquisition targets trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for rare disease acquisition targets`
+
 
 ## Purpose
 

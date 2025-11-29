@@ -22,7 +22,16 @@ complexity: simple
 execution_time: ~2 seconds
 token_efficiency: ~99% reduction vs raw code data
 ---
-
 # get_diabetes_icd10_codes
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are the ICD-10 codes for diabetes?`
+2. `@agent-pharma-search-specialist Get diagnostic codes for diabetes`
+3. `@agent-pharma-search-specialist Show me billing codes for diabetes`
+
 
 Retrieves all ICD-10 diagnosis codes for diabetes mellitus and categorizes them by type.

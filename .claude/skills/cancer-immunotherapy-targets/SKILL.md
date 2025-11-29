@@ -33,8 +33,17 @@ complexity: medium
 execution_time: ~15 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_cancer_immunotherapy_targets
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are the genetic targets for PD-1 checkpoint inhibitor?`
+2. `@agent-pharma-search-specialist Show me therapeutic targets for PD-1 checkpoint inhibitor`
+3. `@agent-pharma-search-specialist Find validated targets in PD-1 checkpoint inhibitor`
+
 
 ## Purpose
 Discovers and prioritizes validated targets for cancer immunotherapy beyond the well-established PD-1/PD-L1 checkpoint inhibitors, enabling next-generation therapeutic development.

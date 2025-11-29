@@ -1,5 +1,15 @@
 # Bottom-Up Catalyst Discovery
 
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for bottom-up-catalyst-discovery?`
+2. `@agent-pharma-search-specialist Find active bottom-up-catalyst-discovery trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for bottom-up-catalyst-discovery`
+
+
 ## Overview
 
 Automated bottom-up discovery pipeline that starts from ClinicalTrials.gov trials and builds a comprehensive list of investable biotech companies with upcoming catalysts.

@@ -18,7 +18,16 @@ complexity: medium
 execution_time: ~4 seconds
 token_efficiency: 99%
 ---
-
 # get_crispr_2024_papers
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are the recent publications on CRISPR gene editing?`
+2. `@agent-pharma-search-specialist Find scientific literature about CRISPR gene editing`
+3. `@agent-pharma-search-specialist Show me research papers on CRISPR gene editing`
+
 
 CRISPR research papers from 2024 with journal distribution analysis.

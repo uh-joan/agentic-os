@@ -21,8 +21,17 @@ complexity: medium
 execution_time: ~5 seconds
 cli_enabled: true
 ---
-
 # get_pharma_company_stock_data
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Which companies are working on pharma company stock?`
+2. `@agent-pharma-search-specialist Show me the competitive landscape for pharma company stock`
+3. `@agent-pharma-search-specialist Who's developing pharma company stock therapies?`
+
 
 Stock market data for pharmaceutical companies using Yahoo Finance API.
 

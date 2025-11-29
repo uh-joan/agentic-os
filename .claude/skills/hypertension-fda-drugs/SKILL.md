@@ -19,7 +19,16 @@ complexity: medium
 execution_time: ~2 seconds
 token_efficiency: 99%
 ---
-
 # get_hypertension_fda_drugs
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What hypertension drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved hypertension medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for hypertension`
+
 
 FDA-approved hypertension drugs with manufacturer information.

@@ -48,8 +48,17 @@ parameters:
     default: ["pma", "510k", "registration"]
     description: Device approval types to include
 ---
-
 # get_company_fda_device_approvals
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What company fda device approvals drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved company fda device approvals medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for company fda device approvals`
+
 
 ## Purpose
 Extract comprehensive FDA device approval data for any medical device company, including PMA approvals, 510(k) clearances, and device registrations. Enables competitive intelligence, regulatory strategy analysis, and portfolio assessment for medtech companies.

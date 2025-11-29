@@ -27,8 +27,17 @@ complexity: medium
 execution_time: ~3-5 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_trials_by_phase_and_design
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for by phase and design?`
+2. `@agent-pharma-search-specialist Find active by phase and design trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for by phase and design`
+
 
 ## Purpose
 

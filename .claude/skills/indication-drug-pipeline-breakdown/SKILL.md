@@ -46,8 +46,17 @@ complexity: complex
 execution_time: ~15-35 seconds
 token_efficiency: ~99% reduction vs raw trial data
 ---
-
 # get_indication_drug_pipeline_breakdown
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What indication drug pipeline breakdown drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved indication drug pipeline breakdown medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for indication drug pipeline breakdown`
+
 
 ## Purpose
 

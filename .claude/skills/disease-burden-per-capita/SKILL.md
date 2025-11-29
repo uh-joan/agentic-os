@@ -29,8 +29,17 @@ is_generic: true
 status: "Multi-server integration working (WHO + Data Commons)"
 version: "2.0"
 ---
-
 # get_disease_burden_per_capita
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What's the disease burden for disease burden per capita?`
+2. `@agent-pharma-search-specialist Show me prevalence data for disease burden per capita`
+3. `@agent-pharma-search-specialist Get epidemiology statistics for disease burden per capita`
+
 
 Calculate true disease burden per capita by combining WHO health indicator data with Data Commons population statistics.
 

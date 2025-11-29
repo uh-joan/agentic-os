@@ -26,8 +26,17 @@ complexity: complex
 execution_time: ~15-20 seconds
 token_efficiency: ~99% reduction vs raw patent data
 ---
-
 # get_crispr_ip_landscape
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What patents exist for CRISPR gene editing?`
+2. `@agent-pharma-search-specialist Show me the IP landscape for CRISPR gene editing`
+3. `@agent-pharma-search-specialist Find CRISPR gene editing patents`
+
 
 ## Purpose
 

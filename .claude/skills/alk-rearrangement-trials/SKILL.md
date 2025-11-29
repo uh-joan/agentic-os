@@ -24,8 +24,19 @@ complexity: medium
 execution_time: ~3 seconds
 token_efficiency: ~98% reduction vs raw data
 ---
-
 # get_alk_rearrangement_trials
+
+
+## Sample Queries
+
+Examples of user queries that would trigger reuse of this skill:
+
+1. `@agent-pharma-search-specialist What ALK-positive NSCLC trials are currently recruiting?`
+2. `@agent-pharma-search-specialist Show me the ALK rearrangement trial landscape`
+3. `@agent-pharma-search-specialist How many ALK inhibitor trials are in development?`
+4. `@agent-pharma-search-specialist What's the competitive landscape for ALK fusion positive cancers?`
+5. `@agent-pharma-search-specialist Which companies are running ALK-positive lung cancer trials?`
+
 
 ## Purpose
 Retrieves all clinical trials for ALK rearrangement positive cancers with status distribution analysis. Designed for competitive landscape assessment in the ALK-positive NSCLC therapeutic space.

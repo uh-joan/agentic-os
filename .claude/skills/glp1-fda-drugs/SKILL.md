@@ -19,8 +19,17 @@ complexity: simple
 execution_time: ~2-3 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_glp1_fda_drugs
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What GLP-1 receptor agonist drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved GLP-1 receptor agonist medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for GLP-1 receptor agonist`
+
 
 Get FDA approved GLP-1 receptor agonist drugs with comprehensive information.
 

@@ -5,8 +5,17 @@ description: >
   sustainability analysis from SEC EDGAR filings. Analyzes cash flow
   and net income to assess dividend policy and shareholder returns.
 ---
-
 # extract_company_dividend_history
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Which companies are working on company dividend history?`
+2. `@agent-pharma-search-specialist Show me the competitive landscape for company dividend history`
+3. `@agent-pharma-search-specialist Who's developing company dividend history therapies?`
+
 
 ## Purpose
 

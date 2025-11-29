@@ -21,8 +21,17 @@ complexity: medium
 execution_time: ~2 seconds
 migration_status: "Migrated to Data Commons v2 API (search_indicators + get_observations)"
 ---
-
 # get_california_population_time_series
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What's the disease burden for california population?`
+2. `@agent-pharma-search-specialist Show me prevalence data for california population`
+3. `@agent-pharma-search-specialist Get epidemiology statistics for california population`
+
 
 California population time series with growth trend analysis from Data Commons.
 

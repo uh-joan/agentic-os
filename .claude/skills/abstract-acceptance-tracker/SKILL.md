@@ -1,5 +1,15 @@
 # Abstract Acceptance Tracker
 
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Get abstract-acceptance-tracker data`
+2. `@agent-pharma-search-specialist Show me abstract-acceptance-tracker information`
+3. `@agent-pharma-search-specialist Find abstract-acceptance-tracker details`
+
+
 ## Overview
 
 Tracks conference abstract acceptance announcements by monitoring SEC 8-K filings. Abstract acceptances are early signals of upcoming clinical data presentations 4-8 weeks before conferences.

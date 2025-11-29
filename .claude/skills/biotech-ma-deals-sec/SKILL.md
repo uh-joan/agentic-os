@@ -18,7 +18,16 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~5 seconds
 ---
-
 # get_biotech_ma_filings
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are the financials for companies in biotech ma deals sec edgar?`
+2. `@agent-pharma-search-specialist Show me R&D spending on biotech ma deals sec edgar`
+3. `@agent-pharma-search-specialist Get revenue data for biotech ma deals sec edgar companies`
+
 
 Biotech merger and acquisition SEC filings analysis.

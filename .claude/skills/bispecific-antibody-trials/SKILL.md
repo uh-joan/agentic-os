@@ -43,8 +43,17 @@ complexity: complex
 execution_time: ~45 seconds (mechanism='all'), ~20 seconds (specific mechanism)
 token_efficiency: ~99% reduction vs raw trial data
 ---
-
 # get_bispecific_antibody_trials
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for PD-1 checkpoint inhibitor?`
+2. `@agent-pharma-search-specialist Find active PD-1 checkpoint inhibitor trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for PD-1 checkpoint inhibitor`
+
 
 ## Purpose
 

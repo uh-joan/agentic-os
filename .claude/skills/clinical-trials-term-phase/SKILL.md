@@ -45,8 +45,17 @@ replaces_skills:
   - us-phase3-obesity-recruiting-trials
 created: 2025-11-24
 ---
-
 # Clinical Trials - Generic Skill
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for clinical?`
+2. `@agent-pharma-search-specialist Find active clinical trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for clinical`
+
 
 Get clinical trials data for ANY therapeutic area, drug class, or medical condition with optional phase filtering.
 

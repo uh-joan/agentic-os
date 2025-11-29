@@ -34,9 +34,22 @@ last_updated: 2025-11-25
 complexity: simple
 execution_time: ~10-60 seconds (depends on trial count)
 token_efficiency: ~99% reduction
+test_config:
+  args: ["KRAS inhibitor", "lung cancer"]
+  expected_min_results: 3
+  timeout_seconds: 90
 ---
-
 # get_companies_by_moa
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What KRAS inhibitor drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved KRAS inhibitor medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for KRAS inhibitor`
+
 
 ## Purpose
 

@@ -20,8 +20,17 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~15 seconds
 ---
-
 # get_cart_adverse_events_comparison
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What CAR-T cell therapy drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved CAR-T cell therapy medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for CAR-T cell therapy`
+
 
 Provides comprehensive comparative analysis of adverse event profiles for all 6 FDA-approved CAR-T cell therapies.
 

@@ -47,8 +47,17 @@ parameters:
       - "Bristol Myers Squibb"
       - "AstraZeneca"
 ---
-
 # get_company_pipeline_indications
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for company pipeline indications?`
+2. `@agent-pharma-search-specialist Find active company pipeline indications trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for company pipeline indications`
+
 
 ## Purpose
 

@@ -18,8 +18,17 @@ complexity: simple
 execution_time: ~2 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_covid19_vaccine_trials_recruiting
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for covid19 vaccine  recruiting?`
+2. `@agent-pharma-search-specialist Find active covid19 vaccine  recruiting trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for covid19 vaccine  recruiting`
+
 
 **Category**: Clinical Trials Research
 **MCP Server**: ct_gov_mcp

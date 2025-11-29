@@ -28,8 +28,17 @@ complexity: complex
 execution_time: ~45 seconds
 token_efficiency: ~99% reduction vs raw trial data
 ---
-
 # get_enhanced_antibody_trials_by_geography
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for antibody-drug conjugate?`
+2. `@agent-pharma-search-specialist Find active antibody-drug conjugate trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for antibody-drug conjugate`
+
 
 ## Purpose
 Provides comprehensive geographic and temporal analysis of enhanced antibody clinical trials across three major formats (ADC, bispecific, multispecific) with regional comparison between US/EU and China. Validates strategic thesis that China has overtaken Western markets in enhanced antibody development.

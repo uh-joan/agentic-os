@@ -5,8 +5,17 @@ description: >
   impacts from SEC EDGAR filings. Identifies major acquisitions, tracks
   goodwill changes, and highlights potential write-down risks.
 ---
-
 # extract_company_acquisitions
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Which companies are working on company acquisitions?`
+2. `@agent-pharma-search-specialist Show me the competitive landscape for company acquisitions`
+3. `@agent-pharma-search-specialist Who's developing company acquisitions therapies?`
+
 
 ## Purpose
 

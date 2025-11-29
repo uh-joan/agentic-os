@@ -35,8 +35,19 @@ complexity: complex
 execution_time: ~30-60 seconds per payload class
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_adc_trials_by_payload
+
+
+## Sample Queries
+
+Examples of user queries that would trigger reuse of this skill:
+
+1. `@agent-pharma-search-specialist Compare ADC trials by payload type - which payloads are most pursued?`
+2. `@agent-pharma-search-specialist Do Chinese companies prefer topoisomerase I inhibitor ADCs versus Western companies?`
+3. `@agent-pharma-search-specialist Show me the target-payload combinations in ADC clinical development`
+4. `@agent-pharma-search-specialist What's the competitive landscape for MMAE-based ADCs?`
+5. `@agent-pharma-search-specialist Which ADC payload classes are in late-stage development?`
+
 
 ## Purpose
 

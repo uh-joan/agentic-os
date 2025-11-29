@@ -20,8 +20,19 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~8 seconds
 ---
-
 # get_anti_amyloid_publications
+
+
+## Sample Queries
+
+Examples of user queries that would trigger reuse of this skill:
+
+1. `@agent-pharma-search-specialist What's the publication landscape for anti-amyloid antibodies in Alzheimer's?`
+2. `@agent-pharma-search-specialist Compare research output for lecanemab, donanemab, and aducanumab`
+3. `@agent-pharma-search-specialist How frequently is ARIA safety data reported in anti-amyloid antibody publications?`
+4. `@agent-pharma-search-specialist Which institutions are leading research on anti-amyloid antibodies for Alzheimer's?`
+5. `@agent-pharma-search-specialist Show me publication trends for gantenerumab and other anti-amyloid therapies`
+
 
 Search PubMed for recent publications on anti-amyloid antibodies for Alzheimer's disease and analyze research trends, safety reporting, and institutional contributions.
 

@@ -35,8 +35,17 @@ complexity: moderate
 execution_time: ~30-90 seconds (depends on indication size)
 token_efficiency: ~99% reduction
 ---
-
 # get_safety_stopped_trials
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for safety stopped?`
+2. `@agent-pharma-search-specialist Find active safety stopped trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for safety stopped`
+
 
 ## Purpose
 

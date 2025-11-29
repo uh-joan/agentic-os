@@ -28,8 +28,17 @@ complexity: complex
 execution_time: ~45 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_obesity_drugs_early_development
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What obesity drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved obesity medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for obesity`
+
 
 ## Purpose
 

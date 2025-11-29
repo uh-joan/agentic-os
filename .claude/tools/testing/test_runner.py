@@ -20,6 +20,13 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
 
+# Import YAML for frontmatter parsing
+try:
+    import yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
+
 
 class TestStatus(Enum):
     """Test result status"""
@@ -70,6 +77,103 @@ class SkillTestRunner:
         self.project_root = project_root or Path.cwd()
         self.skills_dir = self.project_root / ".claude" / "skills"
 
+    def _find_skill_md(self, skill_path: Path) -> Optional[Path]:
+        """Find SKILL.md file for a given Python script.
+
+        Args:
+            skill_path: Path to Python skill script
+
+        Returns:
+            Path to SKILL.md file, or None if not found
+        """
+        # Try folder structure first: skill-name/scripts/skill.py → skill-name/SKILL.md
+        if skill_path.parent.name == "scripts":
+            skill_md = skill_path.parent.parent / "SKILL.md"
+            if skill_md.exists():
+                return skill_md
+
+        # Try flat structure: skill-name/skill.py → skill-name/SKILL.md (legacy)
+        skill_md = skill_path.parent / "SKILL.md"
+        if skill_md.exists():
+            return skill_md
+
+        # Try parent directory
+        skill_md = skill_path.parent.parent / "SKILL.md"
+        if skill_md.exists():
+            return skill_md
+
+        return None
+
+    def _parse_frontmatter(self, skill_md_path: Path) -> Optional[Dict]:
+        """Extract YAML frontmatter from SKILL.md file.
+
+        Args:
+            skill_md_path: Path to SKILL.md file
+
+        Returns:
+            Dictionary of metadata, or None if no frontmatter
+        """
+        try:
+            content = skill_md_path.read_text()
+
+            # Check for frontmatter delimiters
+            if not content.startswith('---\n'):
+                return None
+
+            # Extract frontmatter
+            parts = content.split('---\n', 2)
+            if len(parts) < 3:
+                return None
+
+            frontmatter_text = parts[1]
+
+            if HAS_YAML:
+                return yaml.safe_load(frontmatter_text)
+            else:
+                # Fallback to simple parsing (limited support)
+                return self._simple_parse_frontmatter(frontmatter_text)
+
+        except Exception as e:
+            print(f"Warning: Error parsing frontmatter in {skill_md_path}: {e}")
+            return None
+
+    def _simple_parse_frontmatter(self, text: str) -> Dict:
+        """Simple YAML parser fallback (limited support)."""
+        metadata = {}
+        current_key = None
+
+        for line in text.strip().split('\n'):
+            if ':' in line and not line.startswith(' '):
+                key, value = line.split(':', 1)
+                key = key.strip()
+                value = value.strip()
+                current_key = key
+
+                # Handle lists
+                if value.startswith('['):
+                    value = value.strip('[]').split(',')
+                    value = [v.strip().strip('"\'') for v in value]
+                # Handle empty values (nested dict)
+                elif value == '':
+                    metadata[key] = {}
+                # Handle simple values
+                else:
+                    value = value.strip('"\'')
+
+                metadata[key] = value
+            elif line.startswith('  - ') and current_key:
+                # List item
+                if not isinstance(metadata.get(current_key), list):
+                    metadata[current_key] = []
+                metadata[current_key].append(line.strip('- ').strip())
+            elif line.startswith('  ') and current_key and isinstance(metadata.get(current_key), dict):
+                # Nested dict item
+                if ':' in line:
+                    nested_key, nested_value = line.strip().split(':', 1)
+                    metadata[current_key][nested_key.strip()] = nested_value.strip().strip('"\'')
+
+        return metadata
+
     def test_skill(self, skill_path: str, args: List[str] = None) -> SkillTestReport:
         """
         Run all tests on a skill
@@ -83,6 +187,22 @@ class SkillTestRunner:
         """
         full_path = self.project_root / skill_path
         skill_name = self._extract_skill_name(skill_path)
+
+        # If no args provided, try to load from SKILL.md test_config
+        timeout = 60  # Default timeout
+        if args is None:
+            skill_md = self._find_skill_md(full_path)
+            if skill_md:
+                metadata = self._parse_frontmatter(skill_md)
+                if metadata and 'test_config' in metadata:
+                    test_config = metadata['test_config']
+                    if isinstance(test_config, dict):
+                        if 'args' in test_config:
+                            args = test_config['args']
+                            print(f"  Using test_args from SKILL.md: {args}")
+                        if 'timeout_seconds' in test_config:
+                            timeout = int(test_config['timeout_seconds'])
+                            print(f"  Using custom timeout: {timeout}s")
 
         tests = []
 
@@ -103,14 +223,15 @@ class SkillTestRunner:
             return self._create_report(skill_name, str(full_path), tests)
 
         # Test 3: Execution validation
-        execution_result = self._test_execution(full_path, args)
+        execution_result = self._test_execution(full_path, args, timeout)
         tests.append(execution_result)
 
         if execution_result.status != TestStatus.PASSED.value:
             # Stop testing if execution fails
             report = self._create_report(skill_name, str(full_path), tests)
-            report.execution_output = execution_result.details.get('stdout', '')
-            report.error_output = execution_result.details.get('stderr', '')
+            if execution_result.details:
+                report.execution_output = execution_result.details.get('stdout', '')
+                report.error_output = execution_result.details.get('stderr', '')
             return report
 
         # Test 4: Data validation
@@ -200,8 +321,14 @@ class SkillTestRunner:
                 details={'error': str(e)}
             )
 
-    def _test_execution(self, skill_path: Path, args: List[str] = None) -> TestResult:
-        """Test if skill executes without errors"""
+    def _test_execution(self, skill_path: Path, args: List[str] = None, timeout: int = 60) -> TestResult:
+        """Test if skill executes without errors
+
+        Args:
+            skill_path: Path to skill script
+            args: Optional command-line arguments
+            timeout: Execution timeout in seconds (default: 60)
+        """
         import time
 
         start_time = time.time()
@@ -224,7 +351,7 @@ class SkillTestRunner:
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=60,  # 60 second timeout
+                timeout=timeout,
                 env={**subprocess.os.environ, **env}
             )
 
@@ -258,8 +385,8 @@ class SkillTestRunner:
             return TestResult(
                 test_type=TestType.EXECUTION.value,
                 status=TestStatus.ERROR.value,
-                message="Execution timeout (>60s)",
-                execution_time=60.0
+                message=f"Execution timeout (>{timeout}s)",
+                execution_time=float(timeout)
             )
         except Exception as e:
             return TestResult(

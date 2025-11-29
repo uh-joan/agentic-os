@@ -45,8 +45,17 @@ parameters:
     description: Analysis end year
 cli_enabled: true
 ---
-
 # analyze_company_product_launch_timeline
+
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What analyze company product launch timeline drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved analyze company product launch timeline medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for analyze company product launch timeline`
 
 
 ## CLI Usage

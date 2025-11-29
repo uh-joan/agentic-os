@@ -36,8 +36,17 @@ complexity: medium
 execution_time: ~2 seconds
 token_efficiency: ~99% reduction vs raw FDA JSON
 ---
-
 # get_breakthrough_therapy_designations_2024
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What breakthrough therapy designations 2024 drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved breakthrough therapy designations 2024 medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for breakthrough therapy designations 2024`
+
 
 ## Purpose
 

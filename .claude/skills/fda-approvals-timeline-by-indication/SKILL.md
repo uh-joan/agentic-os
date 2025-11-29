@@ -55,8 +55,17 @@ estimated_value: 9/10
 feasibility: 10/10
 implementation_time: 2 hours
 ---
-
 # FDA Approvals Timeline by Indication
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What fda-approvals-timeline-by-indication drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved fda-approvals-timeline-by-indication medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for fda-approvals-timeline-by-indication`
+
 
 Fully generic FDA drug approval timeline analyzer - works with ANY therapeutic area and drug list, providing year-by-year breakdowns and trend analysis.
 

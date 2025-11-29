@@ -32,8 +32,17 @@ complexity: medium
 execution_time: ~3 seconds
 token_efficiency: ~99% reduction vs raw PubChem JSON
 ---
-
 # get_kras_inhibitor_scaffold_analysis
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Get kras inhibitor scaffold analysis data`
+2. `@agent-pharma-search-specialist Show me kras inhibitor scaffold analysis information`
+3. `@agent-pharma-search-specialist Find kras inhibitor scaffold analysis details`
+
 
 ## Purpose
 

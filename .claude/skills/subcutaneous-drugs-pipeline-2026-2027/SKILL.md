@@ -28,8 +28,17 @@ complexity: medium
 execution_time: ~10-15 minutes (fetches ALL ~2000 trials)
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_subcutaneous_drugs_pipeline_2026_2027
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for subcutaneous drugs pipeline 2026 2027?`
+2. `@agent-pharma-search-specialist Find active subcutaneous drugs pipeline 2026 2027 trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for subcutaneous drugs pipeline 2026 2027`
+
 
 ## Purpose
 

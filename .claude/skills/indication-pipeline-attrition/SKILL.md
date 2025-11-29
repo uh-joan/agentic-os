@@ -25,8 +25,17 @@ complexity: medium
 execution_time: ~10-30 seconds (depends on trial count)
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_indication_pipeline_attrition
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for indication pipeline attrition?`
+2. `@agent-pharma-search-specialist Find active indication pipeline attrition trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for indication pipeline attrition`
+
 
 ## Purpose
 Track terminated and withdrawn clinical trials for any therapeutic area to identify failure patterns, competitive intelligence, and development risks.

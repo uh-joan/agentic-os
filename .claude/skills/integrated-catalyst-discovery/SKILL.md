@@ -20,8 +20,17 @@ updated: 2025-11-29
 bug_fixes:
   - Fixed dictionary key reference bug (line 98) - now correctly retrieves 'investable_companies' from discovery result
 ---
-
 # Integrated Catalyst Discovery
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are upcoming catalysts for integrated-catalyst-discovery?`
+2. `@agent-pharma-search-specialist Show me PDUFA dates for integrated-catalyst-discovery drugs`
+3. `@agent-pharma-search-specialist Find clinical trial readouts in integrated-catalyst-discovery`
+
 
 Generic, end-to-end catalyst discovery for any quarter and year.
 

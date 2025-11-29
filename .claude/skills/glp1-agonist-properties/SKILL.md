@@ -27,8 +27,17 @@ complexity: medium
 execution_time: ~5 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_glp1_agonist_properties
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Get glp1 agonist properties data`
+2. `@agent-pharma-search-specialist Show me glp1 agonist properties information`
+3. `@agent-pharma-search-specialist Find glp1 agonist properties details`
+
 
 ## Purpose
 

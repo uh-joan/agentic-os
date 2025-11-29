@@ -30,8 +30,17 @@ complexity: medium
 execution_time: ~8 seconds
 token_efficiency: ~99.5% reduction vs raw adverse events data
 ---
-
 # get_obesity_fda_drugs
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What obesity drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved obesity medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for obesity`
+
 
 ## Purpose
 Discovers all FDA-approved obesity drugs in the United States by querying the adverse events database for real-world prescription patterns. Unlike label-based searches (which fail due to token limits), this approach uses the `patient.drug.drugindication` field to find drugs where "obesity" or related terms appear as the reported indication.

@@ -2,8 +2,17 @@
 name: company-segment-and-geographic-financials
 description: Extract business segment and geographic revenue from SEC EDGAR filings using XBRL parsing
 ---
-
 # Company Segment & Geographic Financials Extractor
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Which companies are working on company segment geographic financials?`
+2. `@agent-pharma-search-specialist Show me the competitive landscape for company segment geographic financials`
+3. `@agent-pharma-search-specialist Who's developing company segment geographic financials therapies?`
+
 
 ## Overview
 

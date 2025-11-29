@@ -74,8 +74,17 @@ development_notes: >
   - Tier 4: Caching (improve performance)
   - Tier 5: Regional pricing adjustments (realistic regional TAM)
 ---
-
 # get_large_tam_clinical_programs
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What large tam clinical programs drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved large tam clinical programs medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for large tam clinical programs`
+
 
 ## Purpose
 

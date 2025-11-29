@@ -15,8 +15,17 @@ data_type: catalysts
 version: 1.0.0
 created: 2025-11-29
 ---
-
 # Catalyst Tracker
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are upcoming catalysts for catalyst-tracker?`
+2. `@agent-pharma-search-specialist Show me PDUFA dates for catalyst-tracker drugs`
+3. `@agent-pharma-search-specialist Find clinical trial readouts in catalyst-tracker`
+
 
 Generic catalyst tracking across multiple data sources for any quarter and year.
 

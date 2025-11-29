@@ -27,8 +27,17 @@ complexity: complex
 execution_time: ~5-10 seconds (single API call + pipeline fetch)
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_novo_nordisk_novel_patents
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for novo-nordisk-novel-?`
+2. `@agent-pharma-search-specialist Find active novo-nordisk-novel- trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for novo-nordisk-novel-`
+
 
 ## Purpose
 Identifies Novo Nordisk patents in therapeutic areas where the company has not yet initiated clinical trials, revealing potential future R&D directions and strategic priorities.

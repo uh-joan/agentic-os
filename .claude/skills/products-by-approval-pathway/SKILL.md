@@ -65,8 +65,17 @@ data_source:
       - Year filtering parameters (approval_year_start/end)
       - Advanced field_exists filtering
 ---
-
 # ⚠️ CRITICAL BUG - SKILL BROKEN FOR THERAPEUTIC AREA FILTERING ⚠️
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What products by approval pathway drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved products by approval pathway medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for products by approval pathway`
+
 
 **Status**: 🔴 **DO NOT USE** with therapeutic area parameter
 

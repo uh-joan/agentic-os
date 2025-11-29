@@ -23,7 +23,16 @@ complexity: complex
 execution_time: ~15 seconds
 token_efficiency: 99%
 ---
-
 # get_ra_targets_and_trials
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for rheumatoid arthritis?`
+2. `@agent-pharma-search-specialist Find active rheumatoid arthritis trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for rheumatoid arthritis`
+
 
 Rheumatoid arthritis genetic targets with active clinical trial matching.

@@ -239,43 +239,59 @@ Create `.claude/.context/mcp-function-reference.md` with complete documentation:
 
 ### Short-Term Enhancements (Weeks 2-3)
 
-**Enhancement 1: Add Test Args Support**
+**Enhancement 1: Add Test Args Support** ✅ **COMPLETED (2025-11-29)**
 
-Update SKILL.md frontmatter to include test configuration:
+Automatic test argument loading from SKILL.md frontmatter.
+
+**SKILL.md frontmatter format**:
 
 ```yaml
 ---
-name: get_clinical_trials
-description: Search clinical trials by term and optional phase
-servers:
-  - ct_gov_mcp
-category: clinical_trials
+name: get_companies_by_moa
+description: Find companies working on specific mechanisms
+category: competitive-intelligence
 test_config:
-  args: ["KRAS inhibitor", "PHASE3"]
-  expected_min_results: 10
-  timeout_seconds: 30
+  args: ["KRAS inhibitor", "lung cancer"]
+  expected_min_results: 3
+  timeout_seconds: 90
 ---
 ```
 
-Update `test_runner.py` to read and use `test_args`:
+**test_runner.py implementation**:
 
 ```python
 def test_skill(self, skill_path: str, args: list = None):
+    timeout = 60  # Default timeout
+
     # If no args provided, try to load from SKILL.md
     if args is None:
         skill_md = self._find_skill_md(skill_path)
         if skill_md:
             metadata = self._parse_frontmatter(skill_md)
-            args = metadata.get('test_config', {}).get('args', [])
+            if metadata and 'test_config' in metadata:
+                test_config = metadata['test_config']
+                if 'args' in test_config:
+                    args = test_config['args']
+                if 'timeout_seconds' in test_config:
+                    timeout = int(test_config['timeout_seconds'])
 
-    # Execute with args
-    cmd = ['python3', skill_path] + args
-    ...
+    execution_result = self._test_execution(full_path, args, timeout)
 ```
 
-**Enhancement 2: Improve Schema Validation**
+**Test Results**:
+- ✅ companies-by-moa: 5/5 tests passed with args `['KRAS inhibitor', 'lung cancer']`
+- ✅ Custom timeout (90s) respected, skill completed in 24.63s
+- ✅ Returned comprehensive data: 22 companies, 36 trials, competitive assessment
 
-Make schema validation more flexible:
+**Benefits**:
+- Parameterized skills now testable without manual argument specification
+- Custom timeouts prevent false failures for long-running queries
+- Self-documenting: test configuration lives with skill documentation
+- Eliminates "requires arguments" execution failures (~11% of test failures)
+
+**Enhancement 2: Improve Schema Validation** ✅ **COMPLETED (2025-11-29)**
+
+Flexible validation reduces false failures from formatting variations:
 
 ```python
 def _check_schema(self, output: str, skill_type: str) -> tuple[bool, list[str]]:
@@ -436,11 +452,11 @@ python3 .claude/tools/testing/test_orchestrator.py \
 - Health score: 21% → 71% on test sample (238% improvement)
 - See TESTING_SESSION_SUMMARY_2025-11-29.md for full details
 
-**Short-Term (Next 2 Weeks):** 🔄 **READY TO START**
+**Short-Term (Next 2 Weeks):** 🔄 **2/4 COMPLETED**
 
-1. ⏳ Add test_args support to SKILL.md frontmatter
-2. ⏳ Update test_runner.py to use test_args
-3. ⏳ Improve schema validation flexibility
+1. ✅ Add test_args support to SKILL.md frontmatter (COMPLETED 2025-11-29)
+2. ✅ Update test_runner.py to use test_args (COMPLETED 2025-11-29)
+3. ✅ Improve schema validation flexibility (COMPLETED 2025-11-29)
 4. ⏳ Add defensive null checks to parsing
 
 **Medium-Term (Next Month):**

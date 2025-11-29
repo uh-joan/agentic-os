@@ -41,8 +41,17 @@ token_efficiency: ~99% reduction vs raw data
 cli_enabled: true
 version: 1.1
 ---
-
 # generate_company_swot_analysis
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What generate company swot analysis drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved generate company swot analysis medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for generate company swot analysis`
+
 
 ## Purpose
 

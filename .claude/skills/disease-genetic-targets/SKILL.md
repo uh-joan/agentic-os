@@ -31,8 +31,17 @@ execution_time: ~5-30 seconds (scales with dataset size)
 token_efficiency: ~99% reduction vs raw Open Targets data
 cli_enabled: true
 ---
-
 # get_disease_genetic_targets
+
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are the genetic targets for disease genetic targets?`
+2. `@agent-pharma-search-specialist Show me therapeutic targets for disease genetic targets`
+3. `@agent-pharma-search-specialist Find validated targets in disease genetic targets`
 
 
 ## CLI Usage

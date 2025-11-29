@@ -18,8 +18,17 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~15 seconds
 ---
-
 # get_checkpoint_inhibitor_prescribers
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Get checkpoint inhibitor prescribers data`
+2. `@agent-pharma-search-specialist Show me checkpoint inhibitor prescribers information`
+3. `@agent-pharma-search-specialist Find checkpoint inhibitor prescribers details`
+
 
 Identifies KOLs and major cancer centers for checkpoint inhibitor targeting.
 

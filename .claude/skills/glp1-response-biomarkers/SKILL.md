@@ -21,8 +21,17 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~4 seconds
 ---
-
 # get_glp1_response_biomarkers
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are the recent publications on GLP-1 receptor agonist?`
+2. `@agent-pharma-search-specialist Find scientific literature about GLP-1 receptor agonist`
+3. `@agent-pharma-search-specialist Show me research papers on GLP-1 receptor agonist`
+
 
 Discover and categorize biomarkers being studied for predicting patient response to GLP-1 receptor agonists.
 

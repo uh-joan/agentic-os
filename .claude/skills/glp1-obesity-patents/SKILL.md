@@ -19,7 +19,16 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~2 seconds
 ---
-
 # get_glp1_obesity_patents
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What patents exist for GLP-1 receptor agonist?`
+2. `@agent-pharma-search-specialist Show me the IP landscape for GLP-1 receptor agonist`
+3. `@agent-pharma-search-specialist Find GLP-1 receptor agonist patents`
+
 
 Searches USPTO patent database for GLP-1 receptor agonist patents in obesity treatment.

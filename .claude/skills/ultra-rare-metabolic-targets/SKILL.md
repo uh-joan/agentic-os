@@ -27,8 +27,17 @@ execution_time: ~15 seconds
 token_efficiency: ~99% reduction vs raw data
 cli_enabled: true
 ---
-
 # get_ultra_rare_metabolic_targets
+
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are the genetic targets for ultra rare metabolic targets?`
+2. `@agent-pharma-search-specialist Show me therapeutic targets for ultra rare metabolic targets`
+3. `@agent-pharma-search-specialist Find validated targets in ultra rare metabolic targets`
 
 
 ## CLI Usage

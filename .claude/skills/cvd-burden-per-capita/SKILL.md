@@ -24,8 +24,17 @@ execution_time: ~5 seconds
 token_efficiency: 99%
 migration_status: "Migrated to Data Commons v2 API (search_indicators + get_observations)"
 ---
-
 # get_cvd_burden_per_capita
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What's the disease burden for cardiovascular disease?`
+2. `@agent-pharma-search-specialist Show me prevalence data for cardiovascular disease`
+3. `@agent-pharma-search-specialist Get epidemiology statistics for cardiovascular disease`
+
 
 CVD mortality burden per capita analysis combining WHO and Data Commons data.
 

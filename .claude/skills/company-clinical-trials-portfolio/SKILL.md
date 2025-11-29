@@ -49,8 +49,17 @@ parameters:
     description: Filter trials posted after this year
 cli_enabled: true
 ---
-
 # get_company_clinical_trials_portfolio
+
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for company clinical  portfolio?`
+2. `@agent-pharma-search-specialist Find active company clinical  portfolio trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for company clinical  portfolio`
 
 
 ## CLI Usage

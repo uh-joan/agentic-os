@@ -35,8 +35,17 @@ complexity: low
 execution_time: <1 second
 token_efficiency: ~99% reduction vs raw SEC filings
 ---
-
 # get_biotech_ma_deals_over_1b
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Get biotech ma deals over 1b data`
+2. `@agent-pharma-search-specialist Show me biotech ma deals over 1b information`
+3. `@agent-pharma-search-specialist Find biotech ma deals over 1b details`
+
 
 ## Purpose
 

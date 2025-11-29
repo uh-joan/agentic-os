@@ -1,5 +1,15 @@
 # Trial Completion Predictor
 
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for trial-completion-predictor?`
+2. `@agent-pharma-search-specialist Find active trial-completion-predictor trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for trial-completion-predictor`
+
+
 ## Overview
 
 Predicts likely conference presentations based on ClinicalTrials.gov trial completion dates and conference timing. Uses therapeutic area matching and completion timing windows to identify trials likely to present data.

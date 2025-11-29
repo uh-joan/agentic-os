@@ -24,7 +24,18 @@ complexity: medium
 execution_time: ~4 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_alzheimers_genetic_targets
+
+
+## Sample Queries
+
+Examples of user queries that would trigger reuse of this skill:
+
+1. `@agent-pharma-search-specialist What are the top genetically validated targets for Alzheimer's disease?`
+2. `@agent-pharma-search-specialist Show me Alzheimer's targets with strong genetic evidence and existing drugs`
+3. `@agent-pharma-search-specialist Which Alzheimer's targets have the highest association scores in Open Targets?`
+4. `@agent-pharma-search-specialist Find novel drug discovery opportunities for Alzheimer's beyond APOE and APP`
+5. `@agent-pharma-search-specialist What genetic evidence supports emerging Alzheimer's therapeutic targets?`
+
 
 Queries Open Targets Platform to retrieve genetic targets associated with Alzheimer's disease.

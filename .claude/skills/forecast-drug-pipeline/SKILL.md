@@ -31,8 +31,17 @@ execution_time: ~5-15 minutes (depends on result set size)
 token_efficiency: ~99% reduction vs raw data
 cli_enabled: true
 ---
-
 # forecast_drug_pipeline
+
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for forecast drug pipeline?`
+2. `@agent-pharma-search-specialist Find active forecast drug pipeline trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for forecast drug pipeline`
 
 
 ## CLI Usage

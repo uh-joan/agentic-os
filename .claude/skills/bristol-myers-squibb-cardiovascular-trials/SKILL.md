@@ -28,8 +28,17 @@ complexity: medium
 execution_time: ~8 seconds
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_bristol_myers_squibb_cardiovascular_trials
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for cardiovascular disease?`
+2. `@agent-pharma-search-specialist Find active cardiovascular disease trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for cardiovascular disease`
+
 
 ## Purpose
 Retrieves and analyzes Bristol Myers Squibb's complete cardiovascular clinical trials portfolio from ClinicalTrials.gov. Provides comprehensive view of BMS cardiovascular R&D activities across all trial phases and statuses.

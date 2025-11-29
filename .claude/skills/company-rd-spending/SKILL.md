@@ -5,8 +5,17 @@ description: >
   context and year-over-year growth analysis. Provides strategic insights into
   company investment patterns, R&D intensity trends, and innovation commitment.
 ---
-
 # get_company_rd_spending
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Which companies are working on company rd spending?`
+2. `@agent-pharma-search-specialist Show me the competitive landscape for company rd spending`
+3. `@agent-pharma-search-specialist Who's developing company rd spending therapies?`
+
 
 ## Purpose
 

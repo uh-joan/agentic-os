@@ -20,8 +20,17 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~8 seconds
 ---
-
 # get_orphan_neurological_drugs
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What orphan neurological drugs drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved orphan neurological drugs medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for orphan neurological drugs`
+
 
 Retrieves FDA orphan drug approvals for rare neurological diseases over the past 3 years.
 

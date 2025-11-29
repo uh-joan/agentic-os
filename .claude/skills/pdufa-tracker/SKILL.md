@@ -1,5 +1,15 @@
 # PDUFA Date Tracker
 
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are upcoming catalysts for pdufa-tracker?`
+2. `@agent-pharma-search-specialist Show me PDUFA dates for pdufa-tracker drugs`
+3. `@agent-pharma-search-specialist Find clinical trial readouts in pdufa-tracker`
+
+
 ## Overview
 
 Tracks FDA Prescription Drug User Fee Act (PDUFA) action dates by monitoring SEC 8-K filings. PDUFA dates are the exact dates when FDA must make approval decisions on new drug applications.

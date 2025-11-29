@@ -53,8 +53,17 @@ complexity: medium
 execution_time: ~2-5 minutes (complete pagination through all results)
 token_efficiency: ~99% reduction vs raw data
 ---
-
 # get_diabetes_drugs_stopped_safety
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What clinical trials are running for diabetes?`
+2. `@agent-pharma-search-specialist Find active diabetes trials`
+3. `@agent-pharma-search-specialist Show me the clinical development landscape for diabetes`
+
 
 > **⚠️ DEPRECATED (2025-11-28)**
 >

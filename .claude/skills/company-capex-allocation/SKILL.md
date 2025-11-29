@@ -5,8 +5,17 @@ description: >
   share buybacks, and free cash flow from SEC EDGAR filings. Analyzes how
   companies deploy cash between growth investments and shareholder returns.
 ---
-
 # extract_company_capex_allocation
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Which companies are working on company capex allocation?`
+2. `@agent-pharma-search-specialist Show me the competitive landscape for company capex allocation`
+3. `@agent-pharma-search-specialist Who's developing company capex allocation therapies?`
+
 
 ## Purpose
 

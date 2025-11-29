@@ -33,8 +33,17 @@ complexity: complex
 execution_time: ~5-8 seconds
 token_efficiency: ~99% reduction vs raw epidemiology data
 ---
-
 # estimate_therapeutic_area_tam
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist Get estimate therapeutic area tam data`
+2. `@agent-pharma-search-specialist Show me estimate therapeutic area tam information`
+3. `@agent-pharma-search-specialist Find estimate therapeutic area tam details`
+
 
 ## Purpose
 

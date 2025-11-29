@@ -21,8 +21,17 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~3 seconds
 ---
-
 # get_crispr_sickle_cell_publications
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What are the recent publications on CRISPR gene editing?`
+2. `@agent-pharma-search-specialist Find scientific literature about CRISPR gene editing`
+3. `@agent-pharma-search-specialist Show me research papers on CRISPR gene editing`
+
 
 Search and analyze PubMed publications on CRISPR gene editing for sickle cell disease.
 

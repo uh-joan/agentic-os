@@ -21,8 +21,17 @@ created: 2025-11-22
 complexity: medium
 execution_time: ~5 seconds
 ---
-
 # get_oncology_recalls_2024
+
+
+## Sample Queries
+
+Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+
+1. `@agent-pharma-search-specialist What oncology recalls 2024 drugs are FDA approved?`
+2. `@agent-pharma-search-specialist Show me all approved oncology recalls 2024 medications`
+3. `@agent-pharma-search-specialist Get the list of FDA-approved drugs for oncology recalls 2024`
+
 
 Analyzes oncology drug recalls from 2024 to identify quality control issues and supply chain risks.
 
