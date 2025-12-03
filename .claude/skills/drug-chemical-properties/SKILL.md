@@ -1,5 +1,5 @@
 ---
-name: get_anticoagulant_chemical_properties
+name: get_drug_chemical_properties
 description: >
   Retrieves comprehensive chemical properties for specific drugs from PubChem using dynamic drug name lookup.
   Returns molecular formula, weight, SMILES, InChI, LogP, TPSA, and hydrogen bond donor/acceptor counts.
@@ -27,7 +27,7 @@ execution_time: "~2 seconds per drug"
 token_efficiency: 99%
 parameterized: true
 ---
-# get_anticoagulant_chemical_properties
+# get_drug_chemical_properties
 
 **General-Purpose Drug Chemical Property Analyzer** (works for specific drug names)
 
@@ -83,24 +83,24 @@ Key data returned:
 **Direct execution** (with drug names):
 ```bash
 # Custom drugs
-PYTHONPATH=.claude:$PYTHONPATH python3 .claude/skills/anticoagulant-chemical-properties/scripts/get_anticoagulant_chemical_properties.py semaglutide liraglutide
+PYTHONPATH=.claude:$PYTHONPATH python3 .claude/skills/drug-chemical-properties/scripts/get_drug_chemical_properties.py semaglutide liraglutide
 
 # Single drug
-PYTHONPATH=.claude:$PYTHONPATH python3 .claude/skills/anticoagulant-chemical-properties/scripts/get_anticoagulant_chemical_properties.py aspirin
+PYTHONPATH=.claude:$PYTHONPATH python3 .claude/skills/drug-chemical-properties/scripts/get_drug_chemical_properties.py aspirin
 
 # Default (anticoagulants)
-PYTHONPATH=.claude:$PYTHONPATH python3 .claude/skills/anticoagulant-chemical-properties/scripts/get_anticoagulant_chemical_properties.py
+PYTHONPATH=.claude:$PYTHONPATH python3 .claude/skills/drug-chemical-properties/scripts/get_drug_chemical_properties.py
 ```
 
 **Import and use**:
 ```python
-from skills.anticoagulant_chemical_properties.scripts.get_anticoagulant_chemical_properties import get_anticoagulant_chemical_properties
+from skills.drug_chemical_properties.scripts.get_drug_chemical_properties import get_drug_chemical_properties
 
 # Custom drugs
-result = get_anticoagulant_chemical_properties(['semaglutide', 'liraglutide'])
+result = get_drug_chemical_properties(['semaglutide', 'liraglutide'])
 
 # Default anticoagulants
-result = get_anticoagulant_chemical_properties()
+result = get_drug_chemical_properties()
 
 print(f"Total compounds: {result['total_compounds']}")
 for compound in result['data']:
@@ -156,7 +156,7 @@ Returns dict with:
 
 ### Default Anticoagulants
 ```bash
-$ python3 get_anticoagulant_chemical_properties.py
+$ python3 get_drug_chemical_properties.py
 
 Warfarin (CID: 54678486)
   Formula: C19H16O4, MW: 308.3 g/mol
@@ -176,7 +176,7 @@ Apixaban (CID: 10182969)
 
 ### GLP-1 Agonists
 ```bash
-$ python3 get_anticoagulant_chemical_properties.py semaglutide liraglutide
+$ python3 get_drug_chemical_properties.py semaglutide liraglutide
 
 semaglutide (CID: 56843331)
   Formula: C187H291N45O59, MW: 4114 g/mol
@@ -210,7 +210,7 @@ compounds = [
 **After (Parameterized)**:
 ```python
 # NEW: Accepts any drug names as input
-def get_anticoagulant_chemical_properties(drug_names: Optional[List[str]] = None):
+def get_drug_chemical_properties(drug_names: Optional[List[str]] = None):
     # Dynamic PubChem search to find CIDs
     for drug_name in drug_names:
         search_result = search_compounds(query=drug_name)
@@ -332,7 +332,7 @@ Step 3: Structured Output
 
 **Code Architecture**:
 ```python
-def get_anticoagulant_chemical_properties(drug_names: Optional[List[str]] = None):
+def get_drug_chemical_properties(drug_names: Optional[List[str]] = None):
     """Parameterized function - works for ANY drugs"""
 
     # Default to anticoagulants if no drugs specified (backward compatible)

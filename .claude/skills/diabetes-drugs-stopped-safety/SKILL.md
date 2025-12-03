@@ -58,11 +58,15 @@ token_efficiency: ~99% reduction vs raw data
 
 ## Sample Queries
 
-Examples of user queries that would invoke the pharma-search-specialist to create or use this skill:
+⚠️ **DEPRECATED** - Use `safety-stopped-trials` skill instead (generic, works for any indication)
 
-1. `@agent-pharma-search-specialist What clinical trials are running for diabetes?`
-2. `@agent-pharma-search-specialist Find active diabetes trials`
-3. `@agent-pharma-search-specialist Show me the clinical development landscape for diabetes`
+Examples of user queries that would trigger reuse of this skill:
+
+1. `@agent-pharma-search-specialist Which diabetes drugs were terminated or withdrawn due to safety concerns?`
+2. `@agent-pharma-search-specialist Show me diabetes clinical trials stopped for adverse events or toxicity`
+3. `@agent-pharma-search-specialist What are notable diabetes drug failures due to safety issues?`
+4. `@agent-pharma-search-specialist Find diabetes trials suspended for hypoglycemia or tolerability problems`
+5. `@agent-pharma-search-specialist Analyze patterns in safety-driven terminations for Type 2 diabetes drugs`
 
 
 > **⚠️ DEPRECATED (2025-11-28)**

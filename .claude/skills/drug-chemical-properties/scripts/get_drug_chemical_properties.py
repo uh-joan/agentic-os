@@ -3,7 +3,7 @@ sys.path.insert(0, ".claude")
 from mcp.servers.pubchem_mcp import get_compound_properties, search_compounds
 from typing import List, Optional
 
-def get_anticoagulant_chemical_properties(drug_names: Optional[List[str]] = None):
+def get_drug_chemical_properties(drug_names: Optional[List[str]] = None):
     """Get comprehensive chemical properties for specified drugs from PubChem.
 
     Note: PubChem API requires specific drug names (not drug classes).
@@ -19,12 +19,12 @@ def get_anticoagulant_chemical_properties(drug_names: Optional[List[str]] = None
 
     Examples:
         # Default anticoagulants
-        result = get_anticoagulant_chemical_properties()
+        result = get_drug_chemical_properties()
 
         # Specific drug list
-        result = get_anticoagulant_chemical_properties(['semaglutide', 'liraglutide'])
-        result = get_anticoagulant_chemical_properties(['aspirin'])
-        result = get_anticoagulant_chemical_properties(['metformin', 'empagliflozin', 'canagliflozin'])
+        result = get_drug_chemical_properties(['semaglutide', 'liraglutide'])
+        result = get_drug_chemical_properties(['aspirin'])
+        result = get_drug_chemical_properties(['metformin', 'empagliflozin', 'canagliflozin'])
     """
 
     # Default to major anticoagulants if no drugs specified
@@ -126,11 +126,11 @@ if __name__ == "__main__":
         # All arguments are drug names
         drug_names = sys.argv[1:]
         print(f"Analyzing {len(drug_names)} user-specified drug(s): {', '.join(drug_names)}")
-        result = get_anticoagulant_chemical_properties(drug_names)
+        result = get_drug_chemical_properties(drug_names)
     else:
         # Default to anticoagulants
         print("No drugs specified - using default anticoagulants (warfarin, rivaroxaban, apixaban)")
-        result = get_anticoagulant_chemical_properties()
+        result = get_drug_chemical_properties()
 
     print(f"\n{'='*80}")
     print(f"DRUG CHEMICAL PROPERTIES ANALYSIS")

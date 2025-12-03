@@ -244,20 +244,23 @@
       "complexity": "unknown"
     },
     {
-      "name": "get_anticoagulant_chemical_properties",
+      "name": "get_drug_chemical_properties",
       "structure": "folder",
-      "folder": "anticoagulant-chemical-properties",
-      "skill_md": "anticoagulant-chemical-properties/SKILL.md",
-      "script": "anticoagulant-chemical-properties/scripts/get_anticoagulant_chemical_properties.py",
+      "folder": "drug-chemical-properties",
+      "skill_md": "drug-chemical-properties/SKILL.md",
+      "script": "drug-chemical-properties/scripts/get_drug_chemical_properties.py",
       "has_frontmatter": true,
-      "description": "",
-      "function_signature": "get_anticoagulant_chemical_properties() -> dict",
+      "description": "Retrieves comprehensive chemical properties for specific drugs from PubChem using dynamic drug name lookup. Works for any specific drugs (not drug classes).",
+      "function_signature": "get_drug_chemical_properties(drug_names: Optional[List[str]] = None) -> dict",
       "servers_used": [
         "pubchem_mcp"
       ],
       "patterns_demonstrated": [
+        "dynamic_search",
         "json_parsing",
-        "multi_compound_query"
+        "multi_compound_query",
+        "parameterized_skill",
+        "name_to_cid_lookup"
       ],
       "category": "drug-discovery",
       "complexity": "medium"
