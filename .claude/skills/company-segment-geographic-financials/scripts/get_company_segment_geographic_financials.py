@@ -7,7 +7,7 @@ from collections import defaultdict
 import re
 import time
 
-def get_company_segment_geographic_financials(ticker, quarters=8):
+def get_company_segment_geographic_financials(ticker, quarters=8, use_subsegments=False):
     """Extract comprehensive segment & geographic financials for ANY company.
 
     Uses SEC EDGAR XBRL dimensional analysis to extract:
@@ -18,6 +18,10 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
     Args:
         ticker (str): Stock ticker symbol (e.g., "JNJ", "PFE", "ABT")
         quarters (int, optional): Number of quarters to analyze (default: 8)
+        use_subsegments (bool, optional): If True, extract division-level data from SubsegmentsAxis
+                                         instead of top-level segments from BusinessSegmentsAxis.
+                                         This provides more granular product/division-level revenue.
+                                         (default: False)
 
     Returns:
         dict: {
@@ -61,6 +65,10 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
             'ticker': ticker,
             'cik': cik
         }
+
+    # Extract fiscal year end (format: MMDD, e.g., '0424' for April 24)
+    fiscal_year_end = submissions.get('fiscalYearEnd', '1231')
+    print(f"✓ Fiscal Year End: {fiscal_year_end[:2]}/{fiscal_year_end[2:]}")
 
     # Get recent filings (10-Q, 10-K, and 20-F for international companies)
     recent_filings = submissions.get('recentFilings', [])
@@ -274,11 +282,19 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
 
     # Find which axis to use for segment breakdown
     # Axis priority order (lower number = higher priority)
-    axis_priority_map = {
-        'StatementBusinessSegmentsAxis': 1,
-        'ProductOrServiceAxis': 2,
-        'SubsegmentsAxis': 3
-    }
+    # When use_subsegments=True, prioritize SubsegmentsAxis for division-level data
+    if use_subsegments:
+        axis_priority_map = {
+            'SubsegmentsAxis': 1,
+            'StatementBusinessSegmentsAxis': 2,
+            'ProductOrServiceAxis': 3
+        }
+    else:
+        axis_priority_map = {
+            'StatementBusinessSegmentsAxis': 1,
+            'ProductOrServiceAxis': 2,
+            'SubsegmentsAxis': 3
+        }
 
     def get_axis_priority(axis):
         """Extract axis priority from full axis name."""
@@ -455,7 +471,7 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
     # Group by quarter label and keep only the LATEST date for each quarter
     periods_by_quarter = defaultdict(list)
     for period in all_periods:
-        quarter_label = get_quarter_label(period)
+        quarter_label = get_quarter_label(period, fiscal_year_end)
         periods_by_quarter[quarter_label].append(period)
 
     # For each quarter, keep only the latest (maximum) date
@@ -522,7 +538,7 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
                 margin = (oi / revenue * 100) if revenue > 0 and oi != 0 else 0
 
                 if revenue > 0:
-                    quarter_label = get_quarter_label(period)
+                    quarter_label = get_quarter_label(period, fiscal_year_end)
                     revenue_str = f"${revenue/1_000_000_000:.2f}B"
                     oi_str = f"${oi/1_000_000_000:.2f}B" if oi != 0 else "-"
                     margin_str = f"{margin:.1f}%" if oi != 0 else "-"
@@ -603,7 +619,7 @@ def get_company_segment_geographic_financials(ticker, quarters=8):
                 margin = (oi / revenue * 100) if revenue > 0 and oi != 0 else 0
 
                 if revenue > 0:
-                    quarter_label = get_quarter_label(period)
+                    quarter_label = get_quarter_label(period, fiscal_year_end)
                     revenue_str = f"${revenue/1_000_000_000:.2f}B"
                     oi_str = f"${oi/1_000_000_000:.2f}B" if oi != 0 else "-"
                     margin_str = f"{margin:.1f}%" if oi != 0 else "-"
@@ -895,29 +911,59 @@ def convert_cumulative_to_quarterly(time_series_data):
     return quarterly_data
 
 
-def get_quarter_label(date_str):
-    """Convert date string to quarter label (e.g., '2025-09-28' -> 'Q3 2025').
+def get_quarter_label(date_str, fiscal_year_end='1231'):
+    """Convert date string to fiscal quarter label based on company's fiscal year.
 
     Args:
         date_str: Date string in format YYYY-MM-DD
+        fiscal_year_end: Fiscal year end in MMDD format (e.g., '0424' for April 24, '1231' for Dec 31)
 
     Returns:
-        Quarter label like 'Q1 2025', 'Q2 2025', etc.
+        Quarter label like 'FY2025 Q3', 'FY2026 Q1', etc.
     """
-    year = date_str[:4]
+    # Parse date
+    year = int(date_str[:4])
     month = int(date_str.split('-')[1])
+    day = int(date_str.split('-')[2])
 
-    # Determine quarter from month
-    if month <= 3:
+    # Parse fiscal year end
+    fye_month = int(fiscal_year_end[:2])
+    fye_day = int(fiscal_year_end[2:4])
+
+    # Determine fiscal year
+    # If we're past the fiscal year end, we're in the next fiscal year
+    if month > fye_month or (month == fye_month and day > fye_day):
+        fiscal_year = year + 1
+    else:
+        fiscal_year = year
+
+    # Calculate months from fiscal year start
+    # Fiscal year starts the month after fiscal year end
+    fye_start_month = (fye_month % 12) + 1
+
+    # Calculate which quarter this period falls into
+    # Q1: months 1-3 of fiscal year
+    # Q2: months 4-6 of fiscal year
+    # Q3: months 7-9 of fiscal year
+    # Q4: months 10-12 of fiscal year
+
+    # Calculate month offset from fiscal year start
+    if month >= fye_start_month:
+        month_in_fy = month - fye_start_month + 1
+    else:
+        month_in_fy = month + 12 - fye_start_month + 1
+
+    # Determine quarter
+    if month_in_fy <= 3:
         quarter = 'Q1'
-    elif month <= 6:
+    elif month_in_fy <= 6:
         quarter = 'Q2'
-    elif month <= 9:
+    elif month_in_fy <= 9:
         quarter = 'Q3'
     else:
         quarter = 'Q4'
 
-    return f"{quarter} {year}"
+    return f"FY{fiscal_year} {quarter}"
 
 
 def extract_dimensional_revenue(xml_root, contexts, revenue_concepts, form):
@@ -1041,23 +1087,35 @@ if __name__ == "__main__":
     # Ticker parameter is REQUIRED (no default)
     if len(sys.argv) < 2:
         print("Error: Ticker symbol required")
-        print("Usage: python3 get_company_segment_geographic_financials.py <TICKER> [QUARTERS]")
+        print("Usage: python3 get_company_segment_geographic_financials.py <TICKER> [QUARTERS] [--subsegments]")
         print("\nExamples:")
         print("  python3 get_company_segment_geographic_financials.py JNJ")
         print("  python3 get_company_segment_geographic_financials.py ABT 4")
-        print("  python3 get_company_segment_geographic_financials.py PFE 8")
+        print("  python3 get_company_segment_geographic_financials.py MDT 8 --subsegments")
         print("\nDescription:")
         print("  Extracts segment and geographic revenue data from SEC EDGAR XBRL filings")
         print("  for any publicly traded company using dimensional analysis.")
         print("  Includes revenue reconciliation to verify data completeness.")
+        print("\nOptions:")
+        print("  --subsegments: Extract division-level data (more granular than segments)")
         sys.exit(1)
 
     ticker = sys.argv[1].upper()
-    quarters = int(sys.argv[2]) if len(sys.argv) > 2 else 8
+
+    # Parse optional arguments
+    quarters = 8
+    use_subsegments = False
+
+    for arg in sys.argv[2:]:
+        if arg == '--subsegments':
+            use_subsegments = True
+        elif arg.isdigit():
+            quarters = int(arg)
 
     result = get_company_segment_geographic_financials(
         ticker=ticker,
-        quarters=quarters
+        quarters=quarters,
+        use_subsegments=use_subsegments
     )
 
     if 'error' in result:

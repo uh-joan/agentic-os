@@ -24,6 +24,7 @@ Extracts detailed business segment and geographic revenue breakdowns from SEC ED
 
 **Extracts:**
 - Business segment revenue (e.g., Pharma, MedTech, Diagnostics)
+- **NEW: Division-level revenue** (via `--subsegments` flag for more granular data)
 - Segment-level operating income (when disclosed)
 - Segment margins (Operating Income / Revenue)
 - Product-level revenue (for companies reporting at product level)
@@ -33,10 +34,11 @@ Extracts detailed business segment and geographic revenue breakdowns from SEC ED
 
 **Features:**
 - ✅ Automatic XBRL XML parsing from SEC filings
+- ✅ **NEW: SubsegmentsAxis extraction** for division-level granularity
 - ✅ Quarterly time series with revenue, operating income, and margins
 - ✅ Hierarchical rollup detection (prevents double-counting)
 - ✅ Multi-axis dimensional analysis
-- ✅ Priority-based segment selection
+- ✅ Priority-based segment selection (configurable: BusinessSegmentsAxis or SubsegmentsAxis)
 - ✅ Revenue reconciliation validation
 - ✅ Handles both business segment and product-level reporting
 - ✅ Graceful handling of missing operating income data (shows "-" when not disclosed)
@@ -46,11 +48,14 @@ Extracts detailed business segment and geographic revenue breakdowns from SEC ED
 ### Basic Usage
 
 ```bash
-# Get latest quarter for a company
+# Get latest quarter for a company (4 main segments)
 python3 get_company_segment_geographic_financials.py ABBV 4
 
-# Get 8 quarters of history
+# Get 8 quarters of history (4 main segments)
 python3 get_company_segment_geographic_financials.py JNJ 8
+
+# Get division-level data (more granular than segments) - NEW!
+python3 get_company_segment_geographic_financials.py MDT 8 --subsegments
 ```
 
 ### Programmatic Usage
@@ -58,15 +63,37 @@ python3 get_company_segment_geographic_financials.py JNJ 8
 ```python
 from get_company_segment_geographic_financials import get_company_segment_geographic_financials
 
-# Extract financials
+# Extract financials (default: top-level segments)
 result = get_company_segment_geographic_financials(
     ticker="PFE",
     quarters=4
 )
 
+# Extract division-level data (more granular)
+result = get_company_segment_geographic_financials(
+    ticker="MDT",
+    quarters=8,
+    use_subsegments=True  # Extract from SubsegmentsAxis instead of BusinessSegmentsAxis
+)
+
 print(f"Segments: {result['segments_analyzed']}")
 print(f"Variance: {result['reconciliation_variance']}%")
 ```
+
+### When to Use `--subsegments`
+
+**Use `--subsegments` flag when:**
+- You need more granular product/division-level revenue than top-level segments
+- The company reports SubsegmentsAxis in XBRL (e.g., Medtronic: 8 divisions vs 4 segments)
+- You want to understand which product lines drive revenue within each segment
+- You're analyzing portfolio mix at a more detailed level
+
+**Examples:**
+- **Medtronic**: Default shows 4 segments (Cardiovascular, Neuroscience, Medical Surgical, Diabetes)
+  - With `--subsegments`: Shows 8 divisions (Cardiac Rhythm, Structural Heart, Coronary Vascular, Cranial & Spinal, Neuromodulation, Specialty Therapies, Surgical Endoscopy, Acute Care Monitoring)
+- **Gives product-line visibility**: Separates "Cardiac Rhythm & Heart Failure" ($1.83B, +15.6% YoY) from "Coronary & Peripheral Vascular" ($0.66B, +1.9% YoY) within Cardiovascular
+
+**Note**: Not all companies report SubsegmentsAxis. If unavailable, the skill will fall back to BusinessSegmentsAxis automatically.
 
 ## Example Output
 
