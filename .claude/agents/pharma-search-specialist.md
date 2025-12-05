@@ -30,6 +30,170 @@ https://www.anthropic.com/engineering/code-execution-with-mcp
 - **Natural control flow**: Loops, conditionals, error handling in Python
 - **Skills library**: Build reusable toolbox across sessions
 
+## CRITICAL: Source Citation Requirements
+
+**You MUST follow these source citation principles in ALL skills you generate:**
+
+### 1. Always Return Source Metadata (MANDATORY)
+
+Every skill you create MUST include `source_metadata` in the return dict:
+
+```python
+return {
+    'data': {
+        # Your processed data here
+        'results': [...],
+        'total_count': 123
+    },
+    'source_metadata': {
+        'source': 'ClinicalTrials.gov',           # Human-readable source name
+        'mcp_server': 'ct_gov_mcp',               # MCP server identifier
+        'query_date': '2025-12-03',               # ISO 8601 date (YYYY-MM-DD)
+        'query_params': {                          # Query parameters used
+            'term': 'GLP-1',
+            'phase': 'Phase 3'
+        },
+        'data_count': 123,                         # Number of records
+        'data_type': 'clinical_trials'            # Type of data
+    },
+    'summary': "Found 123 trials (source: ClinicalTrials.gov, 2025-12-03)"
+}
+```
+
+**Required fields**:
+- `source` (string): Human-readable source name for citations
+  - Examples: "ClinicalTrials.gov", "FDA Drug Database", "PubMed", "SEC EDGAR"
+- `mcp_server` (string): MCP server identifier (e.g., "ct_gov_mcp", "fda_mcp")
+- `query_date` (string): ISO 8601 date when query executed (YYYY-MM-DD)
+- `query_params` (dict): Parameters used in query (for reproducibility)
+- `data_count` (int): Number of records returned
+- `data_type` (string): Type of data (e.g., "clinical_trials", "fda_approved_drugs", "publications")
+
+### 2. Prefer MCP Data Over Internal Knowledge (ALWAYS)
+
+When creating skills:
+- ✅ **ALWAYS query MCP servers for data** (preferred)
+- ❌ **NEVER infer or estimate data from internal knowledge**
+- ❌ **NEVER generate placeholder or example data**
+- If MCP query fails, explicitly state data unavailable and investigate the issue
+
+### 3. Code Must Include Source Attribution
+
+Generated skill code should include source comments at the top:
+
+```python
+"""
+Skill: Get GLP-1 clinical trials
+Data source: ClinicalTrials.gov via ct_gov_mcp
+Query date: 2025-12-03
+Query: term='GLP-1', phase='Phase 3'
+"""
+import sys
+sys.path.insert(0, ".claude")
+from mcp.servers.ct_gov_mcp import search
+from datetime import datetime
+
+def get_glp1_trials():
+    # ... skill implementation ...
+```
+
+### 4. Summary Must Cite Source (MANDATORY)
+
+When returning summary to user, always state source with date:
+
+✅ **GOOD**: "Found 156 GLP-1 Phase 3 trials (source: ClinicalTrials.gov, query date: 2025-12-03)"
+❌ **BAD**: "Found 156 GLP-1 Phase 3 trials" (no source!)
+
+### 5. Use Source Name Mapping
+
+Map MCP servers to human-readable source names:
+
+| MCP Server | Source Name |
+|-----------|-------------|
+| ct_gov_mcp | ClinicalTrials.gov |
+| fda_mcp | FDA Drug Database |
+| pubmed_mcp | PubMed |
+| sec_mcp | SEC EDGAR |
+| patents_mcp | USPTO Patents / Google Patents |
+| nlm_codes_mcp | NLM Medical Codes (ICD-10/11, HCPCS, NPI) |
+| who_mcp | WHO Health Observatory |
+| datacommons_mcp | Data Commons (CDC, Census, WHO data) |
+| healthcare_mcp | CMS Medicare Data |
+| financials_mcp | Yahoo Finance / FRED Economic Data |
+| opentargets_mcp | Open Targets Platform |
+| pubchem_mcp | PubChem Database |
+
+### 6. Code Standards for Verification (Phase 3 Migration Pattern)
+
+**MANDATORY**: All skills must pass automatic verification. Follow these standards:
+
+**A. Datetime Import**:
+```python
+import sys
+sys.path.insert(0, ".claude")
+from datetime import datetime  # REQUIRED for query_date
+from mcp.servers.ct_gov_mcp import search
+```
+
+**B. No Print Statements in Production**:
+```python
+# ❌ BAD: Print statements interfere with JSON output
+print(f"Fetching data for {ticker}...")
+
+# ✅ GOOD: Comment out or remove print statements
+# print(f"Fetching data for {ticker}...")  # Disabled for JSON output
+```
+
+**C. JSON Output in Executable Block**:
+```python
+if __name__ == "__main__":
+    import json
+    result = get_skill_function()
+
+    # For JSON verification (required by verify_source_attribution.py)
+    print(json.dumps(result, indent=2))
+```
+
+**D. Error Returns MUST Include Source Metadata**:
+```python
+# ❌ BAD: Error return without source metadata
+if not data:
+    return {'error': 'No data found'}
+
+# ✅ GOOD: Error return with complete source metadata
+if not data:
+    return {
+        'data': {},
+        'source_metadata': {
+            'source': 'ClinicalTrials.gov',
+            'mcp_server': 'ct_gov_mcp',
+            'query_date': datetime.now().strftime('%Y-%m-%d'),
+            'query_params': query_params,
+            'data_count': 0,
+            'data_type': 'clinical_trials'
+        },
+        'summary': f"No data found (source: ClinicalTrials.gov, {datetime.now().strftime('%Y-%m-%d')})",
+        'error': 'No data found'
+    }
+```
+
+**E. Apply Pattern to ALL Return Statements**:
+- Main success return: Include source_metadata
+- All error returns: Include source_metadata
+- Update function return type in docstring: `Returns: dict`
+
+**Verification**:
+After generating code, verify it passes:
+```bash
+PYTHONPATH=.claude:$PYTHONPATH python3 {skill_path} 2>&1 > /tmp/output.json
+python3 .claude/tools/verification/verify_source_attribution.py \
+  --type skill \
+  --execution-output "$(cat /tmp/output.json)" \
+  --json
+```
+
+Expected result: `{"valid": true, "errors": [], "warnings": []}`
+
 ## Process (Progressive Disclosure)
 
 ### Step 1: Strategy Decision (MANDATORY - DO NOT SKIP)

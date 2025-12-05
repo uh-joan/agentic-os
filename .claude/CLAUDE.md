@@ -427,22 +427,50 @@ When strategic agents produce substantial analyses:
 title: {Therapeutic Area} Competitive Landscape
 date: YYYY-MM-DD
 analyst: competitive-landscape-analyst
-data_sources:
-  - get_kras_inhibitor_trials: 363 trials
-  - get_kras_inhibitor_fda_drugs: 2 drugs
+therapeutic_area: {therapeutic_area}
+
+# SOURCE METADATA (REQUIRED)
+data_sources_mcp_verified:
+  - get_kras_inhibitor_trials: 363 trials (source: ClinicalTrials.gov, date: 2025-12-03)
+  - get_kras_inhibitor_fda_drugs: 2 drugs (source: FDA Drug Database, date: 2025-12-03)
+
+data_sources_internal_knowledge:
+  - Market size estimates: $5-8B by 2030 [estimated from industry analyst consensus]
+
+source_validation:
+  mcp_verified_claims: 87
+  analytical_insights: 34
+  internal_knowledge: 8  # Target: <20% of total claims
 ---
 
 # Executive Summary
-[2-3 paragraphs]
+[2-3 paragraphs with inline citations]
 
 # Data Summary
-[Transparency on sources]
+[Transparency on sources with query dates]
 
 # Analysis
-[Core strategic analysis]
+[Core strategic analysis with >70% MCP-verified citations]
 
 # Actionable Recommendations
-[Prioritized with timelines]
+[Prioritized with timelines and success metrics]
+```
+
+**Source Attribution Requirements**:
+- >70% of major claims must cite MCP-verified data
+- <20% of claims can use internal knowledge
+- All claims must have inline citations: `(**source**: ClinicalTrials.gov, 2025-12-03)`
+- Reports must pass `verify_report_attribution.py` before being returned to user
+
+**Verification Workflow**:
+```bash
+# After generating report, agent runs:
+python3 .claude/tools/verification/verify_report_attribution.py \
+  --report reports/competitive-landscape/YYYY-MM-DD_{topic}.md \
+  --json
+
+# Expected result: {"valid": true, "errors": [], "metrics": {...}}
+# If valid: false, agent fixes errors and re-verifies (max 2 iterations)
 ```
 
 ---
@@ -478,6 +506,70 @@ data_sources:
 - Main agent reads metadata and orchestrates data collection
 - Agent body focuses on capabilities (WHAT), metadata specifies data (HOW)
 - Small metadata footprint (~25 lines) supports 100+ capabilities
+
+### 6. Source Citation and Data Provenance
+- Every output must be traceable to authoritative data sources
+- Prefer MCP-verified data over internal knowledge
+- Clear distinction between data types (MCP data vs analysis vs internal knowledge)
+- Complete source metadata enables reproducibility and trustability
+
+---
+
+## Source Citation and Data Provenance
+
+**Core Principle**: Every output—reports, agent responses, skill results—must be traceable to authoritative data sources.
+
+### Source Hierarchy (Trustability Order)
+
+**1. MCP-Verified Data (MOST TRUSTABLE)**
+- Data retrieved from MCP servers (ClinicalTrials.gov, FDA, PubMed, SEC, WHO, CDC, etc.)
+- Always includes: source name, query date, query parameters
+- Citation format: `(source: ClinicalTrials.gov, 2025-12-03)`
+- Use: Preferred for ALL factual claims
+
+**2. Published Literature (HIGH TRUSTABILITY)**
+- Peer-reviewed publications from PubMed
+- Always includes: Author, journal, year, PMID/DOI
+- Citation format: `(Jastreboff et al., NEJM 2022, PMID: 35658024)`
+- Use: Clinical efficacy, trial results, scientific evidence
+
+**3. Analytical Insights (DERIVED, MODERATE TRUSTABILITY)**
+- Calculations, synthesis, or analysis derived from MCP data
+- Citation format: `[analysis based on ClinicalTrials.gov data]`
+- Use: Patterns, trends, comparisons synthesized from MCP data
+
+**4. Internal Knowledge (LOWEST TRUSTABILITY - MINIMIZE)**
+- Industry consensus, market projections, estimates from training data
+- Citation format: `[estimated from industry consensus]` or `[internal knowledge]`
+- Use: ONLY when MCP data unavailable, always explicitly labeled
+- Constraint: Should be <20% of claims in any report
+
+### Source Attribution Standards
+
+**Skills**:
+- Every skill returns `source_metadata` dict with: source, mcp_server, query_date, query_params, data_count, data_type
+- Verified by `verify_source_attribution.py` before adding to library
+- Summary includes source citation
+
+**Agents**:
+- pharma-search-specialist: Generates skills with source metadata (mandatory)
+- competitive-landscape-analyst: Cites sources inline in reports (every major claim)
+- All agents: Prefer MCP data over internal knowledge, explicitly label internal knowledge
+
+**Reports**:
+- Frontmatter: Complete `data_sources_mcp_verified` and `data_sources_internal_knowledge` sections
+- Inline citations: Every major claim (>70%) cited with source
+- Tables/figures: Source attribution in caption or footer
+- Source validation metrics: Track MCP-verified claims vs internal knowledge usage
+
+### Benefits
+
+✅ **Trustability**: Every claim traceable to authoritative source
+✅ **Reproducibility**: Query parameters enable re-execution of data collection
+✅ **Transparency**: Clear distinction between MCP data, analysis, and internal knowledge
+✅ **Scientific rigor**: Follows academic citation standards (author-year-PMID for literature)
+✅ **Compliance**: Audit trail for regulatory/legal requirements
+✅ **Quality control**: Automated verification prevents unsourced claims from entering reports
 
 ---
 
