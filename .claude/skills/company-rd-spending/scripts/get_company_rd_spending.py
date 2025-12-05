@@ -23,14 +23,27 @@ def get_company_rd_spending(ticker: str, quarters: int = 8) -> dict:
     """
 
     # Fetch company facts from SEC EDGAR
-    print(f"Fetching SEC EDGAR data for {ticker}...")
+    # print(f"Fetching SEC EDGAR data for {ticker}...")  # Disabled for JSON output
     facts_response = get_company_facts(cik_or_ticker=ticker)
 
     if not facts_response or 'error' in facts_response:
         return {
-            'error': f"Failed to fetch data for {ticker}",
-            'total_quarters': 0,
-            'summary': "No data available"
+            'data': {
+                'total_quarters': 0
+            },
+            'source_metadata': {
+                'source': 'SEC EDGAR',
+                'mcp_server': 'sec_edgar_mcp',
+                'query_date': datetime.now().strftime('%Y-%m-%d'),
+                'query_params': {
+                    'ticker': ticker,
+                    'quarters': quarters
+                },
+                'data_count': 0,
+                'data_type': 'financial_data'
+            },
+            'summary': f"Failed to fetch data for {ticker} (source: SEC EDGAR, {datetime.now().strftime('%Y-%m-%d')})",
+            'error': f"Failed to fetch data for {ticker}"
         }
 
     company_name = facts_response.get('entityName', ticker)
@@ -49,7 +62,7 @@ def get_company_rd_spending(ticker: str, quarters: int = 8) -> dict:
             rd_units = rd_concept.get('units', {})
             rd_data = rd_units.get('USD', [])
             if rd_data:
-                print(f"Using R&D concept: {concept_name}")
+                # print(f"Using R&D concept: {concept_name}")  # Disabled for JSON output
                 break
 
     # Extract Revenue concept (try multiple common names)
@@ -64,9 +77,22 @@ def get_company_rd_spending(ticker: str, quarters: int = 8) -> dict:
 
     if not rd_data:
         return {
-            'error': f"No R&D expense data found for {ticker}",
-            'total_quarters': 0,
-            'summary': "Company does not report R&D expenses or uses non-standard taxonomy"
+            'data': {
+                'total_quarters': 0
+            },
+            'source_metadata': {
+                'source': 'SEC EDGAR',
+                'mcp_server': 'sec_edgar_mcp',
+                'query_date': datetime.now().strftime('%Y-%m-%d'),
+                'query_params': {
+                    'ticker': ticker,
+                    'quarters': quarters
+                },
+                'data_count': 0,
+                'data_type': 'financial_data'
+            },
+            'summary': f"No R&D expense data found for {ticker} (source: SEC EDGAR, {datetime.now().strftime('%Y-%m-%d')})",
+            'error': f"No R&D expense data found for {ticker}"
         }
 
     # Filter for quarterly data (3-month periods) and recent filings
@@ -222,21 +248,33 @@ def get_company_rd_spending(ticker: str, quarters: int = 8) -> dict:
             summary_lines.append(f"- Average R&D Intensity: {avg_intensity:.1f}% over {len(intensities)} quarters")
 
     return {
-        'total_quarters': len(combined_data),
-        'company_name': company_name,
-        'data': combined_data,
-        'summary': '\n'.join(summary_lines)
+        'data': {
+            'total_quarters': len(combined_data),
+            'company_name': company_name,
+            'quarterly_data': combined_data
+        },
+        'source_metadata': {
+            'source': 'SEC EDGAR',
+            'mcp_server': 'sec_edgar_mcp',
+            'query_date': datetime.now().strftime('%Y-%m-%d'),
+            'query_params': {
+                'ticker': ticker,
+                'quarters': quarters
+            },
+            'data_count': len(combined_data),
+            'data_type': 'financial_data'
+        },
+        'summary': f"{'\n'.join(summary_lines)}\n\n(source: SEC EDGAR, {datetime.now().strftime('%Y-%m-%d')})"
     }
 
 
 if __name__ == "__main__":
+    import json
     # Default example: Medtronic (medical device company with significant R&D)
     ticker = sys.argv[1] if len(sys.argv) > 1 else "MDT"
     quarters = int(sys.argv[2]) if len(sys.argv) > 2 else 8
 
     result = get_company_rd_spending(ticker=ticker, quarters=quarters)
 
-    if 'error' in result:
-        print(f"Error: {result['error']}")
-    else:
-        print(result['summary'])
+    # For JSON verification (required by verify_source_attribution.py)
+    print(json.dumps(result, indent=2))

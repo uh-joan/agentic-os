@@ -22,30 +22,64 @@ From Anthropic's article:
 
 **Agent executes code and returns folder structure to main agent**:
 
-### 1. Define and Execute Function
+### 1. Define and Execute Function with Source Metadata
+
+**CRITICAL**: Every skill MUST return `source_metadata` dict for traceability:
 
 ```python
 import sys
 sys.path.insert(0, 'scripts')
 from mcp.servers.fda_mcp import lookup_drug
+from datetime import datetime
 
-# Define reusable function
+# Define reusable function with source metadata
 def search_drug_brands(search_term, limit=100):
-    """Reusable function to search drug brands."""
+    """Reusable function to search drug brands.
+
+    Returns:
+        dict: Contains 'data', 'source_metadata', and 'summary'
+    """
     results = lookup_drug(search_term=search_term, limit=limit)
 
     brands = set()
     for result in results.get('data', {}).get('results', []):
         openfda = result.get('openfda', {})
         brands.update(openfda.get('brand_name', []))
-    return brands
+
+    # MANDATORY: Return with source metadata
+    return {
+        'data': {
+            'brands': sorted(brands),
+            'total_count': len(brands)
+        },
+        'source_metadata': {
+            'source': 'FDA Drug Database',
+            'mcp_server': 'fda_mcp',
+            'query_date': datetime.now().strftime('%Y-%m-%d'),
+            'query_params': {
+                'search_term': search_term,
+                'limit': limit
+            },
+            'data_count': len(brands),
+            'data_type': 'fda_drug_brands'
+        },
+        'summary': f"Found {len(brands)} brands (source: FDA Drug Database, {datetime.now().strftime('%Y-%m-%d')})"
+    }
 
 # Execute and display
-brands = search_drug_brands("obesity", limit=50)
-print(f"Found {len(brands)} brands")
-for brand in sorted(brands)[:10]:
+result = search_drug_brands("obesity", limit=50)
+print(result['summary'])
+for brand in result['data']['brands'][:10]:
     print(f"  • {brand}")
 ```
+
+**Required source_metadata fields**:
+- `source` (string): Human-readable source name (e.g., "ClinicalTrials.gov", "FDA Drug Database")
+- `mcp_server` (string): MCP server identifier (e.g., "ct_gov_mcp", "fda_mcp")
+- `query_date` (string): ISO 8601 date (YYYY-MM-DD)
+- `query_params` (dict): Query parameters used (for reproducibility)
+- `data_count` (int): Number of records returned
+- `data_type` (string): Type of data (e.g., "clinical_trials", "fda_approved_drugs")
 
 ### 2. Agent Returns Folder Structure to Main Agent
 
@@ -105,23 +139,56 @@ brands = search_drug_brands("obesity", limit=50)
 
 Python script (scripts/search_drug_brands.py):
 \```python
+"""
+Skill: Search FDA drug brands
+Data source: FDA Drug Database via fda_mcp
+"""
 import sys
 sys.path.insert(0, "scripts")
 from mcp.servers.fda_mcp import lookup_drug
+from datetime import datetime
 
 def search_drug_brands(search_term, limit=100):
-    \"\"\"Reusable function to search drug brands.\"\"\"
+    \"\"\"Reusable function to search drug brands.
+
+    Args:
+        search_term (str): Search term for FDA lookup
+        limit (int): Maximum results (default: 100)
+
+    Returns:
+        dict: Contains 'data', 'source_metadata', and 'summary'
+    \"\"\"
     results = lookup_drug(search_term=search_term, limit=limit)
+
     brands = set()
     for result in results.get("data", {}).get("results", []):
         openfda = result.get("openfda", {})
         brands.update(openfda.get("brand_name", []))
-    return brands
+
+    # MANDATORY: Return with source metadata
+    return {
+        'data': {
+            'brands': sorted(brands),
+            'total_count': len(brands)
+        },
+        'source_metadata': {
+            'source': 'FDA Drug Database',
+            'mcp_server': 'fda_mcp',
+            'query_date': datetime.now().strftime('%Y-%m-%d'),
+            'query_params': {
+                'search_term': search_term,
+                'limit': limit
+            },
+            'data_count': len(brands),
+            'data_type': 'fda_drug_brands'
+        },
+        'summary': f"Found {len(brands)} brands (source: FDA Drug Database, {datetime.now().strftime('%Y-%m-%d')})"
+    }
 
 if __name__ == "__main__":
-    brands = search_drug_brands("obesity", limit=50)
-    print(f"Found {len(brands)} brands")
-    for brand in sorted(brands)[:10]:
+    result = search_drug_brands("obesity", limit=50)
+    print(result['summary'])
+    for brand in result['data']['brands'][:10]:
         print(f"  • {brand}")
 \```
 ```

@@ -1,6 +1,7 @@
 import sys
 import re
 sys.path.insert(0, ".claude")
+from datetime import datetime
 from mcp.servers.ct_gov_mcp import search
 
 def get_diabetes_recruiting_trials():
@@ -67,14 +68,35 @@ def get_diabetes_recruiting_trials():
             break
     
     return {
-        'total_count': len(all_trials),
-        'pages_retrieved': page_count,
-        'trials': all_trials,
-        'phase_distribution': dict(sorted(phase_counts.items(), key=lambda x: x[1], reverse=True)),
-        'diabetes_type_distribution': dict(sorted(diabetes_type_counts.items(), key=lambda x: x[1], reverse=True))
+        'data': {
+            'total_count': len(all_trials),
+            'pages_retrieved': page_count,
+            'trials': all_trials,
+            'phase_distribution': dict(sorted(phase_counts.items(), key=lambda x: x[1], reverse=True)),
+            'diabetes_type_distribution': dict(sorted(diabetes_type_counts.items(), key=lambda x: x[1], reverse=True))
+        },
+        'source_metadata': {
+            'source': 'ClinicalTrials.gov',
+            'mcp_server': 'ct_gov_mcp',
+            'query_date': datetime.now().strftime('%Y-%m-%d'),
+            'query_params': {
+                'query': 'diabetes',
+                'recruitmentStatus': 'RECRUITING',
+                'pageSize': 1000
+            },
+            'data_count': len(all_trials),
+            'data_type': 'clinical_trials'
+        },
+        'summary': f"Found {len(all_trials):,} recruiting diabetes trials across {page_count} pages (source: ClinicalTrials.gov, {datetime.now().strftime('%Y-%m-%d')})"
     }
 
 if __name__ == "__main__":
+    import json
     result = get_diabetes_recruiting_trials()
-    print(f"\nDiabetes Recruiting Trials: {result['total_count']:,} trials, {result['pages_retrieved']} pages")
-    print(f"Type distribution: {result['diabetes_type_distribution']}")
+
+    # For human-readable output (comment out for JSON verification)
+    # print(f"\nDiabetes Recruiting Trials: {result['data']['total_count']:,} trials, {result['data']['pages_retrieved']} pages")
+    # print(f"Type distribution: {result['data']['diabetes_type_distribution']}")
+
+    # For JSON verification (required by verify_source_attribution.py)
+    print(json.dumps(result, indent=2))

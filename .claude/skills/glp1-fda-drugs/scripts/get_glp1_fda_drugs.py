@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0, ".claude")
+from datetime import datetime
 from mcp.servers.fda_mcp import lookup_drug
 
 def get_glp1_fda_drugs():
@@ -98,13 +99,33 @@ def get_glp1_fda_drugs():
     summary = "\n".join(summary_lines)
 
     return {
-        'drugs': unique_drugs,
-        'total_count': len(unique_drugs),
-        'summary': summary
+        'data': {
+            'drugs': unique_drugs,
+            'total_count': len(unique_drugs)
+        },
+        'source_metadata': {
+            'source': 'FDA Drug Database',
+            'mcp_server': 'fda_mcp',
+            'query_date': datetime.now().strftime('%Y-%m-%d'),
+            'query_params': {
+                'search_terms': glp1_drugs,
+                'search_type': 'general',
+                'limit': 100
+            },
+            'data_count': len(unique_drugs),
+            'data_type': 'fda_approved_drugs'
+        },
+        'summary': f"{summary}\n(source: FDA Drug Database, {datetime.now().strftime('%Y-%m-%d')})"
     }
 
 # REQUIRED: Make skill executable standalone
 if __name__ == "__main__":
+    import json
     result = get_glp1_fda_drugs()
-    print(result['summary'])
-    print(f"\nReturned {result['total_count']} unique GLP-1 drugs")
+
+    # For human-readable output (comment out for JSON verification)
+    # print(result['summary'])
+    # print(f"\nReturned {result['data']['total_count']} unique GLP-1 drugs")
+
+    # For JSON verification (required by verify_source_attribution.py)
+    print(json.dumps(result, indent=2))

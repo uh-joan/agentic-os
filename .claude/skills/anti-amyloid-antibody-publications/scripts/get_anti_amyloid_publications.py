@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0, ".claude")
+from datetime import datetime
 from mcp.servers.pubmed_mcp import search_keywords
 import re
 from collections import Counter
@@ -214,11 +215,32 @@ def get_anti_amyloid_publications():
     print("\n" + "="*80)
 
     return {
-        'total_count': total_count,
-        'summary': summary,
-        'raw_results': all_results[:50]  # Return first 50 for reference
+        'data': {
+            'total_count': total_count,
+            'analysis': summary,
+            'raw_results': all_results[:50]  # Return first 50 for reference
+        },
+        'source_metadata': {
+            'source': 'PubMed',
+            'mcp_server': 'pubmed_mcp',
+            'query_date': datetime.now().strftime('%Y-%m-%d'),
+            'query_params': {
+                'keywords': base_query,
+                'time_periods': time_periods,
+                'num_results_per_period': 100
+            },
+            'data_count': total_count,
+            'data_type': 'publications'
+        },
+        'summary': f"Found {total_count} anti-amyloid antibody publications (2019-2024) with {aria_count} mentioning ARIA safety ({aria_percentage:.1f}%) (source: PubMed, {datetime.now().strftime('%Y-%m-%d')})"
     }
 
 if __name__ == "__main__":
+    import json
     result = get_anti_amyloid_publications()
-    print(f"\n✓ Analysis complete. {result['total_count']} publications analyzed.")
+
+    # For human-readable output (comment out for JSON verification)
+    # print(f"\n✓ Analysis complete. {result['data']['total_count']} publications analyzed.")
+
+    # For JSON verification (required by verify_source_attribution.py)
+    print(json.dumps(result, indent=2))

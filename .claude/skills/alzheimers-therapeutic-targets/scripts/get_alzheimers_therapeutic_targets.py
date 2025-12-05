@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0, ".claude")
+from datetime import datetime
 from mcp.servers.opentargets_mcp import search_diseases, get_disease_targets_summary
 
 def get_alzheimers_therapeutic_targets():
@@ -13,15 +14,43 @@ def get_alzheimers_therapeutic_targets():
     """
     results = {'disease_info': {}, 'top_targets': [], 'genetic_targets': [], 'summary': {}}
 
-    print("Searching for Alzheimer's disease...")
+    # print("Searching for Alzheimer's disease...")  # Disabled for JSON output
     disease_results = search_diseases(query="Alzheimer's disease", size=5)
 
     if not disease_results or 'data' not in disease_results:
-        return {'error': 'No disease data found'}
+        return {
+            'data': {},
+            'source_metadata': {
+                'source': 'Open Targets Platform',
+                'mcp_server': 'opentargets_mcp',
+                'query_date': datetime.now().strftime('%Y-%m-%d'),
+                'query_params': {
+                    'disease_query': "Alzheimer's disease"
+                },
+                'data_count': 0,
+                'data_type': 'therapeutic_targets'
+            },
+            'summary': f"No disease data found (source: Open Targets Platform, {datetime.now().strftime('%Y-%m-%d')})",
+            'error': 'No disease data found'
+        }
 
     diseases = disease_results.get('data', {}).get('search', {}).get('hits', [])
     if not diseases:
-        return {'error': 'No matching diseases found'}
+        return {
+            'data': {},
+            'source_metadata': {
+                'source': 'Open Targets Platform',
+                'mcp_server': 'opentargets_mcp',
+                'query_date': datetime.now().strftime('%Y-%m-%d'),
+                'query_params': {
+                    'disease_query': "Alzheimer's disease"
+                },
+                'data_count': 0,
+                'data_type': 'therapeutic_targets'
+            },
+            'summary': f"No matching diseases found (source: Open Targets Platform, {datetime.now().strftime('%Y-%m-%d')})",
+            'error': 'No matching diseases found'
+        }
 
     disease = diseases[0]
     disease_id = disease.get('id', '')
@@ -33,20 +62,50 @@ def get_alzheimers_therapeutic_targets():
         'description': disease.get('description', 'N/A')
     }
 
-    print(f"Found disease: {disease_name} ({disease_id})")
+    # print(f"Found disease: {disease_name} ({disease_id})")  # Disabled for JSON output
 
-    print("Retrieving associated therapeutic targets...")
+    # print("Retrieving associated therapeutic targets...")  # Disabled for JSON output
     targets_results = get_disease_targets_summary(diseaseId=disease_id, minScore=0.0, size=50)
 
     if not targets_results or 'data' not in targets_results:
-        return {'disease_info': results['disease_info'], 'error': 'No target associations found'}
+        return {
+            'data': {'disease_info': results['disease_info']},
+            'source_metadata': {
+                'source': 'Open Targets Platform',
+                'mcp_server': 'opentargets_mcp',
+                'query_date': datetime.now().strftime('%Y-%m-%d'),
+                'query_params': {
+                    'disease_query': "Alzheimer's disease",
+                    'disease_id': disease_id
+                },
+                'data_count': 0,
+                'data_type': 'therapeutic_targets'
+            },
+            'summary': f"No target associations found for {disease_name} (source: Open Targets Platform, {datetime.now().strftime('%Y-%m-%d')})",
+            'error': 'No target associations found'
+        }
 
     associations = targets_results.get('data', [])
 
     if not associations:
-        return {'disease_info': results['disease_info'], 'error': 'No target associations in response'}
+        return {
+            'data': {'disease_info': results['disease_info']},
+            'source_metadata': {
+                'source': 'Open Targets Platform',
+                'mcp_server': 'opentargets_mcp',
+                'query_date': datetime.now().strftime('%Y-%m-%d'),
+                'query_params': {
+                    'disease_query': "Alzheimer's disease",
+                    'disease_id': disease_id
+                },
+                'data_count': 0,
+                'data_type': 'therapeutic_targets'
+            },
+            'summary': f"No target associations in response for {disease_name} (source: Open Targets Platform, {datetime.now().strftime('%Y-%m-%d')})",
+            'error': 'No target associations in response'
+        }
 
-    print(f"Found {len(associations)} target associations")
+    # print(f"Found {len(associations)} target associations")  # Disabled for JSON output
 
     # Process all targets and identify those with strong genetic evidence
     top_targets = []
@@ -113,32 +172,26 @@ def get_alzheimers_therapeutic_targets():
         'num_evidence_types': len(evidence_types)
     }
 
-    return results
+    return {
+        'data': results,
+        'source_metadata': {
+            'source': 'Open Targets Platform',
+            'mcp_server': 'opentargets_mcp',
+            'query_date': datetime.now().strftime('%Y-%m-%d'),
+            'query_params': {
+                'disease_query': "Alzheimer's disease",
+                'min_score': 0.0,
+                'max_targets': 50
+            },
+            'data_count': total_targets,
+            'data_type': 'therapeutic_targets'
+        },
+        'summary': f"Found {total_targets} therapeutic targets for {disease_name}, {len(genetic_targets)} with genetic evidence (source: Open Targets Platform, {datetime.now().strftime('%Y-%m-%d')})"
+    }
 
 if __name__ == "__main__":
+    import json
     result = get_alzheimers_therapeutic_targets()
 
-    if 'error' in result:
-        print(f"\nError: {result['error']}")
-    else:
-        print(f"\n{'='*80}")
-        print("ALZHEIMER'S DISEASE THERAPEUTIC TARGETS WITH GENETIC EVIDENCE")
-        print(f"{'='*80}\n")
-
-        summary = result['summary']
-        print(f"Disease: {summary['disease']}")
-        print(f"Total Targets: {summary['total_targets']}")
-        print(f"Targets with Genetic Evidence: {summary['targets_with_genetic_evidence']}")
-        print(f"Average Association Score: {summary['avg_association_score']}")
-        print(f"Average Genetic Evidence Score: {summary['avg_genetic_evidence_score']}")
-        print(f"\nEvidence Types Found: {', '.join(summary['evidence_types'])}\n")
-
-        print(f"{'='*80}")
-        print("TOP TARGETS BY GENETIC EVIDENCE")
-        print(f"{'='*80}\n")
-
-        for idx, target in enumerate(result['genetic_targets'][:10], 1):
-            print(f"{idx}. Target ID: {target['target_id']}")
-            print(f"   Overall Score: {target['association_score']}")
-            print(f"   Genetic Evidence: {target['genetic_evidence_score']}")
-            print(f"   Evidence Types: {list(target['datatype_scores'].keys())}\n")
+    # For JSON verification (required by verify_source_attribution.py)
+    print(json.dumps(result, indent=2))
